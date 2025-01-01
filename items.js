@@ -1,30 +1,30 @@
-// items.js - Verwaltung der Artikel
+// items.js - Artikelverwaltung
 
-class ItemsManager {
-    constructor() {
-        this.items = {
-            "Pommes": { emoji: "🍟", sellPrice: 2.5, buyPrice: 1.0, stock: 10 },
-            "Currywurst": { emoji: "🌭", sellPrice: 3.0, buyPrice: 1.5, stock: 8 },
-            "Hamburger": { emoji: "🍔", sellPrice: 4.0, buyPrice: 2.0, stock: 6 },
-            "Kaffee": { emoji: "☕", sellPrice: 1.5, buyPrice: 0.8, stock: 15 }
-        };
-    }
-
-    reduceStock(itemName) {
-        if (this.items[itemName] && this.items[itemName].stock > 0) {
-            this.items[itemName].stock -= 1;
-        }
-    }
-
-    restock(itemName, quantity) {
-        if (this.items[itemName]) {
-            this.items[itemName].stock += quantity;
-        }
-    }
+export const Items = {
+    items: {
+        fries: { name: 'fries', emoji: '🍟', stock: 3, sellPrice: 2.5 },
+        sausage: { name: 'sausage', emoji: '🌭', stock: 3, sellPrice: 3.0 },
+        burger: { name: 'burger', emoji: '🍔', stock: 3, sellPrice: 4.0 },
+        coffee: { name: 'coffee', emoji: '☕', stock: 3, sellPrice: 1.5 },
+        candy: { name: 'candy', emoji: '🍬', stock: 3, sellPrice: 0.5 },
+        lollipop: { name: 'lollipop', emoji: '🍭', stock: 3, sellPrice: 0.8 },
+        soup: { name: 'soup', emoji: '🍲', stock: 3, sellPrice: 3.5 },
+        bratwurst: { name: 'bratwurst', emoji: '🥩', stock: 3, sellPrice: 3.2 },
+    },
 
     getItems() {
         return this.items;
-    }
-}
+    },
 
-export const Items = new ItemsManager();
+    reduceStock(itemName) {
+        if (this.items[itemName]?.stock > 0) {
+            this.items[itemName].stock--;
+        }
+    },
+
+    increaseStock(itemName, amount) {
+        if (this.items[itemName]) {
+            this.items[itemName].stock += amount;
+        }
+    }
+};

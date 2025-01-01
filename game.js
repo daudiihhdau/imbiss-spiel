@@ -1,5 +1,3 @@
-// game.js - Hauptspiel
-import { PriceAdjustmentScene } from './price_adjustment.js';
 import { MainScene } from './main_scene.js';
 
 const config = {
@@ -13,7 +11,7 @@ const config = {
             debug: false
         }
     },
-    scene: [PriceAdjustmentScene, MainScene] // Startet mit der Preisänderung
+    scene: [MainScene],
 };
 
 const game = new Phaser.Game(config);
