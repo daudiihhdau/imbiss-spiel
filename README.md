@@ -1,0 +1,1 @@
+ws --spa index.html

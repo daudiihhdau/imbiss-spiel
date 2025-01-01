@@ -30,9 +30,9 @@ export function setupDebug(scene) {
 function updateDebugDisplay(debugText) {
     const items = Items.getItems();
     const stockInfo = Object.entries(items)
-        .map(([name, { emoji, stock }]) => {
-            const displayEmoji = stock > 0 ? emoji : `⚫${emoji}`; // Grau für ausverkaufte Artikel
-            return `${displayEmoji} ${name}: ${stock}`;
+        .map(([name, { emoji, stock, sellPrice }]) => {
+            const displayEmoji = stock > 0 ? emoji : `⚫${emoji}`;
+            return `${displayEmoji} ${name}: ${stock} Stück, €${sellPrice.toFixed(2)}`;
         })
         .join('\n');
 
