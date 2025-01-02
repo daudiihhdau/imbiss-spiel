@@ -40,8 +40,7 @@ export class Location {
     }
 
     generateRandomOrder() {
-        const items = Object.values(Items.getItems()); // Artikel aus items.js abrufen
-
+        const items = Items.getItems(); // Nutze Items aus items.js
         const order = [];
         const itemCount = Phaser.Math.Between(1, 3);
         for (let i = 0; i < itemCount; i++) {
@@ -54,16 +53,15 @@ export class Location {
 
 // Beispielkonfiguration für verschiedene Locations
 export const locations = [
-    new Location('Downtown', 'downtown.png', [
-        { start: '00:00', end: '09:00', probability: 0.2 },
-        { start: '09:00', end: '12:00', probability: 0.5 },
-        { start: '12:00', end: '15:00', probability: 0.7 },
-        { start: '15:00', end: '18:00', probability: 0.6 },
-        { start: '18:00', end: '21:00', probability: 0.3 },
+    new Location('Forest', 'forest.png', [
+        { start: '00:00', end: '06:00', probability: 0.1 },
+        { start: '06:00', end: '12:00', probability: 0.3 },
+        { start: '12:00', end: '18:00', probability: 0.5 },
+        { start: '18:00', end: '00:00', probability: 0.2 },
     ]),
-    new Location('Mall', 'mall.png', [
-        { start: '10:00', end: '14:00', probability: 0.8 },
-        { start: '14:00', end: '20:00', probability: 0.9 },
-        { start: '20:00', end: '22:00', probability: 0.4 },
+    new Location('Parc', 'parc.png', [
+        { start: '00:00', end: '08:00', probability: 0.2 },
+        { start: '08:00', end: '16:00', probability: 0.6 },
+        { start: '16:00', end: '00:00', probability: 0.4 },
     ]),
 ];

@@ -8,7 +8,7 @@ import { locations } from './location.js';
 export class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        this.currentLocation = locations[0]; // Standard-Location auswählen
+        this.currentLocation = locations[Phaser.Math.Between(0, locations.length - 1)]; // Zufällige Location auswählen
         this.customerSchedule = [];
     }
 
