@@ -1,40 +1,45 @@
-// debug.js - Debugging-Funktionen
+// debug.js - Debug-Modus
 
 import { Items } from './items.js';
 
 export function setupDebug(scene) {
-    const debugText = scene.add.text(scene.scale.width - 10, scene.scale.height - 10, "", {
-        fontSize: '18px',
-        fill: '#ffffff',
-        backgroundColor: '#000000',
-        padding: { x: 10, y: 10 },
-        align: 'right'
-    }).setOrigin(1, 1).setVisible(false);
+    const debugBackground = scene.add.rectangle(
+        scene.scale.width / 2, scene.scale.height / 2,
+        600, 300,
+        0x000000,
+        0.8
+    ).setOrigin(0.5).setVisible(false);
 
-    // Umschalten der Sichtbarkeit bei Leertaste
+    const debugText = scene.add.text(scene.scale.width / 2, scene.scale.height / 2, '', {
+        fontSize: '16px',
+        fill: '#fff',
+        align: 'left',
+        wordWrap: { width: 580 }
+    }).setOrigin(0.5).setVisible(false);
+
+    let debugVisible = false;
+
     scene.input.keyboard.on('keydown-SPACE', () => {
-        debugText.setVisible(!debugText.visible);
-        if (debugText.visible) {
-            updateDebugDisplay(debugText);
+        debugVisible = !debugVisible;
+        debugBackground.setVisible(debugVisible);
+        debugText.setVisible(debugVisible);
+
+        if (debugVisible) {
+            updateDebugText();
+
+            const padding = 20;
+            debugBackground.setSize(debugText.width + padding, debugText.height + padding); // Hintergrund mit Rand
         }
     });
 
-    // Ereignis hören und Debug-Text aktualisieren
-    scene.events.on('updateDebug', () => {
-        if (debugText.visible) {
-            updateDebugDisplay(debugText);
-        }
-    });
-}
+    function updateDebugText() {
+        const items = Items.getItems();
+        const debugLines = Object.entries(items).map(
+            ([key, item]) => `${item.emoji}: Lager: ${item.stock}, Verkaufspreis: €${item.sellPrice.toFixed(2)}, Einkaufspreis: €${item.purchasePrice.toFixed(2)}`
+        );
+        debugText.setText(debugLines.join('\n'));
+    }
 
-function updateDebugDisplay(debugText) {
-    const items = Items.getItems();
-    const stockInfo = Object.entries(items)
-        .map(([name, { emoji, stock, sellPrice }]) => {
-            const displayEmoji = stock > 0 ? emoji : `⚫${emoji}`;
-            return `${displayEmoji} ${name}: ${stock} Stück, €${sellPrice.toFixed(2)}`;
-        })
-        .join('\n');
-
-    debugText.setText(stockInfo);
+    // Aktualisiere Debug-Text, wenn etwas geändert wird
+    scene.events.on('update-debug', updateDebugText);
 }

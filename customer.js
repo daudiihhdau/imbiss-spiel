@@ -15,10 +15,11 @@ export class Customer {
         this.state = Customer.States.ENTERING;
         this.desiredItems = desiredItems;
         this.purchasedItems = [];
+        this.hasPurchased = false; // Hinzugefügt, um den Einkaufsstatus zu überwachen
 
         this.bubble = scene.add.image(x, y - 100, 'bubble').setOrigin(0.5).setScale(0.5);
         this.bubbleText = scene.add.text(x, y - 110, '', {
-            fontSize: '16px',
+            fontSize: '48px', // Emoji 3x größer dargestellt
             fill: '#000',
             align: 'center'
         }).setOrigin(0.5);
@@ -26,7 +27,8 @@ export class Customer {
 
     moveTo(targetX) {
         this.targetX = targetX;
-        this.sprite.setVelocityX(targetX > this.sprite.x ? 100 : -100);
+        const speed = 300; // Geschwindigkeit immer 300
+        this.sprite.setVelocityX(targetX > this.sprite.x ? speed : -speed);
     }
 
     isAtTarget() {
@@ -54,7 +56,7 @@ export class Customer {
     addPurchasedItem(itemName) {
         const item = this.desiredItems.find(i => i.name === itemName);
         if (item) {
-            this.purchasedItems.push(item); // Fügt das gekaufte Item zu purchasedItems hinzu
+            this.purchasedItems.push(item);
         }
     }
 
