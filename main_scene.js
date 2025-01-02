@@ -1,4 +1,4 @@
-// main_scene.js - Hauptspielszene
+// main_scene.js - Hauptspielszene ohne Physik
 
 import { Customer } from './customer.js';
 import { Items } from './items.js';
@@ -66,6 +66,7 @@ export class MainScene extends Phaser.Scene {
 
     update(time, delta) {
         this.customers.forEach((customer, index) => {
+            customer.updatePosition(delta);
             customer.updateBubblePosition();
 
             if (customer.state === Customer.States.ENTERING) {
@@ -73,7 +74,6 @@ export class MainScene extends Phaser.Scene {
                 if (customer.isAtTarget()) {
                     if (!customer.hasPurchased) {
                         customer.state = Customer.States.PAYING;
-                        customer.sprite.setVelocityX(0);
                     } else {
                         customer.state = Customer.States.LEAVING;
                     }
@@ -82,7 +82,7 @@ export class MainScene extends Phaser.Scene {
 
             if (customer.state === Customer.States.PAYING) {
                 let totalCost = 0;
-                customer.desiredItems.forEach(item => {
+                customer.order.forEach(item => {
                     if (Items.isInStock(item.name)) {
                         Items.reduceStock(item.name);
                         customer.addPurchasedItem(item.name);
@@ -102,18 +102,10 @@ export class MainScene extends Phaser.Scene {
                 }
             }
 
-            if (customer.state === Customer.States.LEAVING || customer.state === Customer.States.EXITING) {
-                customer.showPurchasedItems();
-            }
-
-            if (customer.state === Customer.States.EXITING) {
-                customer.sprite.setVelocityX(300);
-                customer.sprite.setFlipX(false);
-            }
-
             if (customer.state === Customer.States.LEAVING) {
-                customer.sprite.setVelocityX(-300);
-                customer.sprite.setFlipX(true);
+                customer.sprite.setFlipX(true); customer.moveTo(-300); // Nach links bewegen
+            } else if (customer.state === Customer.States.EXITING) {
+                customer.sprite.setFlipX(false); customer.moveTo(this.scale.width + 300); // Nach rechts bewegen
             }
 
             if (
