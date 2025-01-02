@@ -4,6 +4,7 @@ import { Customer } from './customer.js';
 import { Items } from './items.js';
 import { setupDebug } from './debug.js';
 import { locations } from './location.js';
+import { foodStalls } from './food_stall.js';
 
 export class MainScene extends Phaser.Scene {
     constructor() {
@@ -19,6 +20,9 @@ export class MainScene extends Phaser.Scene {
         this.load.image('customer3', 'mensch3.png');
         this.load.image('customer4', 'mensch4.png');
         this.load.image('bubble', 'bubble.png');
+
+        // Lade Food Stall Bilder
+        foodStalls.forEach(stall => this.load.image(stall.getImage(), stall.getImage()));
     }
 
     create() {
@@ -33,6 +37,10 @@ export class MainScene extends Phaser.Scene {
         });
 
         const background = this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
+
+        // Wähle zufälligen Food Stall und platziere ihn in der Mitte
+        const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
+        this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage()).setOrigin(0.5).setScale(0.5);
 
         this.clockText = this.add.text(10, 10, "00:00", {
             fontSize: '24px',
