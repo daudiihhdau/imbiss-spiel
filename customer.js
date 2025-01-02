@@ -23,25 +23,25 @@ export class Customer {
         this.waitingTime = 0;
         this.targetX = x;
 
-        this.bubble = scene.add.image(x, y - 100, 'bubble').setOrigin(0.5).setScale(0.5);
-        this.bubbleText = scene.add.text(x, y - 110, '', {
+        this.bubble = scene.add.image(x + 20, y - 250, 'bubble').setOrigin(0.5).setScale(0.5);
+        this.bubbleText = scene.add.text(x + 20, y - 260, '', {
             fontSize: '48px', // Emoji 3x größer dargestellt
             fill: '#000',
             align: 'center'
         }).setOrigin(0.5);
 
         // Emotion als Text anzeigen
-        this.emotionText = scene.add.text(x, y - 50, this.getEmotion().emoji, {
-            fontSize: '32px',
+        this.emotionText = scene.add.text(x, y - 120, this.getEmotion().emoji, {
+            fontSize: '100px',
         });
     }
 
     updateBubblePosition() {
-        this.bubble.x = this.sprite.x;
-        this.bubble.y = this.sprite.y - 100;
-        this.bubbleText.x = this.sprite.x;
-        this.bubbleText.y = this.sprite.y - 110;
-        this.emotionText.setPosition(this.sprite.x, this.sprite.y - 50);
+        this.bubble.x = this.sprite.x + 20;
+        this.bubble.y = this.sprite.y - 250;
+        this.bubbleText.x = this.sprite.x + 20;
+        this.bubbleText.y = this.sprite.y - 260;
+        this.emotionText.setPosition(this.sprite.x, this.sprite.y - 120);
         this.emotionText.setText(this.getEmotion().emoji);
     }
 
@@ -87,23 +87,18 @@ export class Customer {
         if (this.state === Customer.States.ENTERING) {
             return Emotions.HUNGRY;
         }
-        if (this.state === Customer.States.PAYING) {
-            if (this.purchasedItems.length === this.order.length) {
-                return Emotions.HAPPY;
-            } else if (this.purchasedItems.length > 0) {
-                return Emotions.DISAPPOINTED;
-            } else {
-                return Emotions.ANGRY;
-            }
-        }
         if (this.state === Customer.States.EXITING) {
-            return Emotions.EXCITED;
+            if (this.purchasedItems.length === this.order.length) {
+                return Emotions.EXCITED;
+            } else {
+                return Emotions.HAPPY;
+            }
         }
         if (this.state === Customer.States.LEAVING) {
             if (this.purchasedItems.length > 0) {
                 return Emotions.DISAPPOINTED;
             } else {
-                return Emotions.SAD;
+                return Emotions.ANGRY;
             }
         }
         if (this.waitingTime > 5000) {

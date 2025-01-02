@@ -103,9 +103,13 @@ export class MainScene extends Phaser.Scene {
             }
 
             if (customer.state === Customer.States.LEAVING) {
-                customer.sprite.setFlipX(true); customer.moveTo(-300); // Nach links bewegen
+                customer.sprite.setFlipX(true); 
+                customer.moveTo(-300); // Nach links bewegen
+                customer.showPurchasedItems()
             } else if (customer.state === Customer.States.EXITING) {
-                customer.sprite.setFlipX(false); customer.moveTo(this.scale.width + 300); // Nach rechts bewegen
+                customer.sprite.setFlipX(false); 
+                customer.moveTo(this.scale.width + 300); // Nach rechts bewegen
+                customer.showPurchasedItems()
             }
 
             if (
