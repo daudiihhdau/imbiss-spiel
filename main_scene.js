@@ -20,7 +20,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
-        // Initialisiere globale Variablen hier
         this.clockText = null;
         this.wealthText = null;
         this.currentTime = 0;
@@ -28,89 +27,101 @@ export class MainScene extends Phaser.Scene {
         this.customerSchedule = generateCustomerSchedule();
         this.customers = [];
 
-        // Setze den Bestand aller Waren auf 3
         Object.values(Items.getItems()).forEach(item => {
-            item.stock = 3;
+            console.log(`Initial stock for ${item.name}: ${item.stock}`);
         });
 
-        // Hintergrundbild
         const background = this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
 
-        // Uhrzeit-Anzeige
         this.clockText = this.add.text(10, 10, "00:00", {
             fontSize: '24px',
             fill: '#000'
         });
 
-        // Vermögensanzeige
         this.wealthText = this.add.text(this.scale.width - 10, 10, `Vermögen: €${this.playerWealth.toFixed(2)}`, {
             fontSize: '24px',
             fill: '#000'
         }).setOrigin(1, 0);
 
-        // Debug-Modus aktivieren
         setupDebug(this);
 
-        // Uhr-Update
         this.time.addEvent({
             delay: 120,
             callback: this.updateClock,
             callbackScope: this,
             loop: true
         });
+
+        console.log("MainScene created.");
     }
 
     update(time, delta) {
         this.customers.forEach((customer, index) => {
             customer.updateBubblePosition();
 
-            // Zeige je nach Zustand an, was der Kunde in der Bubble sehen soll
             if (customer.state === Customer.States.ENTERING) {
-                customer.showDesiredItems(); // Zeigt, was der Kunde kaufen will
-            } else if (
-                customer.state === Customer.States.EXITING ||
-                customer.state === Customer.States.LEAVING
-            ) {
-                customer.showPurchasedItems(); // Zeigt, was der Kunde gekauft hat
+                this.updateQueuePositions();
+                customer.showDesiredItems();
+                if (customer.isAtTarget()) {
+                    if (!customer.hasPurchased) { // Sicherstellen, dass der Kunde noch nicht eingekauft hat
+                        customer.state = Customer.States.PAYING;
+                        customer.sprite.setVelocityX(0);
+                        console.log(`Customer ${index} reached target and is now PAYING.`);
+                    } else {
+                        customer.state = Customer.States.LEAVING;
+                        console.log(`Customer ${index} is leaving without purchasing.`);
+                    }
+                }
             }
 
-            if (customer.isAtTarget() && customer.state === Customer.States.ENTERING) {
-                customer.sprite.setVelocityX(0);
-                if (index === 0) {
-                    // Überprüfe und kaufe verfügbare Artikel
-                    let totalCost = 0;
-                    customer.desiredItems.forEach(item => {
-                        const stockItem = Items.getItems()[item.name];
-                        if (stockItem && stockItem.stock > 0) {
+            if (customer.state === Customer.States.PAYING) {
+                let totalCost = 0;
+                console.log(`Customer ${index} desired items:`, customer.desiredItems);
+                customer.desiredItems.forEach(item => {
+                    const stockItem = Items.getItems().find(i => i.name === item.name);
+                    if (stockItem) {
+                        if (stockItem.stock > 0) {
                             Items.reduceStock(item.name);
                             customer.addPurchasedItem(item.name);
                             totalCost += item.sellPrice;
+                            console.log(`Customer ${index} bought ${item.name}. Remaining stock: ${stockItem.stock}`);
+                        } else {
+                            console.log(`Customer ${index} could not buy ${item.name}, stock is 0.`);
                         }
-                    });
-
-                    if (customer.purchasedItems.length > 0) {
-                        this.playerWealth += totalCost;
-                        this.wealthText.setText(`Vermögen: €${this.playerWealth.toFixed(2)}`);
-                        customer.state = Customer.States.EXITING;
-                        customer.sprite.setVelocityX(300); // Kunde bewegt sich nach rechts
-                        customer.sprite.setFlipX(false); // Spiegelung entfernen für EXITING
                     } else {
-                        customer.state = Customer.States.LEAVING;
-                        customer.sprite.setVelocityX(-300); // Kunde bewegt sich nach links
-                        customer.sprite.setFlipX(true); // Spiegelung aktivieren für LEAVING
+                        console.log(`Customer ${index} requested ${item.name}, but it does not exist in stock.`);
                     }
+                });
+
+                if (customer.purchasedItems.length > 0) {
+                    this.playerWealth += totalCost;
+                    this.wealthText.setText(`Vermögen: €${this.playerWealth.toFixed(2)}`);
+                    customer.state = Customer.States.EXITING;
+                    customer.hasPurchased = true; // Markiere den Kunden als fertig mit Einkäufen
+                    console.log(`Customer ${index} has finished purchasing. Total cost: €${totalCost.toFixed(2)}`);
                 } else {
-                    customer.sprite.setVelocityX(0);
+                    customer.state = Customer.States.LEAVING;
+                    console.log(`Customer ${index} is leaving without buying anything.`);
                 }
+            }
+
+            if (customer.state === Customer.States.EXITING) {
+                customer.sprite.setVelocityX(300); // Nach rechts bewegen
+                customer.sprite.setFlipX(false);
+            }
+
+            if (customer.state === Customer.States.LEAVING) {
+                customer.sprite.setVelocityX(-300); // Nach links bewegen
+                customer.sprite.setFlipX(true);
             }
 
             if (
                 (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
                 (customer.state === Customer.States.LEAVING && customer.sprite.x < -50)
             ) {
+                console.log(`Customer ${index} has left the scene.`);
                 this.customers.splice(index, 1);
                 customer.destroy();
-                this.updateQueuePositions();
             }
         });
     }
@@ -142,12 +153,14 @@ export class MainScene extends Phaser.Scene {
         this.customers.push(customer);
 
         customer.state = Customer.States.ENTERING;
-        customer.moveTo(this.scale.width / 3 + this.customers.length * 50); // Kunden reihen sich ein
+        customer.hasPurchased = false; // Initialisiere das Einkauf-Flag
+        console.log(`Spawned customer with desired items:`, order);
+        this.updateQueuePositions();
     }
 
     updateQueuePositions() {
         this.customers.forEach((customer, index) => {
-            if (customer.state !== Customer.States.EXITING && customer.state !== Customer.States.LEAVING) {
+            if (customer.state === Customer.States.ENTERING) {
                 const targetX = this.scale.width / 3 + index * 50;
                 customer.moveTo(targetX);
             }

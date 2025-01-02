@@ -1,68 +1,61 @@
-// customer.js - Kundenklasse
-
-const BUBBLE_OFFSET_Y = 250; // Konstante für Bubble-Offset
-const SPEED = 300; // Konstante für Bewegungsgeschwindigkeit
+// customer.js - Kundenlogik
 
 export class Customer {
-    constructor(scene, x, y, spriteKey, order = []) {
-        this.scene = scene;
-        this.sprite = scene.physics.add.sprite(x, y, spriteKey);
-        this.sprite.setScale(1); // Setzt den Kunden auf Originalgröße
-        this.sprite.setCollideWorldBounds(false);
-        this.desiredItems = order; // Array von gewünschten Bestellungen
-        this.purchasedItems = []; // Array von tatsächlich gekauften Artikeln
-        this.state = Customer.States.ENTERING; // Initialer Zustand
+    static States = {
+        ENTERING: 'ENTERING',
+        PAYING: 'PAYING',
+        EXITING: 'EXITING',
+        LEAVING: 'LEAVING',
+    };
 
-        // Sprechblase
-        this.bubble = scene.add.image(x, y - BUBBLE_OFFSET_Y, 'bubble')
-            .setScale(0.5) // Sprechblase kleiner machen
-            .setOrigin(0.5)
-            .setVisible(true);
-        this.bubbleText = scene.add.text(x, y - BUBBLE_OFFSET_Y, this.generateItemsText(this.desiredItems), {
-            fontSize: '24px', // Größere Emojiis in der Bubble
-            fill: '#000'
+    constructor(scene, x, y, spriteKey, desiredItems = []) {
+        this.scene = scene;
+        this.sprite = scene.physics.add.sprite(x, y, spriteKey).setOrigin(0.5);
+        this.targetX = null;
+        this.state = Customer.States.ENTERING;
+        this.desiredItems = desiredItems;
+        this.purchasedItems = [];
+
+        this.bubble = scene.add.image(x, y - 100, 'bubble').setOrigin(0.5).setScale(0.5);
+        this.bubbleText = scene.add.text(x, y - 110, '', {
+            fontSize: '16px',
+            fill: '#000',
+            align: 'center'
         }).setOrigin(0.5);
     }
 
-    static States = {
-        ENTERING: 'entering',
-        PAYING: 'paying',
-        EXITING: 'exiting',
-        LEAVING: 'leaving',
-    };
-
     moveTo(targetX) {
-        this.sprite.setVelocityX(targetX > this.sprite.x ? SPEED : -SPEED);
         this.targetX = targetX;
-        this.targetY = this.sprite.y; // Y-Position bleibt konstant
+        this.sprite.setVelocityX(targetX > this.sprite.x ? 100 : -100);
     }
 
     isAtTarget() {
-        return Math.abs(this.sprite.x - this.targetX) < 10;
+        if (this.targetX === null) return false;
+        return Math.abs(this.sprite.x - this.targetX) < 5;
     }
 
     updateBubblePosition() {
-        this.bubble.setPosition(this.sprite.x, this.sprite.y - BUBBLE_OFFSET_Y);
-        this.bubbleText.setPosition(this.sprite.x, this.sprite.y - BUBBLE_OFFSET_Y);
-    }
-
-    generateItemsText(items) {
-        return items.map(item => item.emoji).join(' ');
-    }
-
-    addPurchasedItem(itemName) {
-        const itemIndex = this.desiredItems.findIndex(item => item.name === itemName);
-        if (itemIndex !== -1) {
-            this.purchasedItems.push(this.desiredItems[itemIndex]);
-        }
+        this.bubble.x = this.sprite.x;
+        this.bubble.y = this.sprite.y - 100;
+        this.bubbleText.x = this.sprite.x;
+        this.bubbleText.y = this.sprite.y - 110;
     }
 
     showDesiredItems() {
-        this.bubbleText.setText(this.generateItemsText(this.desiredItems));
+        const itemsText = this.desiredItems.map(item => item.emoji).join(' ');
+        this.bubbleText.setText(itemsText);
     }
 
     showPurchasedItems() {
-        this.bubbleText.setText(this.generateItemsText(this.purchasedItems));
+        const itemsText = this.purchasedItems.map(item => item.emoji).join(' ');
+        this.bubbleText.setText(itemsText);
+    }
+
+    addPurchasedItem(itemName) {
+        const item = this.desiredItems.find(i => i.name === itemName);
+        if (item) {
+            this.purchasedItems.push(item); // Fügt das gekaufte Item zu purchasedItems hinzu
+        }
     }
 
     destroy() {

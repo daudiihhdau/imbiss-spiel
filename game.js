@@ -1,3 +1,4 @@
+import { PriceAdjustmentScene } from './price_adjustment.js';
 import { MainScene } from './main_scene.js';
 
 const config = {
@@ -8,10 +9,13 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
-        }
+            debug: false,
+        },
     },
-    scene: [MainScene],
+    scene: [PriceAdjustmentScene, MainScene],
 };
 
 const game = new Phaser.Game(config);
+
+// Übergang von PriceAdjustment zu MainScene
+game.scene.start('PriceAdjustmentScene');

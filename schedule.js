@@ -24,7 +24,7 @@ function getCustomerProbability(minute) {
     if (hour >= 6 && hour < 9) return 0.15; // Morgens
     if (hour >= 12 && hour < 14) return 0.25; // Mittags
     if (hour >= 17 && hour < 20) return 0.3; // Abends
-    return 0.05; // Rest des Tages
+    return 0.005; // Rest des Tages
 }
 
 function generateRandomOrder() {
