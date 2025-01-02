@@ -108,11 +108,13 @@ export class MainScene extends Phaser.Scene {
             if (customer.state === Customer.States.EXITING) {
                 customer.sprite.setVelocityX(300); // Nach rechts bewegen
                 customer.sprite.setFlipX(false);
+                customer.showPurchasedItems();
             }
 
             if (customer.state === Customer.States.LEAVING) {
                 customer.sprite.setVelocityX(-300); // Nach links bewegen
                 customer.sprite.setFlipX(true);
+                customer.showPurchasedItems();
             }
 
             if (
