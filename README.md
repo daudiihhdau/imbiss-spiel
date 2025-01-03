@@ -2,12 +2,19 @@ ws --spa index.html
 
 # Ideen
 
-Datum mit 27.01.1983
+Einkaufen im Großhandel
+Datum DD.MM.YYYY
 in der Nacht dunkel
-Jahreszeiten und Wetter (wenn heiß ist: mehr Eis verkaufen)
-Verkaufsstatistiken
+Jahreszeiten 
+Wetter (wenn heiß ist: mehr Eis verkaufen)
+Verkaufsstatistiken: Top-Produkte, Uhrzeit
 Wochenende\Wochentag
-
+Location: kostet Miete
+Location: alter Imbiss schreckt Kunden ab (sie gehen vorbei oder reduzieren Bestellung)
+Kundenzufriedenheit messen
+Menü: Location mieten
+Menü: Imbiss kaufen
+Kunden: haben immer Emoji-Kopf
 
 # Warenwirtschaft
 
