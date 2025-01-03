@@ -1,6 +1,8 @@
 // location.js - Locations und Zeitplan
 
-import { Items } from './items.js';
+import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+
+const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
 
 export class Location {
     constructor(name, backgroundImage, config) {
@@ -40,12 +42,12 @@ export class Location {
     }
 
     generateRandomOrder() {
-        const items = Items.getItems(); // Nutze Items aus items.js
+        const items = inventory.getCurrentStock(); // Nutze Items aus inventory_management.js
         const order = [];
         const itemCount = Phaser.Math.Between(1, 3);
         for (let i = 0; i < itemCount; i++) {
             const randomItem = items[Phaser.Math.Between(0, items.length - 1)];
-            order.push(randomItem);
+            order.push(randomItem); // Nur benötigte Daten übernehmen
         }
         return order;
     }
@@ -54,10 +56,10 @@ export class Location {
 // Beispielkonfiguration für verschiedene Locations
 export const locations = [
     new Location('Forest', 'forest.png', [
-        { start: '00:00', end: '06:00', probability: 0.1 },
-        { start: '06:00', end: '12:00', probability: 0.3 },
-        { start: '12:00', end: '18:00', probability: 0.5 },
-        { start: '18:00', end: '00:00', probability: 0.2 },
+        { start: '00:00', end: '06:00', probability: 0.01 },
+        { start: '06:00', end: '12:00', probability: 0.03 },
+        { start: '12:00', end: '18:00', probability: 0.05 },
+        { start: '18:00', end: '00:00', probability: 0.02 },
     ]),
     new Location('Parc', 'parc.png', [
         { start: '00:00', end: '08:00', probability: 0.2 },
@@ -65,9 +67,8 @@ export const locations = [
         { start: '16:00', end: '00:00', probability: 0.4 },
     ]),
     new Location('City', 'city.png', [
-        { start: '00:00', end: '06:00', probability: 0.3 },
-        { start: '06:00', end: '12:00', probability: 0.7 },
-        { start: '12:00', end: '18:00', probability: 0.8 },
-        { start: '18:00', end: '00:00', probability: 0.5 },
-    ]),
+        { start: '00:00', end: '08:00', probability: 0.2 },
+        { start: '08:00', end: '16:00', probability: 0.6 },
+        { start: '16:00', end: '00:00', probability: 0.4 },
+    ])
 ];

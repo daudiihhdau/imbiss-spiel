@@ -1,16 +1,17 @@
 // main_scene.js - Hauptspielszene ohne Physik
 
 import { Customer } from './customer.js';
-import { Items } from './items.js';
 import { setupDebug } from './debug.js';
 import { locations } from './location.js';
 import { foodStalls } from './food_stall.js';
+import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
 
 export class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         this.currentLocation = locations[Phaser.Math.Between(0, locations.length - 1)]; // Zufällige Location auswählen
         this.customerSchedule = [];
+        this.imbissSoftware = new ImbissSoftware(); // Instanziere Warenwirtschaft
     }
 
     preload() {
@@ -31,10 +32,6 @@ export class MainScene extends Phaser.Scene {
         this.currentTime = 0;
         this.playerWealth = 0;
         this.customers = [];
-
-        Object.values(Items.getItems()).forEach(item => {
-            item.stock = 3;
-        });
 
         const background = this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
 
@@ -62,6 +59,11 @@ export class MainScene extends Phaser.Scene {
             callbackScope: this,
             loop: true,
         });
+
+        // Event-Listener für niedrigen Bestand
+        this.imbissSoftware.dispatcher.subscribe('lowStock', (data) => {
+            console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
+        });
     }
 
     update(time, delta) {
@@ -83,12 +85,12 @@ export class MainScene extends Phaser.Scene {
             if (customer.state === Customer.States.PAYING) {
                 let totalCost = 0;
                 customer.order.forEach(item => {
-                    if (Items.isInStock(item.name)) {
-                        Items.reduceStock(item.name);
+                    try {
+                        this.imbissSoftware.addSale(item.name, 1, item.sellPrice); // Verwende Warenwirtschaft
                         customer.addPurchasedItem(item.name);
                         totalCost += item.sellPrice;
-                    } else {
-                        console.log(`Item ${item.name} is out of stock!`);
+                    } catch (error) {
+                        console.log(`Fehler beim Verkauf: ${error.message}`);
                     }
                 });
 
@@ -103,13 +105,13 @@ export class MainScene extends Phaser.Scene {
             }
 
             if (customer.state === Customer.States.LEAVING) {
-                customer.sprite.setFlipX(true); 
-                customer.moveTo(-300); // Nach links bewegen
-                customer.showPurchasedItems()
+                customer.sprite.setFlipX(true);
+                customer.moveTo(-300);
+                customer.showPurchasedItems();
             } else if (customer.state === Customer.States.EXITING) {
-                customer.sprite.setFlipX(false); 
-                customer.moveTo(this.scale.width + 300); // Nach rechts bewegen
-                customer.showPurchasedItems()
+                customer.sprite.setFlipX(false);
+                customer.moveTo(this.scale.width + 300);
+                customer.showPurchasedItems();
             }
 
             if (
@@ -144,7 +146,7 @@ export class MainScene extends Phaser.Scene {
         const x = -50;
         const y = this.scale.height - 100;
         const customer = new Customer(this, x, y, spriteKey, order);
-
+        console.log(customer)
         this.customers.push(customer);
 
         customer.state = Customer.States.ENTERING;

@@ -1,9 +1,10 @@
 // price_adjustment.js - Szene zum Ändern der Verkaufspreise
-import { Items } from './items.js';
+import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
 
 export class PriceAdjustmentScene extends Phaser.Scene {
     constructor() {
         super({ key: 'PriceAdjustmentScene' });
+        this.imbissSoftware = new ImbissSoftware(); // Instanziere Warenwirtschaft
     }
 
     create() {
@@ -12,31 +13,25 @@ export class PriceAdjustmentScene extends Phaser.Scene {
             fill: '#000'
         });
 
-        const items = Items.getItems();
+        const items = this.imbissSoftware.getCurrentStock(); // Abrufen der Lagerbestände aus der Warenwirtschaft
         const yStart = 60;
         const xLabel = 20;
         const xInput = 250;
         const xDetails = 400;
 
-        Object.entries(items).forEach(([itemName, itemData], index) => {
+        items.forEach((item, index) => {
             const yOffset = yStart + index * 40;
 
             // Item-Label
-            this.add.text(xLabel, yOffset, `${itemData.emoji} ${itemName}:`, {
+            this.add.text(xLabel, yOffset, `${item.emoji} ${item.name}:`, {
                 fontSize: '24px',
                 fill: '#000'
-            });
-
-            // Produktname anzeigen
-            this.add.text(xLabel + 120, yOffset, `${itemData.name}`, {
-                fontSize: '20px',
-                fill: '#fff'
             });
 
             // Input-Feld für den Verkaufspreis
             const inputElement = document.createElement('input');
             inputElement.type = 'number';
-            inputElement.value = itemData.sellPrice;
+            inputElement.value = item.sellPrice || 0; // Standardpreis, falls nicht gesetzt
             inputElement.style.position = 'absolute';
             inputElement.style.top = `${this.scale.canvas.offsetTop + yOffset}px`;
             inputElement.style.left = `${this.scale.canvas.offsetLeft + xInput}px`;
@@ -46,14 +41,18 @@ export class PriceAdjustmentScene extends Phaser.Scene {
             inputElement.addEventListener('change', () => {
                 const newValue = parseFloat(inputElement.value);
                 if (!isNaN(newValue) && newValue > 0) {
-                    itemData.sellPrice = newValue;
+                    try {
+                        this.imbissSoftware.logPrice(item.name, newValue, 'sell'); // Preisänderung protokollieren
+                    } catch (error) {
+                        console.log(`Fehler bei der Preisänderung: ${error.message}`);
+                    }
                 }
             });
 
             document.body.appendChild(inputElement);
 
-            // Weißer Text für Anzahl im Lager und Einkaufspreis
-            this.add.text(xDetails, yOffset, `Lager: ${itemData.stock}, Einkauf: €${itemData.purchasePrice.toFixed(2)}`, {
+            // Weißer Text für Anzahl im Lager
+            this.add.text(xDetails, yOffset, `Lager: ${item.stock}`, {
                 fontSize: '20px',
                 fill: '#fff'
             });
