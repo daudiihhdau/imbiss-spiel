@@ -2,6 +2,9 @@ ws --spa index.html
 
 # Ideen
 
+Szene: Über-uns
+Knopf oben: Spende und Kaffee
+Knopf oben: Instagram, Twitter, Twitch
 Einkaufen im Großhandel
 Datum DD.MM.YYYY
 in der Nacht dunkel
