@@ -13,5 +13,6 @@ export class FoodStall {
 // Beispiel-Instanzen
 export const foodStalls = [
     new FoodStall('imbiss_rostig.png'),
-    new FoodStall('imbiss_lustig.png')
+    new FoodStall('imbiss_lustig.png'),
+    new FoodStall('imbiss_eisladen.png')
 ];

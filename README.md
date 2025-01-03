@@ -1,5 +1,13 @@
 ws --spa index.html
 
+# Ideen
+
+Datum mit 27.01.1983
+in der Nacht dunkel
+Jahreszeiten und Wetter (wenn heiß ist: mehr Eis verkaufen)
+Verkaufsstatistiken
+Wochenende\Wochentag
+
 
 # Warenwirtschaft
 
