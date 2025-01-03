@@ -1,4 +1,4 @@
-// customer.js - Kundenklasse ohne Arcade-Physics mit Emotionen
+import { ImbissSoftware } from './inventory_management.js';
 
 export const Emotions = {
     HAPPY: { emoji: '😊', description: 'glücklich' },
@@ -19,21 +19,21 @@ export class Customer {
         this.state = Customer.States.ENTERING;
         this.order = order;
         this.purchasedItems = [];
-        this.hasPurchased = false;
         this.waitingTime = 0;
         this.targetX = x;
 
         this.bubble = scene.add.image(x + 20, y - 250, 'bubble').setOrigin(0.5).setScale(0.5);
         this.bubbleText = scene.add.text(x + 20, y - 260, '', {
-            fontSize: '48px', // Emoji 3x größer dargestellt
+            fontSize: '48px',
             fill: '#000',
             align: 'center'
         }).setOrigin(0.5);
 
-        // Emotion als Text anzeigen
         this.emotionText = scene.add.text(x, y - 120, this.getEmotion().emoji, {
             fontSize: '100px',
         });
+
+        this.inventory = ImbissSoftware.getInstance(); // Singleton-Instanz von ImbissSoftware
     }
 
     updateBubblePosition() {
@@ -70,8 +70,22 @@ export class Customer {
         }
     }
 
+    processOrder() {
+        const orderSummary = this.inventory.processOrder(this.order);
+
+        if (orderSummary) {
+            orderSummary.items.forEach(({ itemName }) => {
+                this.addPurchasedItem(itemName);
+            });
+            return orderSummary;
+        } else {
+            console.error('Die Bestellung konnte nicht vollständig bearbeitet werden.');
+            return null;
+        }
+    }
+
     updatePosition(delta) {
-        const speed = 300 * (delta / 1000); // Geschwindigkeit ohne Physik
+        const speed = 300 * (delta / 1000);
         if (this.sprite.x < this.targetX) {
             this.sprite.x = Math.min(this.sprite.x + speed, this.targetX);
         } else if (this.sprite.x > this.targetX) {
@@ -105,7 +119,11 @@ export class Customer {
             return Emotions.TIRED;
         }
 
-        return Emotions.HAPPY; // Standardemotion
+        return Emotions.HAPPY;
+    }
+
+    hasPurchased() {
+        return this.purchasedItems.length > 0 || this.state === Customer.States.EXITING || this.state === Customer.States.LEAVING;
     }
 
     destroy() {

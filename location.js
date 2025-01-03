@@ -42,12 +42,12 @@ export class Location {
     }
 
     generateRandomOrder() {
-        const items = inventory.getCurrentStock(); // Nutze Items aus inventory_management.js
+        const items = inventory.getCurrentStock();
         const order = [];
         const itemCount = Phaser.Math.Between(1, 3);
         for (let i = 0; i < itemCount; i++) {
             const randomItem = items[Phaser.Math.Between(0, items.length - 1)];
-            order.push(randomItem); // Nur benötigte Daten übernehmen
+            order.push({ name: randomItem.name, emoji: randomItem.emoji }); // Nur benötigte Daten übernehmen
         }
         return order;
     }
@@ -76,12 +76,12 @@ export const locations = [
         { start: '08:00', end: '16:00', probability: 0.6 },
         { start: '16:00', end: '00:00', probability: 0.4 },
     ]),
-    new Location('Altstadt', 'fussballplatz_amateur.png', [
+    new Location('Fussballplatz_Amateur', 'fussballplatz_amateur.png', [
         { start: '00:00', end: '08:00', probability: 0.2 },
         { start: '08:00', end: '16:00', probability: 0.6 },
         { start: '16:00', end: '00:00', probability: 0.4 },
     ]),
-    new Location('Altstadt', 'fussballplatz_profi.png', [
+    new Location('Fussballplatz_Profi', 'fussballplatz_profi.png', [
         { start: '00:00', end: '08:00', probability: 0.2 },
         { start: '08:00', end: '16:00', probability: 0.6 },
         { start: '16:00', end: '00:00', probability: 0.4 },

@@ -1,5 +1,3 @@
-// debug.js - Debug-Modus
-
 import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
 
 export function setupDebug(scene) {
@@ -19,7 +17,7 @@ export function setupDebug(scene) {
 
     let debugVisible = false;
 
-    const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
+    const inventory = ImbissSoftware.getInstance(); // Singleton-Instanz der Warenwirtschaft
 
     scene.input.keyboard.on('keydown-SPACE', () => {
         debugVisible = !debugVisible;
@@ -35,9 +33,9 @@ export function setupDebug(scene) {
     });
 
     function updateDebugText() {
-        const items = inventory.getCurrentStock(); // Lagerbestand von Warenwirtschaft abrufen
+        const items = Array.from(ImbissSoftware.items.values()); // Alle Items direkt aus der Warenwirtschaft abrufen
         const debugLines = items.map(
-            (item) => `${item.emoji}: Lager: ${item.stock}, Mindestbestand: ${item.needsRestock ? 'Nachbestellung nötig' : 'OK'}`
+            (item) => `${item.emoji}: Lager: ${item.stock}, Mindestbestand: ${item.stock < 3 ? 'Nachbestellung nötig' : 'OK'}`
         );
         debugText.setText(debugLines.join('\n'));
     }

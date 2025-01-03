@@ -1,5 +1,9 @@
 import { PriceAdjustmentScene } from './price_adjustment.js';
 import { MainScene } from './main_scene.js';
+import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+
+// Singleton-Instanz initialisieren
+const inventory = ImbissSoftware.getInstance();
 
 const config = {
     type: Phaser.AUTO,

@@ -1,10 +1,9 @@
-// price_adjustment.js - Szene zum Ändern der Verkaufspreise
 import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
 
 export class PriceAdjustmentScene extends Phaser.Scene {
     constructor() {
         super({ key: 'PriceAdjustmentScene' });
-        this.imbissSoftware = new ImbissSoftware(); // Instanziere Warenwirtschaft
+        this.imbissSoftware = ImbissSoftware.getInstance(); // Singleton-Instanz der Warenwirtschaft
     }
 
     create() {
@@ -42,7 +41,7 @@ export class PriceAdjustmentScene extends Phaser.Scene {
                 const newValue = parseFloat(inputElement.value);
                 if (!isNaN(newValue) && newValue > 0) {
                     try {
-                        this.imbissSoftware.logPrice(item.name, newValue, 'sell'); // Preisänderung protokollieren
+                        this.imbissSoftware.updateSellPrice(item.name, newValue); // Verkaufspreis aktualisieren
                     } catch (error) {
                         console.log(`Fehler bei der Preisänderung: ${error.message}`);
                     }

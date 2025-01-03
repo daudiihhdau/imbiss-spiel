@@ -1,5 +1,3 @@
-// main_scene.js - Hauptspielszene ohne Physik
-
 import { Customer } from './customer.js';
 import { setupDebug } from './debug.js';
 import { locations } from './location.js';
@@ -11,7 +9,7 @@ export class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.currentLocation = locations[Phaser.Math.Between(0, locations.length - 1)]; // Zufällige Location auswählen
         this.customerSchedule = [];
-        this.imbissSoftware = new ImbissSoftware(); // Instanziere Warenwirtschaft
+        this.imbissSoftware = ImbissSoftware.getInstance(); // Singleton-Instanz der Warenwirtschaft
     }
 
     preload() {
@@ -74,7 +72,7 @@ export class MainScene extends Phaser.Scene {
             if (customer.state === Customer.States.ENTERING) {
                 customer.showDesiredItems();
                 if (customer.isAtTarget()) {
-                    if (!customer.hasPurchased) {
+                    if (!customer.hasPurchased()) {
                         customer.state = Customer.States.PAYING;
                     } else {
                         customer.state = Customer.States.LEAVING;
@@ -83,22 +81,11 @@ export class MainScene extends Phaser.Scene {
             }
 
             if (customer.state === Customer.States.PAYING) {
-                let totalCost = 0;
-                customer.order.forEach(item => {
-                    try {
-                        this.imbissSoftware.addSale(item.name, 1, item.sellPrice); // Verwende Warenwirtschaft
-                        customer.addPurchasedItem(item.name);
-                        totalCost += item.sellPrice;
-                    } catch (error) {
-                        console.log(`Fehler beim Verkauf: ${error.message}`);
-                    }
-                });
-
-                if (customer.purchasedItems.length > 0) {
-                    this.playerWealth += totalCost;
+                const orderSummary = customer.processOrder()
+                if (orderSummary) {
+                    this.playerWealth += orderSummary.totalRevenue;
                     this.wealthText.setText(`Vermögen: €${this.playerWealth.toFixed(2)}`);
                     customer.state = Customer.States.EXITING;
-                    customer.hasPurchased = true;
                 } else {
                     customer.state = Customer.States.LEAVING;
                 }
@@ -146,11 +133,9 @@ export class MainScene extends Phaser.Scene {
         const x = -50;
         const y = this.scale.height - 100;
         const customer = new Customer(this, x, y, spriteKey, order);
-        console.log(customer)
         this.customers.push(customer);
 
         customer.state = Customer.States.ENTERING;
-        customer.hasPurchased = false;
         this.updateQueuePositions();
     }
 
