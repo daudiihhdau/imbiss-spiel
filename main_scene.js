@@ -3,13 +3,31 @@ import { setupDebug } from './debug.js';
 import { locations } from './location.js';
 import { foodStalls } from './food_stall.js';
 import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import { World } from './world.js';
 
 export class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        this.currentLocation = locations[Phaser.Math.Between(0, locations.length - 1)]; // Zufällige Location auswählen
+
+        this.world = World.getInstance();
+
+        // Set currentLocation based on debug mode
+        this.currentLocation = this.world.isDebugMode 
+            ? locations[0] 
+            : locations[Phaser.Math.Between(1, locations.length - 1)];
+
         this.customerSchedule = [];
-        this.imbissSoftware = ImbissSoftware.getInstance(); // Singleton-Instanz der Warenwirtschaft
+        this.imbissSoftware = ImbissSoftware.getInstance();
+
+        // Set all stock to 2 in debug mode
+        if (this.world.isDebugMode) {
+            ImbissSoftware.items.forEach(item => {
+                item.stock = 2;
+            });
+        }
+        this.customers = [];
+        this.clockText = null;
+        this.wealthText = null;
     }
 
     preload() {
@@ -20,33 +38,13 @@ export class MainScene extends Phaser.Scene {
         this.load.image('customer4', 'mensch4.png');
         this.load.image('bubble', 'bubble.png');
 
-        // Lade Food Stall Bilder
         foodStalls.forEach(stall => this.load.image(stall.getImage(), stall.getImage()));
     }
 
     create() {
-        this.clockText = null;
-        this.wealthText = null;
-        this.currentTime = 0;
-        this.playerWealth = 0;
-        this.customers = [];
-
-        const background = this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
-
-        // Wähle zufälligen Food Stall und platziere ihn in der Mitte
-        const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
-        this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage()).setOrigin(0.5).setScale(0.5);
-
-        this.clockText = this.add.text(10, 10, "00:00", {
-            fontSize: '24px',
-            fill: '#000',
-        });
-
-        this.wealthText = this.add.text(this.scale.width - 10, 10, `Vermögen: €${this.playerWealth.toFixed(2)}`, {
-            fontSize: '24px',
-            fill: '#000',
-        }).setOrigin(1, 0);
-
+        this.setupScene();
+        this.setupClock();
+        this.setupWealthDisplay();
         setupDebug(this);
 
         this.customerSchedule = this.currentLocation.generateCustomerSchedule();
@@ -58,72 +56,95 @@ export class MainScene extends Phaser.Scene {
             loop: true,
         });
 
-        // Event-Listener für niedrigen Bestand
-        this.imbissSoftware.dispatcher.subscribe('lowStock', (data) => {
+        this.imbissSoftware.dispatcher.subscribe('lowStock', data => {
             console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
         });
     }
 
     update(time, delta) {
         this.customers.forEach((customer, index) => {
-            customer.updatePosition(delta);
-            customer.updateBubblePosition();
-
-            if (customer.state === Customer.States.ENTERING) {
-                customer.showDesiredItems();
-                if (customer.isAtTarget()) {
-                    if (!customer.hasPurchased()) {
-                        customer.state = Customer.States.PAYING;
-                    } else {
-                        customer.state = Customer.States.LEAVING;
-                    }
-                }
-            }
-
-            if (customer.state === Customer.States.PAYING) {
-                const orderSummary = customer.processOrder()
-                if (orderSummary) {
-                    this.playerWealth += orderSummary.totalRevenue;
-                    this.wealthText.setText(`Vermögen: €${this.playerWealth.toFixed(2)}`);
-                    customer.state = Customer.States.EXITING;
-                } else {
-                    customer.state = Customer.States.LEAVING;
-                }
-            }
-
-            if (customer.state === Customer.States.LEAVING) {
-                customer.sprite.setFlipX(true);
-                customer.moveTo(-300);
-                customer.showPurchasedItems();
-            } else if (customer.state === Customer.States.EXITING) {
-                customer.sprite.setFlipX(false);
-                customer.moveTo(this.scale.width + 300);
-                customer.showPurchasedItems();
-            }
-
-            if (
-                (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
-                (customer.state === Customer.States.LEAVING && customer.sprite.x < -50)
-            ) {
-                this.customers.splice(index, 1);
-                customer.destroy();
-                this.updateQueuePositions();
-            }
+            this.handleCustomerState(customer, index, delta);
         });
 
         this.updateQueuePositions();
     }
 
-    updateClock() {
-        this.currentTime++;
-        if (this.currentTime >= 1440) {
-            this.currentTime = 0;
+    setupScene() {
+        this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
+
+        const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
+        this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage())
+            .setOrigin(0.5)
+            .setScale(0.5);
+    }
+
+    setupClock() {
+        this.clockText = this.add.text(10, 10, this.world.getFormattedTime(), {
+            fontSize: '24px',
+            fill: '#000',
+        });
+    }
+
+    setupWealthDisplay() {
+        this.wealthText = this.add.text(this.scale.width - 10, 10, `Vermögen: €${this.world.getWealth().toFixed(2)}`, {
+            fontSize: '24px',
+            fill: '#000',
+        }).setOrigin(1, 0);
+    }
+
+    handleCustomerState(customer, index, delta) {
+        customer.updatePosition(delta);
+        customer.updateBubblePosition();
+
+        switch (customer.state) {
+            case Customer.States.ENTERING:
+                this.handleEnteringCustomer(customer);
+                break;
+            case Customer.States.PAYING:
+                this.handlePayingCustomer(customer);
+                break;
+            case Customer.States.LEAVING:
+            case Customer.States.EXITING:
+                this.handleExitingCustomer(customer, index);
+                break;
         }
+    }
 
-        const hours = Math.floor(this.currentTime / 60).toString().padStart(2, '0');
-        const minutes = (this.currentTime % 60).toString().padStart(2, '0');
-        this.clockText.setText(`${hours}:${minutes}`);
+    handleEnteringCustomer(customer) {
+        customer.showDesiredItems();
+        if (customer.isAtTarget()) {
+            customer.state = customer.hasPurchased() ? Customer.States.LEAVING : Customer.States.PAYING;
+        }
+    }
 
+    handlePayingCustomer(customer) {
+        const orderSummary = customer.processOrder();
+        if (orderSummary) {
+            this.world.addWealth(orderSummary.totalRevenue);
+            this.wealthText.setText(`Vermögen: €${this.world.getWealth().toFixed(2)}`);
+            customer.state = Customer.States.EXITING;
+        } else {
+            customer.state = Customer.States.LEAVING;
+        }
+    }
+
+    handleExitingCustomer(customer, index) {
+        const exitDirection = customer.state === Customer.States.LEAVING ? -300 : this.scale.width + 300;
+        customer.sprite.setFlipX(customer.state === Customer.States.LEAVING);
+        customer.moveTo(exitDirection);
+
+        if (
+            (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
+            (customer.state === Customer.States.LEAVING && customer.sprite.x < -50)
+        ) {
+            this.customers.splice(index, 1);
+            customer.destroy();
+        }
+    }
+
+    updateClock() {
+        this.world.updateClock();
+        this.clockText.setText(this.world.getFormattedTime());
         this.checkSpawnProbability();
     }
 
@@ -133,9 +154,8 @@ export class MainScene extends Phaser.Scene {
         const x = -50;
         const y = this.scale.height - 100;
         const customer = new Customer(this, x, y, spriteKey, order);
-        this.customers.push(customer);
-
         customer.state = Customer.States.ENTERING;
+        this.customers.push(customer);
         this.updateQueuePositions();
     }
 
@@ -149,7 +169,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     checkSpawnProbability() {
-        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.currentTime) {
+        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.currentTime) {
             const nextCustomer = this.customerSchedule.shift();
             this.spawnCustomer(nextCustomer.order);
         }

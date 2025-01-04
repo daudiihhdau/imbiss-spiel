@@ -55,6 +55,9 @@ export class Location {
 
 // Beispielkonfiguration für verschiedene Locations
 export const locations = [
+    new Location('Moon', 'moon.png', [
+        { start: '00:00', end: '23:59', probability: 0.1 }
+    ]),
     new Location('Forest', 'forest.png', [
         { start: '00:00', end: '06:00', probability: 0.001 },
         { start: '06:00', end: '09:00', probability: 0.002 },
@@ -83,11 +86,11 @@ export const locations = [
     ]),
     new Location('Altstadt', 'altstadt.png', [
         { start: '00:00', end: '06:00', probability: 0.005 },
-        { start: '06:00', end: '10:00', probability: 0.04 },
-        { start: '10:00', end: '14:00', probability: 0.07 },
-        { start: '14:00', end: '18:00', probability: 0.08 },
-        { start: '18:00', end: '21:00', probability: 0.06 },
-        { start: '21:00', end: '00:00', probability: 0.03 },
+        { start: '06:00', end: '10:00', probability: 0.4 },
+        { start: '10:00', end: '14:00', probability: 0.7 },
+        { start: '14:00', end: '18:00', probability: 0.8 },
+        { start: '18:00', end: '21:00', probability: 0.6 },
+        { start: '21:00', end: '00:00', probability: 0.3 },
     ]),
     new Location('Fussballplatz_Amateur', 'fussballplatz_amateur.png', [
         { start: '00:00', end: '06:00', probability: 0.001 },
