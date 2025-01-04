@@ -63,33 +63,52 @@ export class ImbissSoftware {
         this.logging.push({ ...entry, date: this.getCurrentDate(entry.date) });
     }
 
+    processSingleItem(name) {
+        try {
+            const item = this.validateInput(name, 1);
+
+            if (item.stock <= 0) {
+                this.dispatcher.emit('outOfStock', { name });
+                console.warn(`Produkt '${name}' ist ausverkauft.`);
+                return null;
+            }
+
+            item.stock -= 1;
+
+            if (item.stock < 3) {
+                this.dispatcher.emit('lowStock', { name, stock: item.stock });
+            }
+
+            if (item.stock === 0) {
+                this.dispatcher.emit('outOfStock', { name });
+            }
+
+            if (item.stock < 5) {
+                this.dispatcher.emit('highDemand', { name, stock: item.stock });
+            }
+
+            return {
+                itemName: name,
+                quantity: 1,
+                sellPrice: item.sellPrice,
+                totalCost: item.sellPrice,
+            };
+        } catch (error) {
+            console.error(`Fehler bei der Verarbeitung von '${name}': ${error.message}`);
+            return null;
+        }
+    }
+
     processOrder(wishlist, date) {
         const processedItems = [];
         let totalRevenue = 0;
         const currentDate = this.getCurrentDate(date);
 
         wishlist.forEach(({ name }) => {
-            try {
-                const item = this.validateInput(name, 1);
-
-                if (item.stock >= 1) {
-                    item.stock -= 1;
-                    processedItems.push({
-                        itemName: name,
-                        quantity: 1,
-                        sellPrice: item.sellPrice,
-                        totalCost: item.sellPrice * 1,
-                    });
-                    totalRevenue += item.sellPrice * 1;
-
-                    if (item.stock < 3) {
-                        this.dispatcher.emit('lowStock', { name, stock: item.stock });
-                    }
-                } else {
-                    console.warn(`Produkt '${name}' nicht in ausreichender Menge verfügbar.`);
-                }
-            } catch (error) {
-                console.error(`Fehler bei der Verarbeitung von '${name}': ${error.message}`);
+            const processedItem = this.processSingleItem(name);
+            if (processedItem) {
+                processedItems.push(processedItem);
+                totalRevenue += processedItem.totalCost;
             }
         });
 
@@ -162,6 +181,7 @@ export class ImbissSoftware {
     }
 
     getPriceLogAnalysis() {
+        // Gibt eine Analyse aller Preisänderungen zurück, einschließlich des neuen Preises und des Datums.
         return this.logging.filter((entry) => entry.type === 'priceUpdate').map((entry) => ({
             itemName: entry.itemName,
             price: entry.price,
@@ -171,12 +191,14 @@ export class ImbissSoftware {
     }
 
     filterLastDay() {
+        // Filtert alle Logeinträge der letzten 24 Stunden heraus.
         const oneDayAgo = new Date();
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
         return this.logging.filter((entry) => new Date(entry.date) > oneDayAgo);
     }
 
     getStatistics() {
+        // Gibt Statistiken zu Verkäufen und Einkäufen der letzten 24 Stunden zurück.
         const lastDayLogs = this.filterLastDay();
 
         const salesStats = lastDayLogs.filter((entry) => entry.type === 'sale').reduce((acc, sale) => {
@@ -195,6 +217,7 @@ export class ImbissSoftware {
     }
 
     calculateProfit() {
+        // Berechnet den Nettogewinn, basierend auf den letzten 24 Stunden Verkäufen und Einkäufen.
         const stats = this.getStatistics();
         return stats.salesStats.totalRevenue - stats.purchaseStats.totalCost;
     }
