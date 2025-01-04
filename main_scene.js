@@ -133,6 +133,8 @@ export class MainScene extends Phaser.Scene {
         customer.sprite.setFlipX(customer.state === Customer.States.LEAVING);
         customer.moveTo(exitDirection);
 
+        customer.showPurchasedItems()
+
         if (
             (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
             (customer.state === Customer.States.LEAVING && customer.sprite.x < -50)
