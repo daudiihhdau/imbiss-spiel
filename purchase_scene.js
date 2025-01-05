@@ -24,12 +24,13 @@ export class PurchaseScene extends Phaser.Scene {
         const tableStartX = 20;
         const tableStartY = 60;
         const rowHeight = 40;
-        const columnWidths = [80, 150, 150, 100]; // Breite für Emoji, Bestand, Preis und Input
+        const columnWidths = [80, 150, 150, 100, 150]; // Breite für Emoji, Großhandel Bestand, Preis, Input und Eigenes Lager
 
         this.add.text(tableStartX, tableStartY, 'Produkt', { fontSize: '16px', fill: '#fff' });
-        this.add.text(tableStartX + columnWidths[0], tableStartY, 'Vorhanden', { fontSize: '16px', fill: '#fff' });
+        this.add.text(tableStartX + columnWidths[0], tableStartY, 'Vorhanden (Großhandel)', { fontSize: '16px', fill: '#fff' });
         this.add.text(tableStartX + columnWidths[0] + columnWidths[1], tableStartY, 'Preis (€)', { fontSize: '16px', fill: '#fff' });
         this.add.text(tableStartX + columnWidths[0] + columnWidths[1] + columnWidths[2], tableStartY, 'Menge', { fontSize: '16px', fill: '#fff' });
+        this.add.text(tableStartX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], tableStartY, 'Auf Lager', { fontSize: '16px', fill: '#fff' });
 
         const items = this.imbissSoftware.getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
 
@@ -38,8 +39,7 @@ export class PurchaseScene extends Phaser.Scene {
 
         items.forEach((item, index) => {
             const yOffset = tableStartY + (index + 1) * rowHeight;
-            const randomUnits = Math.floor(Math.random() * 50) + 1;
-            const randomPrice = (Math.random() * 5 + 1).toFixed(2);
+            const randomUnits = Math.floor(Math.random() * 50) + 1; // Zufällige Anzahl für Großhandel Bestand
 
             // Emoji-Spalte
             this.add.text(tableStartX, yOffset, `${item.emoji}`, {
@@ -47,13 +47,14 @@ export class PurchaseScene extends Phaser.Scene {
                 fill: '#fff'
             });
 
-            // Bestand-Spalte
+            // Großhandel Bestand-Spalte
             this.add.text(tableStartX + columnWidths[0], yOffset, `${randomUnits}`, {
                 fontSize: '16px',
                 fill: '#fff'
             });
 
-            // Preis-Spalte
+            // Preis-Spalte (Zufällig generiert für Simulation des Einkaufspreises)
+            const randomPrice = (Math.random() * 5 + 1).toFixed(2);
             this.add.text(tableStartX + columnWidths[0] + columnWidths[1], yOffset, `${randomPrice}`, {
                 fontSize: '16px',
                 fill: '#fff'
@@ -76,6 +77,12 @@ export class PurchaseScene extends Phaser.Scene {
             document.body.appendChild(inputElement);
             this.inputs[item.name] = { inputElement, randomUnits, randomPrice };
             this.inputElements.push(inputElement);
+
+            // Eigenes Lager-Spalte
+            this.add.text(tableStartX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yOffset, `${item.stock}`, {
+                fontSize: '16px',
+                fill: '#fff'
+            });
         });
 
         this.inputElements.forEach((input, idx) => {

@@ -28,6 +28,8 @@ export class ImbissSoftware {
         this.logging = []; // Einheitliches Log für Verkäufe, Einkäufe und Preisänderungen
         this.dispatcher = new EventDispatcher();
 
+        this.registerDefaultEvents(); // Registriert Standard-Events
+
         ImbissSoftware.instance = this;
     }
 
@@ -36,6 +38,12 @@ export class ImbissSoftware {
             ImbissSoftware.instance = new ImbissSoftware();
         }
         return ImbissSoftware.instance;
+    }
+
+    registerDefaultEvents() {
+        this.dispatcher.subscribe('outOfStock', (data) => console.warn(`Out of stock: ${data.name}`));
+        this.dispatcher.subscribe('lowStock', (data) => console.log(`Low stock: ${data.name}, ${data.stock} left.`));
+        this.dispatcher.subscribe('highDemand', (data) => console.log(`High demand for: ${data.name}`));
     }
 
     validateInput(itemName, quantity) {
@@ -178,6 +186,17 @@ export class ImbissSoftware {
             sellPrice: data.sellPrice,
             needsRestock: data.stock < 3,
         }));
+    }
+
+    getRevenuePerProduct() {
+        return this.logging.filter(entry => entry.type === 'sale')
+            .reduce((acc, sale) => {
+                sale.items.forEach(item => {
+                    if (!acc[item.itemName]) acc[item.itemName] = 0;
+                    acc[item.itemName] += item.totalCost;
+                });
+                return acc;
+            }, {});
     }
 
     getPriceLogAnalysis() {
