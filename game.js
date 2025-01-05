@@ -1,4 +1,5 @@
 import { PriceAdjustmentScene } from './price_adjustment.js';
+import { PurchaseScene } from './purchase_scene.js';
 import { MainScene } from './main_scene.js';
 import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
 
@@ -16,10 +17,10 @@ const config = {
             debug: false,
         },
     },
-    scene: [PriceAdjustmentScene, MainScene],
+    scene: [PurchaseScene, PriceAdjustmentScene, MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);
 
-// Übergang von PriceAdjustment zu MainScene
-game.scene.start('PriceAdjustmentScene');
+// Starte nur die PriceAdjustmentScene beim Spielstart
+game.scene.start('PurchaseScene');

@@ -1,4 +1,10 @@
-import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import { ImbissSoftware } from './inventory_management.js';
+
+function removeAllInputs() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => input.remove());
+    console.log('Alle DOM-Input-Elemente wurden entfernt.');
+}
 
 export class PriceAdjustmentScene extends Phaser.Scene {
     constructor() {
@@ -8,34 +14,34 @@ export class PriceAdjustmentScene extends Phaser.Scene {
     }
 
     create() {
+        removeAllInputs(); // Entfernt alle vorherigen Input-Elemente
+
         this.add.text(10, 10, 'Verkaufspreise anpassen', {
-            fontSize: '24px', // Einheitliche Schriftgröße
+            fontSize: '24px',
             fill: '#000'
         });
 
         const items = this.imbissSoftware.getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
         const yStart = 60;
         const xLabel = 20;
-        const xInput = 300; // Platz rechts neben dem Produktnamen
+        const xInput = 300;
         const xDetails = 500;
 
-        // Initialisierung der Eingabefelder
-        this.inputs = {}; // Speicherung der Input-Felder nach Produktname
+        this.inputs = {};
+        this.inputElements = [];
 
         items.forEach((item, index) => {
-            const yOffset = yStart + index * 50; // Abstand zwischen Zeilen
+            const yOffset = yStart + index * 50;
 
-            // Produktname mit Emoji anzeigen
             this.add.text(xLabel, yOffset, `${item.emoji} ${item.name}:`, {
-                fontSize: '24px', // Einheitliche Schriftgröße
-                fill: '#fff' // Weiße Schrift für Lesbarkeit
+                fontSize: '24px',
+                fill: '#fff'
             });
 
-            // Input-Feld für den Verkaufspreis
             const inputElement = document.createElement('input');
             inputElement.type = 'number';
-            inputElement.name = `price_${item.name}`; // Name des Inputs für das Produkt
-            inputElement.value = item.sellPrice || 0; // Standardpreis
+            inputElement.name = `price_${item.name}`;
+            inputElement.value = item.sellPrice || 0;
             inputElement.min = '0.01';
             inputElement.step = '0.01';
             inputElement.style.position = 'absolute';
@@ -44,32 +50,47 @@ export class PriceAdjustmentScene extends Phaser.Scene {
             inputElement.style.fontSize = '18px';
             inputElement.style.width = '100px';
 
-            // Hinzufügen des Input-Feldes zur Speicherung
             document.body.appendChild(inputElement);
             this.inputs[item.name] = inputElement;
+            this.inputElements.push(inputElement);
 
-            // Weißer Text für Lagerbestand
             this.add.text(xDetails, yOffset, `Lager: ${item.stock}`, {
-                fontSize: '24px', // Einheitliche Schriftgröße
+                fontSize: '24px',
                 fill: '#fff'
+            });
+
+            // Hinzufügen von Feedback, wenn der Preis geändert wird
+            inputElement.addEventListener('input', () => {
+                inputElement.style.backgroundColor = '#d4edda'; // Grün für geänderte Preise
             });
         });
 
-        // Zurück-Taste
+        // Tab-Navigation zwischen den Eingabefeldern
+        this.inputElements.forEach((input, idx) => {
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Tab') {
+                    event.preventDefault();
+                    const nextIdx = (idx + 1) % this.inputElements.length;
+                    this.inputElements[nextIdx].focus();
+                }
+            });
+        });
+
         this.add.text(10, this.scale.height - 50, 'Zurück', {
-            fontSize: '24px', // Einheitliche Schriftgröße
+            fontSize: '24px',
             fill: '#000',
             backgroundColor: '#fff',
             padding: { x: 10, y: 5 }
         })
         .setInteractive()
         .on('pointerdown', () => {
-            this.scene.start('MainScene');
+            this.cleanupScene(); // Bereinige die aktuelle Szene
+            this.scene.stop('PriceAdjustmentScene'); // Beende die PriceAdjustmentScene
+            this.scene.start('MainScene'); // Starte die MainScene
         });
 
-        // Button "Preise setzen"
         this.add.text(200, this.scale.height - 50, 'Preise setzen', {
-            fontSize: '24px', // Einheitliche Schriftgröße
+            fontSize: '24px',
             fill: '#000',
             backgroundColor: '#fff',
             padding: { x: 10, y: 5 }
@@ -79,31 +100,51 @@ export class PriceAdjustmentScene extends Phaser.Scene {
             this.applyAllPrices(items);
         });
 
-        // Eingabefelder entfernen, wenn die Szene verlassen wird
         this.events.once('shutdown', () => {
-            Object.values(this.inputs).forEach(input => input.remove());
+            this.cleanupScene();
         });
     }
 
     applyAllPrices(items) {
         try {
             items.forEach(item => {
-                // Holen des neuen Preises aus dem entsprechenden Input-Feld
                 const inputElement = this.inputs[item.name];
                 const newPrice = parseFloat(inputElement.value);
 
                 if (!isNaN(newPrice) && newPrice > 0) {
-                    // Übergeben des neuen Preises an den Manager
                     this.imbissSoftware.updateSellPrice(item.name, newPrice);
                     console.log(`Preis für ${item.name} auf ${newPrice} € gesetzt.`);
+                    inputElement.style.borderColor = ''; // Entfernt Fehleranzeige
                 } else {
                     console.warn(`Ungültiger Preis für ${item.name} ignoriert.`);
+                    inputElement.style.borderColor = 'red'; // Markiert ungültige Preise
                 }
             });
 
-            console.log('Alle Preise erfolgreich an den InventoryManager übergeben.');
+            const successText = this.add.text(10, this.scale.height - 100, 'Preise erfolgreich aktualisiert!', {
+                fontSize: '20px',
+                fill: '#0f0'
+            });
+            this.tweens.add({
+                targets: successText,
+                alpha: 0,
+                delay: 2000,
+                duration: 1000,
+                onComplete: () => successText.destroy()
+            });
+
         } catch (error) {
             console.error(`Fehler beim Übergeben der Preise: ${error.message}`);
         }
+    }
+
+    cleanupScene() {
+        removeAllInputs(); // Entfernt alle Input-Elemente aus dem DOM
+        this.inputs = {};
+        this.inputElements.forEach(input => {
+            input.removeEventListener('keydown', this.handleTabNavigation); // Entferne Event-Listener
+        });
+        this.inputElements = [];
+        console.log('PriceAdjustmentScene erfolgreich aufgeräumt.');
     }
 }

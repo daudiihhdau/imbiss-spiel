@@ -18,6 +18,20 @@ Kundenzufriedenheit messen
 Menü: Location mieten
 Menü: Imbiss kaufen
 Kunden: haben immer Emoji-Kopf
+verschiedene Welt:Quatschwelt, Weltraumwelt
+Welteditor für Konrad
+Hunde\Katzen\Papagei\Frösche laufen vorbei
+Hunden klauen Wurst
+Leute beschweren sich
+Brief von den Kunden (gut\schlecht)
+Internetbewertungen
+Pappteller und Pappbecher kaufen
+Saucen kaufen
+mehr Getränke
+jeder Imbiss hat Kühlschrank, Friteusen
+neue Locationideen: Weihnachtsmarkt, Bahnhof, U-Bahn
+Kindergarten\Schulgruppen
+jeder Kunde hat einen Namen, Alter, Wohnort
 
 # Warenwirtschaft
 
