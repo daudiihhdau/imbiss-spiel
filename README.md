@@ -1,37 +1,60 @@
 ws --spa index.html
 
-# Ideen
+# Next Goals (12.01)
 
+Vermögen, Tageszeit, Datum - oben im weißen Menü
+Ziel setzen - Abfrage (x€ Gewinn)
+Luftballons, wenn Ziel erreicht
+in der Nacht dunkel
+Möglichkeit: Imbiss schließen\Tag beenden
+Loop:
+    Großhandel - man kann nur so viel kaufen, wie man vermögen hat
+    Preise setzen
+    Verkaufsstatistiken: Top-Produkte, Uhrzeit
+
+# Big Goal (27.01)
+
+Veröffentlichung im Internet
 Szene: Über-uns
 Knopf oben: Spende und Kaffee
 Knopf oben: Instagram, Twitter, Twitch
-Einkaufen im Großhandel
 Datum DD.MM.YYYY
-in der Nacht dunkel
+Anzeige - Wochentag
+Menü: Location mieten
+Menü: Imbiss kaufen
+Hunden klauen Wurst
+mehr Essen\Getränke-Items
+
+# Ideen
+
+jedes Lebensmittel: uiid, Haltbarkeit, Zubereitungsart (zeit, Gerät)
+Zeitungsansicht vor Tagesbeginn (Wetter, Spaßergnisse, Demo, Ferienbeginn ...)
 Jahreszeiten 
 Wetter (wenn heiß ist: mehr Eis verkaufen)
-Verkaufsstatistiken: Top-Produkte, Uhrzeit
 Wochenende\Wochentag
 Location: kostet Miete
 Location: alter Imbiss schreckt Kunden ab (sie gehen vorbei oder reduzieren Bestellung)
 Kundenzufriedenheit messen
-Menü: Location mieten
-Menü: Imbiss kaufen
 Kunden: haben immer Emoji-Kopf
 verschiedene Welt:Quatschwelt, Weltraumwelt
 Welteditor für Konrad
 Hunde\Katzen\Papagei\Frösche laufen vorbei
-Hunden klauen Wurst
 Leute beschweren sich
 Brief von den Kunden (gut\schlecht)
 Internetbewertungen
 Pappteller und Pappbecher kaufen
 Saucen kaufen
-mehr Getränke
 jeder Imbiss hat Kühlschrank, Friteusen
 neue Locationideen: Weihnachtsmarkt, Bahnhof, U-Bahn
 Kindergarten\Schulgruppen
-jeder Kunde hat einen Namen, Alter, Wohnort
+jeder Kunde:
+    hat einen Namen, Alter, Wohnort, UIId, Zufriedenheit, Temparement (unentschlossen, zuverlässig ...)
+    erscheint immer wieder
+    merkt sich jedes Essen\Erfahrung
+manuelle Location-Auswahl
+Bons-Ansicht nach Tagesablauf
+Rechnungen per Post
+
 
 # Warenwirtschaft
 

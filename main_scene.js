@@ -2,7 +2,7 @@ import { Customer } from './customer.js';
 import { setupDebug } from './debug.js';
 import { locations } from './location.js';
 import { foodStalls } from './food_stall.js';
-import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import { ImbissSoftware } from './inventory_management.js';
 import { World } from './world.js';
 
 export class MainScene extends Phaser.Scene {
@@ -11,21 +11,21 @@ export class MainScene extends Phaser.Scene {
 
         this.world = World.getInstance();
 
-        // Set currentLocation based on debug mode
-        this.currentLocation = this.world.isDebugMode 
-            ? locations[0] 
+        this.currentLocation = this.world.isDebugMode
+            ? locations[0]
             : locations[Phaser.Math.Between(1, locations.length - 1)];
 
         this.customerSchedule = [];
         this.imbissSoftware = ImbissSoftware.getInstance();
 
-        // Set all stock to 2 in debug mode
         if (this.world.isDebugMode) {
             ImbissSoftware.items.forEach(item => {
                 item.stock = 2;
             });
         }
+
         this.customers = [];
+        this.dateText = null;
         this.clockText = null;
         this.wealthText = null;
     }
@@ -43,8 +43,7 @@ export class MainScene extends Phaser.Scene {
 
     create() {
         this.setupScene();
-        this.setupClock();
-        this.setupWealthDisplay();
+        this.setupTopBar();
         setupDebug(this);
 
         this.customerSchedule = this.currentLocation.generateCustomerSchedule();
@@ -70,26 +69,47 @@ export class MainScene extends Phaser.Scene {
     }
 
     setupScene() {
-        this.add.image(0, 0, 'imbiss').setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
-
+        this.add.image(0, 0, 'imbiss')
+            .setOrigin(0)
+            .setDisplaySize(this.scale.width, this.scale.height);
+    
         const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
         this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage())
             .setOrigin(0.5)
             .setScale(0.5);
     }
 
-    setupClock() {
-        this.clockText = this.add.text(10, 10, this.world.getFormattedTime(), {
-            fontSize: '24px',
+    setupTopBar() {
+        // Weißer Balken oben
+        const barHeight = 43;
+        this.add.rectangle(0, 0, this.scale.width, barHeight, 0xffffff)
+            .setOrigin(0)
+            .setDepth(10);
+
+        // Text für Datum und Uhrzeit mit Kalender-Emoji
+        this.dateText = this.add.text(20, 10, `📅 ${this.getFormattedDateAndTime()}`, {
+            fontSize: '26px',
             fill: '#000',
-        });
+        }).setDepth(11);
+
+        // Text für Vermögen mit Geldbeutel-Emoji
+        this.wealthText = this.add.text(this.scale.width - 20, 10, `💰 ${this.world.getWealth().toFixed(2)}€`, {
+            fontSize: '26px',
+            fill: '#000',
+        }).setOrigin(1, 0).setDepth(11);
     }
 
-    setupWealthDisplay() {
-        this.wealthText = this.add.text(this.scale.width - 10, 10, `Vermögen: €${this.world.getWealth().toFixed(2)}`, {
-            fontSize: '24px',
-            fill: '#000',
-        }).setOrigin(1, 0);
+    getFormattedDateAndTime() {
+        const dayOfWeek = this.world.getDayOfWeek();
+        const formattedDate = this.world.getFormattedDate();
+        const formattedTime = this.world.getFormattedTime();
+        return `${dayOfWeek}, ${formattedDate} - ${formattedTime}`;
+    }
+
+    updateClock() {
+        this.world.updateClock();
+        this.dateText.setText(`📅 ${this.getFormattedDateAndTime()}`);
+        this.checkSpawnProbability();
     }
 
     handleCustomerState(customer, index, delta) {
@@ -121,7 +141,7 @@ export class MainScene extends Phaser.Scene {
         const orderSummary = customer.processOrder();
         if (orderSummary) {
             this.world.addWealth(orderSummary.totalRevenue);
-            this.wealthText.setText(`Vermögen: €${this.world.getWealth().toFixed(2)}`);
+            this.wealthText.setText(`💰 ${this.world.getWealth().toFixed(2)}€`);
             customer.state = Customer.States.EXITING;
         } else {
             customer.state = Customer.States.LEAVING;
@@ -133,7 +153,7 @@ export class MainScene extends Phaser.Scene {
         customer.sprite.setFlipX(customer.state === Customer.States.LEAVING);
         customer.moveTo(exitDirection);
 
-        customer.showPurchasedItems()
+        customer.showPurchasedItems();
 
         if (
             (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
@@ -144,10 +164,11 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    updateClock() {
-        this.world.updateClock();
-        this.clockText.setText(this.world.getFormattedTime());
-        this.checkSpawnProbability();
+    checkSpawnProbability() {
+        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.currentTime) {
+            const nextCustomer = this.customerSchedule.shift();
+            this.spawnCustomer(nextCustomer.order);
+        }
     }
 
     spawnCustomer(order = []) {
@@ -168,12 +189,5 @@ export class MainScene extends Phaser.Scene {
                 customer.moveTo(targetX);
             }
         });
-    }
-
-    checkSpawnProbability() {
-        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.currentTime) {
-            const nextCustomer = this.customerSchedule.shift();
-            this.spawnCustomer(nextCustomer.order);
-        }
     }
 }
