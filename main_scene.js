@@ -2,7 +2,6 @@ import { Customer } from './customer.js';
 import { setupDebug } from './debug.js';
 import { locations } from './location.js';
 import { foodStalls } from './food_stall.js';
-import { ImbissSoftware } from './inventory_management.js';
 import { World } from './world.js';
 
 export class MainScene extends Phaser.Scene {
@@ -16,14 +15,6 @@ export class MainScene extends Phaser.Scene {
             : locations[Phaser.Math.Between(1, locations.length - 1)];
 
         this.customerSchedule = [];
-        this.imbissSoftware = ImbissSoftware.getInstance();
-
-        if (this.world.isDebugMode) {
-            ImbissSoftware.items.forEach(item => {
-                item.stock = 2;
-            });
-        }
-
         this.customers = [];
         this.dateText = null;
         this.clockText = null;
@@ -53,10 +44,6 @@ export class MainScene extends Phaser.Scene {
             callback: this.updateClock,
             callbackScope: this,
             loop: true,
-        });
-
-        this.imbissSoftware.dispatcher.subscribe('lowStock', data => {
-            console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
         });
     }
 

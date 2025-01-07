@@ -2,7 +2,6 @@ ws --spa index.html
 
 # Next Goals (12.01)
 
-Vermögen, Tageszeit, Datum - oben im weißen Menü
 Ziel setzen - Abfrage (x€ Gewinn)
 Luftballons, wenn Ziel erreicht
 in der Nacht dunkel
@@ -11,6 +10,14 @@ Loop:
     Großhandel - man kann nur so viel kaufen, wie man vermögen hat
     Preise setzen
     Verkaufsstatistiken: Top-Produkte, Uhrzeit
+    Bugfix: es kommen wieder neue Kunden
+
+# Super Next Goals
+
+Menü: Location mieten
+Menü: Imbiss kaufen
+Hunden klauen Wurst
+Wochenende\Wochentag
 
 # Big Goal (27.01)
 
@@ -18,20 +25,17 @@ Veröffentlichung im Internet
 Szene: Über-uns
 Knopf oben: Spende und Kaffee
 Knopf oben: Instagram, Twitter, Twitch
-Datum DD.MM.YYYY
-Anzeige - Wochentag
-Menü: Location mieten
-Menü: Imbiss kaufen
-Hunden klauen Wurst
 mehr Essen\Getränke-Items
+es kommen mehr Customer am Wochenende
 
 # Ideen
 
-jedes Lebensmittel: uiid, Haltbarkeit, Zubereitungsart (zeit, Gerät)
+es laufen graue Menschen am Stand vorbei, wenn sie bunt werden, sind sie kunden
+Lieferantenwagen kommt
+Es liegt Müll herum, der mehr wird
+Wetter anzeigen(wenn heiß ist: mehr Eis verkaufen)
+jedes Lebensmittel: uiid, Haltbarkeit, Zubereitungsart, Einkaufspreis (zeit, Gerät)
 Zeitungsansicht vor Tagesbeginn (Wetter, Spaßergnisse, Demo, Ferienbeginn ...)
-Jahreszeiten 
-Wetter (wenn heiß ist: mehr Eis verkaufen)
-Wochenende\Wochentag
 Location: kostet Miete
 Location: alter Imbiss schreckt Kunden ab (sie gehen vorbei oder reduzieren Bestellung)
 Kundenzufriedenheit messen
@@ -51,10 +55,17 @@ jeder Kunde:
     hat einen Namen, Alter, Wohnort, UIId, Zufriedenheit, Temparement (unentschlossen, zuverlässig ...)
     erscheint immer wieder
     merkt sich jedes Essen\Erfahrung
+    mancher wirft Müll weg
+    mag Sonderangebote\Rabatte
+    hat Geld in Form von Münzen, Scheinen
 manuelle Location-Auswahl
 Bons-Ansicht nach Tagesablauf
-Rechnungen per Post
-
+per Post
+    Rechnungen
+    Zeitung
+    Werbung
+man kann in Zeitung Werbung schalten
+Imbiss in GoogleMaps
 
 # Warenwirtschaft
 
