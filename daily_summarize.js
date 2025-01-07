@@ -1,71 +1,79 @@
 import { ImbissSoftware } from './inventory_management.js';
+import { World } from './world.js';
 
-export class DailySummaryScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'DailySummaryScene' });
-        this.imbissSoftware = ImbissSoftware.getInstance();
-    }
+World.getInstance().events.subscribe('midnight', () => {
+        const imbissSoftware = ImbissSoftware.getInstance();
+        const stats = imbissSoftware.getStatistics();
+        const revenuePerProduct = imbissSoftware.getRevenuePerProduct();
+        const priceChanges = imbissSoftware.getPriceLogAnalysis();
+        const profit = imbissSoftware.calculateProfit();
+        const currentStock = imbissSoftware.getCurrentStock();
 
-    create() {
-        // Entferne alle vorherigen Inputs
-        const canvasContainer = document.createElement('div');
-        canvasContainer.id = 'canvas-container';
-        canvasContainer.style.position = 'absolute';
-        canvasContainer.style.top = '0';
-        canvasContainer.style.left = '0';
-        canvasContainer.style.width = '100%';
-        canvasContainer.style.height = '100%';
-        document.body.appendChild(canvasContainer);
+        const container = document.getElementById('html-content');
 
-        this.add.text(20, 20, 'Tageszusammenfassung', {
-            fontSize: '32px',
-            fill: '#000'
-        });
+        // Tageszusammenfassung hinzufügen
+        const header = document.createElement('h1');
+        header.textContent = 'Tageszusammenfassung';
+        container.appendChild(header);
 
-        const stats = this.imbissSoftware.getStatistics();
-        const revenuePerProduct = this.imbissSoftware.getRevenuePerProduct();
-        const priceChanges = this.imbissSoftware.getPriceLogAnalysis();
-        const profit = this.imbissSoftware.calculateProfit();
+        // Statistiken der letzten 24 Stunden
+        const statsHeader = document.createElement('h2');
+        statsHeader.textContent = 'Statistiken der letzten 24 Stunden';
+        container.appendChild(statsHeader);
 
-        // Anzeige von Statistiken mit Diagrammen und Tabellen
-        this.createRevenueChart(revenuePerProduct);
-        this.createPurchaseVsSalesChart(stats);
-        this.createPriceLogTable(priceChanges);
+        const statsElement = document.createElement('p');
+        statsElement.innerHTML = `
+            Verkäufe: ${stats.salesStats.totalRevenue.toFixed(2)} €<br>
+            Einkäufe: ${stats.purchaseStats.totalCost.toFixed(2)} €<br>
+            Nettogewinn: ${profit.toFixed(2)} €
+        `;
+        statsElement.style.fontSize = '18px';
+        container.appendChild(statsElement);
 
-        this.add.text(20, this.scale.height - 50, `Nettogewinn: ${profit.toFixed(2)} €`, {
-            fontSize: '24px',
-            fill: '#000'
-        });
+        // Übersicht
+        const overviewHeader = document.createElement('h2');
+        overviewHeader.textContent = 'Übersicht';
+        container.appendChild(overviewHeader);
 
-        this.add.text(20, this.scale.height - 90, 'Zurück', {
-            fontSize: '24px',
-            fill: '#000',
-            backgroundColor: '#fff',
-            padding: { x: 10, y: 5 }
-        })
-        .setInteractive()
-        .on('pointerdown', () => {
-            this.cleanupScene();
-            this.scene.stop('DailySummaryScene');
-            this.scene.start('MainScene');
-        });
+        const totalProducts = currentStock.length;
+        const lowStockProducts = currentStock.filter(product => product.needsRestock);
+        const mostPopularProduct = Object.keys(revenuePerProduct).reduce((a, b) => 
+            revenuePerProduct[a] > revenuePerProduct[b] ? a : b, ''
+        );
 
-        this.events.once('shutdown', () => {
-            this.cleanupScene();
-        });
-    }
+        const overviewElement = document.createElement('p');
+        overviewElement.innerHTML = `
+            Anzahl der Produkte: ${totalProducts}<br>
+            Produkte mit geringem Bestand: ${lowStockProducts.length}<br>
+            Beliebtestes Produkt: ${mostPopularProduct}
+        `;
+        overviewElement.style.fontSize = '18px';
+        container.appendChild(overviewElement);
 
-    createRevenueChart(revenuePerProduct) {
-        const ctx = document.createElement('canvas');
-        ctx.id = 'revenue-chart';
-        ctx.style.position = 'absolute';
-        ctx.style.top = '100px';
-        ctx.style.left = '50px';
-        ctx.style.width = '400px';
-        ctx.style.height = '400px';
-        document.getElementById('canvas-container').appendChild(ctx);
+        // Einnahmen pro Produkt anzeigen (Diagramm)
+        createRevenueChart(revenuePerProduct);
 
-        new Chart(ctx, {
+        // Verkäufe vs Einkäufe anzeigen (Diagramm)
+        createPurchaseVsSalesChart(stats);
+
+        // Preisanpassungen anzeigen (Tabelle)
+        createPriceLogTable(priceChanges);
+
+        // Produktübersicht (Diagramm: Produkte mit geringem Bestand)
+        createLowStockChart(lowStockProducts);
+    });
+
+    function createRevenueChart(revenuePerProduct) {
+        const chartContainer = document.createElement('div');
+        chartContainer.style.width = '100%';
+        chartContainer.style.height = '400px';
+        chartContainer.style.marginBottom = '20px';
+        document.getElementById('html-content').appendChild(chartContainer);
+
+        const canvas = document.createElement('canvas');
+        chartContainer.appendChild(canvas);
+
+        new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: Object.keys(revenuePerProduct),
@@ -84,17 +92,17 @@ export class DailySummaryScene extends Phaser.Scene {
         });
     }
 
-    createPurchaseVsSalesChart(stats) {
-        const ctx = document.createElement('canvas');
-        ctx.id = 'sales-vs-purchase-chart';
-        ctx.style.position = 'absolute';
-        ctx.style.top = '100px';
-        ctx.style.right = '50px';
-        ctx.style.width = '400px';
-        ctx.style.height = '400px';
-        document.getElementById('canvas-container').appendChild(ctx);
+    function createPurchaseVsSalesChart(stats) {
+        const chartContainer = document.createElement('div');
+        chartContainer.style.width = '100%';
+        chartContainer.style.height = '400px';
+        chartContainer.style.marginBottom = '20px';
+        document.getElementById('html-content').appendChild(chartContainer);
 
-        new Chart(ctx, {
+        const canvas = document.createElement('canvas');
+        chartContainer.appendChild(canvas);
+
+        new Chart(canvas, {
             type: 'pie',
             data: {
                 labels: ['Verkäufe (€)', 'Einkäufe (€)'],
@@ -121,14 +129,12 @@ export class DailySummaryScene extends Phaser.Scene {
         });
     }
 
-    createPriceLogTable(priceChanges) {
+    function createPriceLogTable(priceChanges) {
         const table = document.createElement('table');
-        table.style.position = 'absolute';
-        table.style.bottom = '100px';
-        table.style.left = '50px';
-        table.style.width = '80%';
+        table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
         table.style.backgroundColor = '#fff';
+        table.style.marginTop = '20px';
 
         const header = table.createTHead();
         const headerRow = header.insertRow();
@@ -137,6 +143,7 @@ export class DailySummaryScene extends Phaser.Scene {
             th.textContent = text;
             th.style.border = '1px solid #ddd';
             th.style.padding = '8px';
+            th.style.backgroundColor = '#f4f4f4';
             headerRow.appendChild(th);
         });
 
@@ -151,13 +158,34 @@ export class DailySummaryScene extends Phaser.Scene {
             });
         });
 
-        document.getElementById('canvas-container').appendChild(table);
+        document.getElementById('html-content').appendChild(table);
     }
 
-    cleanupScene() {
-        const canvasContainer = document.getElementById('canvas-container');
-        if (canvasContainer) {
-            canvasContainer.remove();
-        }
+    function createLowStockChart(lowStockProducts) {
+        const chartContainer = document.createElement('div');
+        chartContainer.style.width = '100%';
+        chartContainer.style.height = '400px';
+        chartContainer.style.marginBottom = '20px';
+        document.getElementById('html-content').appendChild(chartContainer);
+
+        const canvas = document.createElement('canvas');
+        chartContainer.appendChild(canvas);
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: lowStockProducts.map(product => product.name),
+                datasets: [{
+                    label: 'Produkte mit geringem Bestand',
+                    data: lowStockProducts.map(product => product.stock),
+                    backgroundColor: lowStockProducts.map(() => `hsl(${Math.random() * 360}, 70%, 70%)`),
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     }
-}

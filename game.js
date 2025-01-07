@@ -1,8 +1,8 @@
 import { PriceAdjustmentScene } from './price_adjustment.js';
 import { PurchaseScene } from './purchase_scene.js';
 import { MainScene } from './main_scene.js';
-import { DailySummaryScene } from './daily_summarize.js';
 import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import './daily_summarize.js';
 
 // Singleton-Instanz initialisieren
 const inventory = ImbissSoftware.getInstance();
@@ -18,7 +18,7 @@ const config = {
             debug: false,
         },
     },
-    scene: [PurchaseScene, PriceAdjustmentScene, MainScene, DailySummaryScene], // Alle Szenen in der Liste
+    scene: [PurchaseScene, PriceAdjustmentScene, MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);

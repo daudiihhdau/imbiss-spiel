@@ -47,7 +47,9 @@ export class MainScene extends Phaser.Scene {
             this.world.stopClock();
 
             // Zu einer anderen Szene wechseln
-            this.scene.start('DailySummaryScene'); // Ersetzt 'NextScene' mit dem Schlüssel deiner nächsten Szene
+            this.scene.stop();
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('html-content').style.display = 'block';
         });
 
         this.customerSchedule = this.currentLocation.generateCustomerSchedule();
