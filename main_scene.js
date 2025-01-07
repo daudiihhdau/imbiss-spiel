@@ -37,17 +37,25 @@ export class MainScene extends Phaser.Scene {
         this.setupTopBar();
         setupDebug(this);
 
-        this.customerSchedule = this.currentLocation.generateCustomerSchedule();
+        this.world.startClock();
 
-        this.time.addEvent({
-            delay: 120,
-            callback: this.updateClock,
-            callbackScope: this,
-            loop: true,
+        // Listener für Mitternacht hinzufügen
+        this.world.events.subscribe('midnight', () => {
+            console.log('Mitternacht erreicht, Szene wechseln!');
+            
+            // Uhrzeit stoppen
+            this.world.stopClock();
+
+            // Zu einer anderen Szene wechseln
+            this.scene.start('DailySummaryScene'); // Ersetzt 'NextScene' mit dem Schlüssel deiner nächsten Szene
         });
+
+        this.customerSchedule = this.currentLocation.generateCustomerSchedule();
     }
 
     update(time, delta) {
+        this.updateClockText()
+
         this.customers.forEach((customer, index) => {
             this.handleCustomerState(customer, index, delta);
         });
@@ -93,8 +101,7 @@ export class MainScene extends Phaser.Scene {
         return `${dayOfWeek}, ${formattedDate} - ${formattedTime}`;
     }
 
-    updateClock() {
-        this.world.updateClock();
+    updateClockText() {
         this.dateText.setText(`📅 ${this.getFormattedDateAndTime()}`);
         this.checkSpawnProbability();
     }

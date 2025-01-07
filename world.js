@@ -1,7 +1,11 @@
 import { ImbissSoftware } from './inventory_management.js';
+import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
 
 export class World {
     static instance = null;
+    timer = null; // Referenz auf den Timer
+    isRunning = false; // Status, ob die Uhr läuft
+    events = new EventDispatcher(); // Dein EventDispatcher für Mitternacht und andere Events
 
     constructor(params = {}) {
         if (World.instance) {
@@ -43,6 +47,7 @@ export class World {
         this.currentTime = (this.currentTime + 1) % 1440; // Minuten im Tagesverlauf (0-1439)
         if (this.currentTime === 0) {
             this.advanceDay();
+            this.events.emit('midnight'); // Mitternacht-Ereignis auslösen
         }
     }
 
@@ -59,6 +64,23 @@ export class World {
                 this.currentYear += 1;
             }
         }
+    }
+
+    startClock() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+
+        this.timer = setInterval(() => {
+            this.updateClock();
+        }, 12); // Alle 120ms
+    }
+
+    stopClock() {
+        if (!this.isRunning) return;
+        this.isRunning = false;
+
+        clearInterval(this.timer);
+        this.timer = null;
     }
 
     getDaysInMonth(month, year) {
@@ -100,11 +122,6 @@ export class World {
     }
 
     getFullDateAndTime() {
-        return `${this.getDayOfWeek()}, ${this.getFormattedDate()} um ${this.getFormattedTime()} (${this.getSeason()})`;
-    }
-
-    static parseDebugMode(url) {
-        const urlParams = new URLSearchParams(url);
-        return urlParams.get('debug') === '1';
+        return `${this.getDayOfWeek()}, ${this.getFormattedDate()} um ${this.getFormattedTime()}`;
     }
 }
