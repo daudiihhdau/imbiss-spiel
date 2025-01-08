@@ -224,6 +224,26 @@ export class ImbissSoftware {
         return stats.salesStats.totalRevenue - stats.purchaseStats.totalCost;
     }
 
+    getMostPopularProducts() {
+        // Filtert alle Verkäufe aus den Logs und zählt die Verkäufe pro Produkt
+        const productSales = this.logging
+            .filter((entry) => entry.type === 'sale')
+            .reduce((acc, sale) => {
+                sale.items.forEach((item) => {
+                    if (!acc[item.itemName]) {
+                        acc[item.itemName] = 0;
+                    }
+                    acc[item.itemName] += item.quantity;
+                });
+                return acc;
+            }, {});
+
+        // Konvertiert das Ergebnis in ein Array, sortiert es nach Verkäufen und gibt es zurück
+        return Object.entries(productSales)
+            .map(([itemName, quantity]) => ({ itemName, quantity }))
+            .sort((a, b) => b.quantity - a.quantity);
+    }
+
     static items = new Map([
         ['Pommes', { emoji: '🍟', stock: 3, sellPrice: 2.5 }],
         ['Currywurst', { emoji: '🌭', stock: 3, sellPrice: 3.0 }],

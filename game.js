@@ -25,3 +25,5 @@ const game = new Phaser.Game(config);
 
 // Starte nur die PriceAdjustmentScene beim Spielstart
 game.scene.start('PurchaseScene');
+
+export { game };

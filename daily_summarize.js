@@ -1,191 +1,206 @@
 import { ImbissSoftware } from './inventory_management.js';
 import { World } from './world.js';
+import { game } from './game.js';
 
 World.getInstance().events.subscribe('midnight', () => {
-        const imbissSoftware = ImbissSoftware.getInstance();
-        const stats = imbissSoftware.getStatistics();
-        const revenuePerProduct = imbissSoftware.getRevenuePerProduct();
-        const priceChanges = imbissSoftware.getPriceLogAnalysis();
-        const profit = imbissSoftware.calculateProfit();
-        const currentStock = imbissSoftware.getCurrentStock();
+    const imbissSoftware = ImbissSoftware.getInstance();
+    const stats = imbissSoftware.getStatistics();
+    const revenuePerProduct = imbissSoftware.getRevenuePerProduct();
+    const profit = imbissSoftware.calculateProfit();
+    const currentStock = imbissSoftware.getCurrentStock();
+    const popularProducts = imbissSoftware.getMostPopularProducts();
 
-        const container = document.getElementById('html-content');
+    const container = document.getElementById('html-content');
+    container.innerHTML = ''; // Reset content
 
-        // Tageszusammenfassung hinzufügen
-        const header = document.createElement('h1');
-        header.textContent = 'Tageszusammenfassung';
-        container.appendChild(header);
+    // Tageszusammenfassung hinzufügen
+    const header = document.createElement('h1');
+    header.textContent = 'Tageszusammenfassung';
+    container.appendChild(header);
 
-        // Statistiken der letzten 24 Stunden
-        const statsHeader = document.createElement('h2');
-        statsHeader.textContent = 'Statistiken der letzten 24 Stunden';
-        container.appendChild(statsHeader);
+    // Tagesgewinn (Ganz nach oben)
+    const dailyProfit = document.createElement('p');
+    dailyProfit.textContent = `Tagesgewinn: ${profit.toFixed(2)} €`;
+    container.appendChild(dailyProfit);
 
-        const statsElement = document.createElement('p');
-        statsElement.innerHTML = `
-            Verkäufe: ${stats.salesStats.totalRevenue.toFixed(2)} €<br>
-            Einkäufe: ${stats.purchaseStats.totalCost.toFixed(2)} €<br>
-            Nettogewinn: ${profit.toFixed(2)} €
-        `;
-        statsElement.style.fontSize = '18px';
-        container.appendChild(statsElement);
+    // Tagesumsatz
+    const dailyRevenue = document.createElement('p');
+    dailyRevenue.textContent = `Tagesumsatz: ${stats.salesStats.totalRevenue.toFixed(2)} €`;
+    container.appendChild(dailyRevenue);
 
-        // Übersicht
-        const overviewHeader = document.createElement('h2');
-        overviewHeader.textContent = 'Übersicht';
-        container.appendChild(overviewHeader);
+    // Durchschnittlicher Umsatz pro Stunde
+    const avgRevenuePerHour = stats.salesStats.totalRevenue / 24;
+    const hourlyRevenue = document.createElement('p');
+    hourlyRevenue.textContent = `Durchschnittlicher Umsatz pro Stunde: ${avgRevenuePerHour.toFixed(2)} €`;
+    container.appendChild(hourlyRevenue);
 
-        const totalProducts = currentStock.length;
-        const lowStockProducts = currentStock.filter(product => product.needsRestock);
-        const mostPopularProduct = Object.keys(revenuePerProduct).reduce((a, b) => 
-            revenuePerProduct[a] > revenuePerProduct[b] ? a : b, ''
-        );
+    // Durchschnittlicher Umsatz pro Kunde
+    const avgRevenuePerCustomer = stats.salesStats.totalRevenue / stats.salesStats.totalItemsSold;
+    const customerRevenue = document.createElement('p');
+    customerRevenue.textContent = `Durchschnittlicher Umsatz pro Kunde: ${avgRevenuePerCustomer.toFixed(2)} €`;
+    container.appendChild(customerRevenue);
 
-        const overviewElement = document.createElement('p');
-        overviewElement.innerHTML = `
-            Anzahl der Produkte: ${totalProducts}<br>
-            Produkte mit geringem Bestand: ${lowStockProducts.length}<br>
-            Beliebtestes Produkt: ${mostPopularProduct}
-        `;
-        overviewElement.style.fontSize = '18px';
-        container.appendChild(overviewElement);
+    // Verhältnis von Verkäufen zu Einkäufen
+    const salesToPurchasesRatio = (stats.salesStats.totalRevenue / stats.purchaseStats.totalCost).toFixed(2);
+    const salesPurchases = document.createElement('p');
+    let ratioMessage = `Verhältnis von Verkäufen zu Einkäufen: ${salesToPurchasesRatio} `;
 
-        // Einnahmen pro Produkt anzeigen (Diagramm)
-        createRevenueChart(revenuePerProduct);
+    if (salesToPurchasesRatio > 1.5) {
+        ratioMessage += '🟢 Sehr gut';
+        salesPurchases.style.color = 'green';
+    } else if (salesToPurchasesRatio >= 1.0) {
+        ratioMessage += '🟡 Akzeptabel';
+        salesPurchases.style.color = 'orange';
+    } else {
+        ratioMessage += '🔴 Kritisch';
+        salesPurchases.style.color = 'red';
+    }
 
-        // Verkäufe vs Einkäufe anzeigen (Diagramm)
-        createPurchaseVsSalesChart(stats);
+    salesPurchases.textContent = ratioMessage;
+    container.appendChild(salesPurchases);
 
-        // Preisanpassungen anzeigen (Tabelle)
-        createPriceLogTable(priceChanges);
+    // Umsatz pro Produkt (Tabelle, sortiert nach Umsatz)
+    const productRevenueHeader = document.createElement('h2');
+    productRevenueHeader.textContent = 'Umsatz pro Produkt';
+    container.appendChild(productRevenueHeader);
 
-        // Produktübersicht (Diagramm: Produkte mit geringem Bestand)
-        createLowStockChart(lowStockProducts);
+    const productRevenueTable = document.createElement('table');
+    productRevenueTable.style.width = '100%';
+    productRevenueTable.style.borderCollapse = 'collapse';
+    productRevenueTable.style.marginBottom = '20px';
+
+    const productRevenueHeaderRow = productRevenueTable.insertRow();
+    ['Produkt', 'Umsatz (€)'].forEach((text) => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        th.style.backgroundColor = '#f4f4f4';
+        productRevenueHeaderRow.appendChild(th);
     });
 
-    function createRevenueChart(revenuePerProduct) {
-        const chartContainer = document.createElement('div');
-        chartContainer.style.width = '100%';
-        chartContainer.style.height = '400px';
-        chartContainer.style.marginBottom = '20px';
-        document.getElementById('html-content').appendChild(chartContainer);
-
-        const canvas = document.createElement('canvas');
-        chartContainer.appendChild(canvas);
-
-        new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(revenuePerProduct),
-                datasets: [{
-                    label: 'Einnahmen pro Produkt (€)',
-                    data: Object.values(revenuePerProduct),
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    function createPurchaseVsSalesChart(stats) {
-        const chartContainer = document.createElement('div');
-        chartContainer.style.width = '100%';
-        chartContainer.style.height = '400px';
-        chartContainer.style.marginBottom = '20px';
-        document.getElementById('html-content').appendChild(chartContainer);
-
-        const canvas = document.createElement('canvas');
-        chartContainer.appendChild(canvas);
-
-        new Chart(canvas, {
-            type: 'pie',
-            data: {
-                labels: ['Verkäufe (€)', 'Einkäufe (€)'],
-                datasets: [{
-                    data: [
-                        stats.salesStats.totalRevenue,
-                        stats.purchaseStats.totalCost
-                    ],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 99, 132, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    function createPriceLogTable(priceChanges) {
-        const table = document.createElement('table');
-        table.style.width = '100%';
-        table.style.borderCollapse = 'collapse';
-        table.style.backgroundColor = '#fff';
-        table.style.marginTop = '20px';
-
-        const header = table.createTHead();
-        const headerRow = header.insertRow();
-        ['Produkt', 'Neuer Preis (€)', 'Datum'].forEach((text) => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            th.style.border = '1px solid #ddd';
-            th.style.padding = '8px';
-            th.style.backgroundColor = '#f4f4f4';
-            headerRow.appendChild(th);
-        });
-
-        const body = table.createTBody();
-        priceChanges.forEach((change) => {
-            const row = body.insertRow();
-            [change.itemName, change.price.toFixed(2), change.date].forEach((value) => {
-                const td = row.insertCell();
+    Object.entries(revenuePerProduct)
+        .sort(([, aRevenue], [, bRevenue]) => bRevenue - aRevenue) // Sortiere nach Umsatz absteigend
+        .forEach(([product, revenue]) => {
+            const row = productRevenueTable.insertRow();
+            const emoji = currentStock.find(item => item.name === product)?.emoji || '';
+            [`${emoji} ${product}`, revenue.toFixed(2)].forEach((value) => {
+                const td = document.createElement('td');
                 td.textContent = value;
                 td.style.border = '1px solid #ddd';
                 td.style.padding = '8px';
+                row.appendChild(td);
             });
         });
 
-        document.getElementById('html-content').appendChild(table);
-    }
+    container.appendChild(productRevenueTable);
 
-    function createLowStockChart(lowStockProducts) {
-        const chartContainer = document.createElement('div');
-        chartContainer.style.width = '100%';
-        chartContainer.style.height = '400px';
-        chartContainer.style.marginBottom = '20px';
-        document.getElementById('html-content').appendChild(chartContainer);
+    // Bestand aller Produkte (Tabelle, sortiert nach Bestand)
+    const stockHeader = document.createElement('h2');
+    stockHeader.textContent = 'Bestand aller Produkte';
+    container.appendChild(stockHeader);
 
-        const canvas = document.createElement('canvas');
-        chartContainer.appendChild(canvas);
+    const stockTable = document.createElement('table');
+    stockTable.style.width = '100%';
+    stockTable.style.borderCollapse = 'collapse';
+    stockTable.style.marginBottom = '20px';
 
-        new Chart(canvas, {
-            type: 'doughnut',
-            data: {
-                labels: lowStockProducts.map(product => product.name),
-                datasets: [{
-                    label: 'Produkte mit geringem Bestand',
-                    data: lowStockProducts.map(product => product.stock),
-                    backgroundColor: lowStockProducts.map(() => `hsl(${Math.random() * 360}, 70%, 70%)`),
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+    const stockHeaderRow = stockTable.insertRow();
+    ['Produkt', 'Bestand', 'Verkaufspreis (€)'].forEach((text) => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        th.style.backgroundColor = '#f4f4f4';
+        stockHeaderRow.appendChild(th);
+    });
+
+    currentStock
+        .sort((a, b) => b.stock - a.stock) // Sortiere nach Bestand absteigend
+        .forEach((product) => {
+            const row = stockTable.insertRow();
+            [
+                `${product.emoji} ${product.name}`,
+                product.stock,
+                product.sellPrice.toFixed(2)
+            ].forEach((value, index) => {
+                const td = document.createElement('td');
+                td.textContent = value;
+                td.style.border = '1px solid #ddd';
+                td.style.padding = '8px';
+                row.appendChild(td);
+            });
+
+            // Markiere Zeile rot, wenn der Bestand gering ist
+            if (product.needsRestock) {
+                row.style.backgroundColor = '#f8d7da'; // Helles Rot für Warnung
             }
         });
+
+    container.appendChild(stockTable);
+
+    // Beliebteste Produkte (Tabelle)
+    const popularProductsHeader = document.createElement('h2');
+    popularProductsHeader.textContent = 'Beliebteste Produkte';
+    container.appendChild(popularProductsHeader);
+
+    const popularProductsTable = document.createElement('table');
+    popularProductsTable.style.width = '100%';
+    popularProductsTable.style.borderCollapse = 'collapse';
+    popularProductsTable.style.marginBottom = '20px';
+
+    const popularProductsHeaderRow = popularProductsTable.insertRow();
+    ['Produkt', 'Verkäufe'].forEach((text) => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        th.style.backgroundColor = '#f4f4f4';
+        popularProductsHeaderRow.appendChild(th);
+    });
+
+    popularProducts.forEach(({ itemName, quantity }) => {
+        const product = currentStock.find(item => item.name === itemName);
+        const row = popularProductsTable.insertRow();
+        [
+            `${product?.emoji || ''} ${itemName}`,
+            quantity
+        ].forEach((value) => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            td.style.border = '1px solid #ddd';
+            td.style.padding = '8px';
+            row.appendChild(td);
+        });
+    });
+
+    // Füge Standardtext hinzu, wenn keine Verkäufe existieren
+    if (popularProducts.length === 0) {
+        const row = popularProductsTable.insertRow();
+        const td = document.createElement('td');
+        td.textContent = 'Keine Verkäufe';
+        td.colSpan = 2;
+        td.style.textAlign = 'center';
+        td.style.border = '1px solid #ddd';
+        td.style.padding = '8px';
+        row.appendChild(td);
     }
+
+    container.appendChild(popularProductsTable);
+
+    // Button: Nächsten Tag starten
+    const nextDayButton = document.createElement('button');
+    nextDayButton.textContent = 'Nächsten Tag starten';
+    nextDayButton.style.marginTop = '20px';
+    nextDayButton.style.padding = '10px 20px';
+    nextDayButton.style.fontSize = '16px';
+    nextDayButton.addEventListener('click', () => {
+        game.scene.start('PurchaseScene');
+        document.getElementById('game-container').style.display = 'block';
+        document.getElementById('html-content').style.display = 'none';
+    });
+
+    container.appendChild(nextDayButton);
+
+    // Weitere Tabellen und Analysen können hier ergänzt werden...
+});
