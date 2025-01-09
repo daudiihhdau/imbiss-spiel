@@ -1,11 +1,8 @@
+import { World } from './world.js';
 import { PriceAdjustmentScene } from './price_adjustment.js';
-import { PurchaseScene } from './purchase_scene.js';
 import { MainScene } from './main_scene.js';
-import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import './purchase_scene.js';
 import './daily_summarize.js';
-
-// Singleton-Instanz initialisieren
-const inventory = ImbissSoftware.getInstance();
 
 const config = {
     type: Phaser.AUTO,
@@ -18,12 +15,11 @@ const config = {
             debug: false,
         },
     },
-    scene: [PurchaseScene, PriceAdjustmentScene, MainScene], // Alle Szenen in der Liste
+    scene: [PriceAdjustmentScene, MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);
 
-// Starte nur die PriceAdjustmentScene beim Spielstart
-game.scene.start('PurchaseScene');
+World.getInstance().events.emit('load_purchase_scene');
 
 export { game };

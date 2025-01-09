@@ -2,6 +2,64 @@ import { ImbissSoftware } from './inventory_management.js';
 import { World } from './world.js';
 import { game } from './game.js';
 
+// Funktion zur Erstellung von Tabellen
+function createTable(headers, data, options = {}) {
+    const { columnStyles = {}, rowStyles = {}, defaultCellStyle = {}, emptyMessage = "Keine Daten verfügbar" } = options;
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+    table.style.marginBottom = '20px';
+
+    // Tabellenköpfe erstellen
+    const headerRow = document.createElement('tr');
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        th.style.backgroundColor = '#f4f4f4';
+        th.style.textAlign = 'left';
+        if (columnStyles[headerText]) {
+            Object.assign(th.style, columnStyles[headerText]);
+        }
+        headerRow.appendChild(th);
+    });
+    table.appendChild(headerRow);
+
+    // Tabelleninhalt hinzufügen
+    if (data.length === 0) {
+        const emptyRow = document.createElement('tr');
+        const emptyCell = document.createElement('td');
+        emptyCell.textContent = emptyMessage;
+        emptyCell.colSpan = headers.length;
+        emptyCell.style.textAlign = 'center';
+        emptyCell.style.padding = '8px';
+        emptyCell.style.border = '1px solid #ddd';
+        emptyRow.appendChild(emptyCell);
+        table.appendChild(emptyRow);
+    } else {
+        data.forEach(rowData => {
+            const row = document.createElement('tr');
+            Object.assign(row.style, rowStyles);
+            headers.forEach(headerText => {
+                const td = document.createElement('td');
+                td.textContent = rowData[headerText] || ''; // Füge Wert basierend auf Header hinzu
+                td.style.border = '1px solid #ddd';
+                td.style.padding = '8px';
+                Object.assign(td.style, defaultCellStyle);
+                if (columnStyles[headerText]) {
+                    Object.assign(td.style, columnStyles[headerText]);
+                }
+                row.appendChild(td);
+            });
+            table.appendChild(row);
+        });
+    }
+
+    return table;
+}
+
 World.getInstance().events.subscribe('midnight', () => {
     const imbissSoftware = ImbissSoftware.getInstance();
     const stats = imbissSoftware.getStatistics();
@@ -9,6 +67,10 @@ World.getInstance().events.subscribe('midnight', () => {
     const profit = imbissSoftware.calculateProfit();
     const currentStock = imbissSoftware.getCurrentStock();
     const popularProducts = imbissSoftware.getMostPopularProducts();
+
+    game.scene.stop();
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('html-content').style.display = 'block';
 
     const container = document.getElementById('html-content');
     container.innerHTML = ''; // Reset content
@@ -18,7 +80,7 @@ World.getInstance().events.subscribe('midnight', () => {
     header.textContent = 'Tageszusammenfassung';
     container.appendChild(header);
 
-    // Tagesgewinn (Ganz nach oben)
+    // Tagesgewinn
     const dailyProfit = document.createElement('p');
     dailyProfit.textContent = `Tagesgewinn: ${profit.toFixed(2)} €`;
     container.appendChild(dailyProfit);
@@ -59,134 +121,46 @@ World.getInstance().events.subscribe('midnight', () => {
     salesPurchases.textContent = ratioMessage;
     container.appendChild(salesPurchases);
 
-    // Umsatz pro Produkt (Tabelle, sortiert nach Umsatz)
-    const productRevenueHeader = document.createElement('h2');
-    productRevenueHeader.textContent = 'Umsatz pro Produkt';
-    container.appendChild(productRevenueHeader);
+    // Umsatz pro Produkt (Tabelle)
+    const productRevenueHeadline = document.createElement('h2');
+    productRevenueHeadline.textContent = 'Umsatz pro Produkt';
+    container.appendChild(productRevenueHeadline);
 
-    const productRevenueTable = document.createElement('table');
-    productRevenueTable.style.width = '100%';
-    productRevenueTable.style.borderCollapse = 'collapse';
-    productRevenueTable.style.marginBottom = '20px';
+    const revenueHeaders = ['Produkt', 'Umsatz (€)'];
+    const revenueData = Object.entries(revenuePerProduct).map(([product, revenue]) => ({
+        'Produkt': product,
+        'Umsatz (€)': revenue.toFixed(2),
+    }));
+    container.appendChild(createTable(revenueHeaders, revenueData));
 
-    const productRevenueHeaderRow = productRevenueTable.insertRow();
-    ['Produkt', 'Umsatz (€)'].forEach((text) => {
-        const th = document.createElement('th');
-        th.textContent = text;
-        th.style.border = '1px solid #ddd';
-        th.style.padding = '8px';
-        th.style.backgroundColor = '#f4f4f4';
-        productRevenueHeaderRow.appendChild(th);
-    });
+    // Bestand aller Produkte (Tabelle)
+    const stockHeadline = document.createElement('h2');
+    stockHeadline.textContent = 'Bestand aller Produkte';
+    container.appendChild(stockHeadline);
 
-    Object.entries(revenuePerProduct)
-        .sort(([, aRevenue], [, bRevenue]) => bRevenue - aRevenue) // Sortiere nach Umsatz absteigend
-        .forEach(([product, revenue]) => {
-            const row = productRevenueTable.insertRow();
-            const emoji = currentStock.find(item => item.name === product)?.emoji || '';
-            [`${emoji} ${product}`, revenue.toFixed(2)].forEach((value) => {
-                const td = document.createElement('td');
-                td.textContent = value;
-                td.style.border = '1px solid #ddd';
-                td.style.padding = '8px';
-                row.appendChild(td);
-            });
-        });
-
-    container.appendChild(productRevenueTable);
-
-    // Bestand aller Produkte (Tabelle, sortiert nach Bestand)
-    const stockHeader = document.createElement('h2');
-    stockHeader.textContent = 'Bestand aller Produkte';
-    container.appendChild(stockHeader);
-
-    const stockTable = document.createElement('table');
-    stockTable.style.width = '100%';
-    stockTable.style.borderCollapse = 'collapse';
-    stockTable.style.marginBottom = '20px';
-
-    const stockHeaderRow = stockTable.insertRow();
-    ['Produkt', 'Bestand', 'Verkaufspreis (€)'].forEach((text) => {
-        const th = document.createElement('th');
-        th.textContent = text;
-        th.style.border = '1px solid #ddd';
-        th.style.padding = '8px';
-        th.style.backgroundColor = '#f4f4f4';
-        stockHeaderRow.appendChild(th);
-    });
-
-    currentStock
-        .sort((a, b) => b.stock - a.stock) // Sortiere nach Bestand absteigend
-        .forEach((product) => {
-            const row = stockTable.insertRow();
-            [
-                `${product.emoji} ${product.name}`,
-                product.stock,
-                product.sellPrice.toFixed(2)
-            ].forEach((value, index) => {
-                const td = document.createElement('td');
-                td.textContent = value;
-                td.style.border = '1px solid #ddd';
-                td.style.padding = '8px';
-                row.appendChild(td);
-            });
-
-            // Markiere Zeile rot, wenn der Bestand gering ist
-            if (product.needsRestock) {
-                row.style.backgroundColor = '#f8d7da'; // Helles Rot für Warnung
-            }
-        });
-
-    container.appendChild(stockTable);
+    const stockHeaders = ['Produkt', 'Bestand', 'Verkaufspreis (€)'];
+    const stockData = currentStock.map(product => ({
+        'Produkt': `${product.emoji} ${product.name}`,
+        'Bestand': product.stock,
+        'Verkaufspreis (€)': product.sellPrice.toFixed(2),
+    }));
+    container.appendChild(createTable(stockHeaders, stockData, {
+        rowStyles: { backgroundColor: '#f8d7da' }, // Zeilenstil für niedrige Bestände
+    }));
 
     // Beliebteste Produkte (Tabelle)
-    const popularProductsHeader = document.createElement('h2');
-    popularProductsHeader.textContent = 'Beliebteste Produkte';
-    container.appendChild(popularProductsHeader);
+    const popularProductsHeadline = document.createElement('h2');
+    popularProductsHeadline.textContent = 'Beliebteste Produkte';
+    container.appendChild(popularProductsHeadline);
 
-    const popularProductsTable = document.createElement('table');
-    popularProductsTable.style.width = '100%';
-    popularProductsTable.style.borderCollapse = 'collapse';
-    popularProductsTable.style.marginBottom = '20px';
-
-    const popularProductsHeaderRow = popularProductsTable.insertRow();
-    ['Produkt', 'Verkäufe'].forEach((text) => {
-        const th = document.createElement('th');
-        th.textContent = text;
-        th.style.border = '1px solid #ddd';
-        th.style.padding = '8px';
-        th.style.backgroundColor = '#f4f4f4';
-        popularProductsHeaderRow.appendChild(th);
-    });
-
-    popularProducts.forEach(({ itemName, quantity }) => {
-        const product = currentStock.find(item => item.name === itemName);
-        const row = popularProductsTable.insertRow();
-        [
-            `${product?.emoji || ''} ${itemName}`,
-            quantity
-        ].forEach((value) => {
-            const td = document.createElement('td');
-            td.textContent = value;
-            td.style.border = '1px solid #ddd';
-            td.style.padding = '8px';
-            row.appendChild(td);
-        });
-    });
-
-    // Füge Standardtext hinzu, wenn keine Verkäufe existieren
-    if (popularProducts.length === 0) {
-        const row = popularProductsTable.insertRow();
-        const td = document.createElement('td');
-        td.textContent = 'Keine Verkäufe';
-        td.colSpan = 2;
-        td.style.textAlign = 'center';
-        td.style.border = '1px solid #ddd';
-        td.style.padding = '8px';
-        row.appendChild(td);
-    }
-
-    container.appendChild(popularProductsTable);
+    const popularHeaders = ['Produkt', 'Verkäufe'];
+    const popularData = popularProducts.map(({ itemName, quantity }) => ({
+        'Produkt': `${currentStock.find(item => item.name === itemName)?.emoji || ''} ${itemName}`,
+        'Verkäufe': quantity,
+    }));
+    container.appendChild(createTable(popularHeaders, popularData, {
+        emptyMessage: 'Keine Verkäufe',
+    }));
 
     // Button: Nächsten Tag starten
     const nextDayButton = document.createElement('button');
@@ -195,12 +169,8 @@ World.getInstance().events.subscribe('midnight', () => {
     nextDayButton.style.padding = '10px 20px';
     nextDayButton.style.fontSize = '16px';
     nextDayButton.addEventListener('click', () => {
-        game.scene.start('PurchaseScene');
-        document.getElementById('game-container').style.display = 'block';
-        document.getElementById('html-content').style.display = 'none';
+        game.events.emit('load_purchase_scene'); 
     });
 
     container.appendChild(nextDayButton);
-
-    // Weitere Tabellen und Analysen können hier ergänzt werden...
 });
