@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+}
+
+.table {
+    width: 60vw;
+    font-size: 1.2em;
+}
+
+.table input {
+    font-size: 0.9em;
+    padding: 3px;
+    width: 70px;
+}
+
+.row-even {
+    background-color: #f2f2f2; /* Hellgraue Zeilen */
+}
+
+.row-odd {
+    background-color: #e6e6e6; /* Etwas dunklere graue Zeilen */
+}
+
+/* Erfolgsmeldung */
+.success-message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: center;
+    margin-top: 20px;
+    border: 2px solid #ccc; /* Grauer Rahmen */
+    background-color: #e8f5e9; /* Helles Grün als Hintergrund */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Buttons */
+.btn-buy {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #4CAF50; /* Grün für den Kaufen-Button */
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease; /* Animation für Hover */
+}
+
+.btn-buy:hover {
+    transform: scale(1.1); /* Vergrößern beim Hover */
+    background-color: #66bb6a; /* Helleres Grün beim Hover */
+}
+
+.btn-adjust-prices {
+    margin-top: 20px;
+    margin-left: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #2196F3; /* Blau für den Preise-Button */
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease; /* Animation für Hover */
+}
+
+.btn-adjust-prices:hover {
+    transform: scale(1.1); /* Vergrößern beim Hover */
+    background-color: #64b5f6; /* Helleres Blau beim Hover */
+}

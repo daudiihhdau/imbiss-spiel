@@ -1,5 +1,4 @@
 import { World } from './world.js';
-import { PriceAdjustmentScene } from './price_adjustment.js';
 import { MainScene } from './main_scene.js';
 import './purchase_scene.js';
 import './daily_summarize.js';
@@ -15,7 +14,7 @@ const config = {
             debug: false,
         },
     },
-    scene: [PriceAdjustmentScene, MainScene], // Alle Szenen in der Liste
+    scene: [MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);
