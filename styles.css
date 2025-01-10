@@ -16,6 +16,8 @@ body {
     max-width: 60vw; /* Begrenzte Breite für größere Bildschirme */
     overflow-x: auto; /* Ermöglicht Scrollen bei kleinen Bildschirmen */
     margin: 0 auto; /* Zentriert die Tabelle */
+    margin-bottom: '20px';
+    border-collapse: collapse;
 }
 
 .table input {
@@ -32,21 +34,22 @@ body {
     outline: none; /* Entfernt den Standard-Fokus */
 }
 
-.row-even {
-    background-color: #f2f2f2; /* Hellgraue Zeilen */
-}
-
-.row-odd {
-    background-color: #e6e6e6; /* Etwas dunklere graue Zeilen */
-}
-
 .table th {
-    background-color: #d9d9d9;
+    border: 1px solid #ddd;
+    padding: 8px;
+    background-color: #f4f4f4;
+    text-align: left;
 }
 
 .table tr:hover {
     background-color: #d9d9d9; /* Noch etwas dunkleres Grau */
     transition: background-color 0.3s ease; /* Sanfter Übergang */
+}
+
+.table td {
+    text-align: center;
+    padding: 6px;
+    border: 1px solid #ddd;
 }
 
 /* Erfolgsmeldung */
