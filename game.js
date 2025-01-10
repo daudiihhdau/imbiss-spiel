@@ -1,6 +1,7 @@
 import { World } from './world.js';
 import { MainScene } from './main_scene.js';
 import './purchase_scene.js';
+import './price_adjustment.js';
 import './daily_summarize.js';
 
 const config = {

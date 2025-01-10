@@ -1,150 +1,133 @@
+import { World } from './world.js';
 import { ImbissSoftware } from './inventory_management.js';
+import { game } from './game.js';
 
-function removeAllInputs() {
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => input.remove());
-    console.log('Alle DOM-Input-Elemente wurden entfernt.');
-}
+// Kaufvorgang
+function applyAllPrices(items, inputs) {
+    try {
+        items.forEach(item => {
+            const inputElement = inputs[item.name];
+            const newPrice = parseFloat(inputElement.value);
 
-export class PriceAdjustmentScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'PriceAdjustmentScene' });
-        this.imbissSoftware = ImbissSoftware.getInstance(); // Singleton-Instanz der Warenwirtschaft
-        this.updatedPrices = {}; // Temporäre Speicherung der neuen Preise
-    }
-
-    create() {
-        removeAllInputs(); // Entfernt alle vorherigen Input-Elemente
-
-        this.add.text(10, 10, 'Verkaufspreise anpassen', {
-            fontSize: '24px',
-            fill: '#000'
+            if (!isNaN(newPrice) && newPrice > 0) {
+                ImbissSoftware.getInstance().updateSellPrice(item.name, newPrice);
+                console.log(`Preis für ${item.name} auf ${newPrice.toFixed(2)} € gesetzt.`);
+                inputElement.style.borderColor = '';
+            } else {
+                console.warn(`Ungültiger Preis für ${item.name} ignoriert.`);
+                inputElement.style.borderColor = 'red';
+            }
         });
 
-        const items = this.imbissSoftware.getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
-        const yStart = 60;
-        const xLabel = 20;
-        const xInput = 300;
-        const xDetails = 500;
+        // Erfolgsmeldung anzeigen
+        const successMessage = document.createElement('p');
+        successMessage.textContent = 'Preise erfolgreich aktualisiert!';
+        successMessage.classList.add('success-message');
+        document.getElementById('html-content').appendChild(successMessage);
 
-        this.inputs = {};
-        this.inputElements = [];
-
-        items.forEach((item, index) => {
-            const yOffset = yStart + index * 50;
-
-            this.add.text(xLabel, yOffset, `${item.emoji} ${item.name}:`, {
-                fontSize: '24px',
-                fill: '#fff'
-            });
-
-            const inputElement = document.createElement('input');
-            inputElement.type = 'number';
-            inputElement.name = `price_${item.name}`;
-            inputElement.value = item.sellPrice || 0;
-            inputElement.min = '0.01';
-            inputElement.step = '0.01';
-            inputElement.style.position = 'absolute';
-            inputElement.style.top = `${this.scale.canvas.offsetTop + yOffset}px`;
-            inputElement.style.left = `${this.scale.canvas.offsetLeft + xInput}px`;
-            inputElement.style.fontSize = '18px';
-            inputElement.style.width = '100px';
-
-            document.body.appendChild(inputElement);
-            this.inputs[item.name] = inputElement;
-            this.inputElements.push(inputElement);
-
-            this.add.text(xDetails, yOffset, `Lager: ${item.stock}`, {
-                fontSize: '24px',
-                fill: '#fff'
-            });
-
-            // Hinzufügen von Feedback, wenn der Preis geändert wird
-            inputElement.addEventListener('input', () => {
-                inputElement.style.backgroundColor = '#d4edda'; // Grün für geänderte Preise
-            });
-        });
-
-        // Tab-Navigation zwischen den Eingabefeldern
-        this.inputElements.forEach((input, idx) => {
-            input.addEventListener('keydown', (event) => {
-                if (event.key === 'Tab') {
-                    event.preventDefault();
-                    const nextIdx = (idx + 1) % this.inputElements.length;
-                    this.inputElements[nextIdx].focus();
-                }
-            });
-        });
-
-        this.add.text(10, this.scale.height - 50, 'Zurück', {
-            fontSize: '24px',
-            fill: '#000',
-            backgroundColor: '#fff',
-            padding: { x: 10, y: 5 }
-        })
-        .setInteractive()
-        .on('pointerdown', () => {
-            this.cleanupScene(); // Bereinige die aktuelle Szene
-            this.scene.stop('PriceAdjustmentScene'); // Beende die PriceAdjustmentScene
-            this.scene.start('MainScene'); // Starte die MainScene
-        });
-
-        this.add.text(200, this.scale.height - 50, 'Preise setzen', {
-            fontSize: '24px',
-            fill: '#000',
-            backgroundColor: '#fff',
-            padding: { x: 10, y: 5 }
-        })
-        .setInteractive()
-        .on('pointerdown', () => {
-            this.applyAllPrices(items);
-        });
-
-        this.events.once('shutdown', () => {
-            this.cleanupScene();
-        });
-    }
-
-    applyAllPrices(items) {
-        try {
-            items.forEach(item => {
-                const inputElement = this.inputs[item.name];
-                const newPrice = parseFloat(inputElement.value);
-
-                if (!isNaN(newPrice) && newPrice > 0) {
-                    this.imbissSoftware.updateSellPrice(item.name, newPrice);
-                    console.log(`Preis für ${item.name} auf ${newPrice} € gesetzt.`);
-                    inputElement.style.borderColor = ''; // Entfernt Fehleranzeige
-                } else {
-                    console.warn(`Ungültiger Preis für ${item.name} ignoriert.`);
-                    inputElement.style.borderColor = 'red'; // Markiert ungültige Preise
-                }
-            });
-
-            const successText = this.add.text(10, this.scale.height - 100, 'Preise erfolgreich aktualisiert!', {
-                fontSize: '20px',
-                fill: '#0f0'
-            });
-            this.tweens.add({
-                targets: successText,
-                alpha: 0,
-                delay: 2000,
-                duration: 1000,
-                onComplete: () => successText.destroy()
-            });
-
-        } catch (error) {
-            console.error(`Fehler beim Übergeben der Preise: ${error.message}`);
-        }
-    }
-
-    cleanupScene() {
-        removeAllInputs(); // Entfernt alle Input-Elemente aus dem DOM
-        this.inputs = {};
-        this.inputElements.forEach(input => {
-            input.removeEventListener('keydown', this.handleTabNavigation); // Entferne Event-Listener
-        });
-        this.inputElements = [];
-        console.log('PriceAdjustmentScene erfolgreich aufgeräumt.');
+        setTimeout(() => successMessage.remove(), 3000);
+    } catch (error) {
+        console.error(`Fehler beim Aktualisieren der Preise: ${error.message}`);
     }
 }
+
+World.getInstance().events.subscribe('load_pricelist_scene', () => {
+    game.scene.stop();
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('html-content').style.display = 'block';
+
+    const container = document.getElementById('html-content');
+    container.innerHTML = ''; // Reset content
+    
+    // Titel hinzufügen
+    const header = document.createElement('h1');
+    header.textContent = 'Verkaufspreise anpassen';
+    header.classList.add('fun-header');
+    container.appendChild(header);
+
+    const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
+    const inputs = {}; // Eingabe-Elemente sammeln
+
+    // Tabelle erstellen
+    const table = document.createElement('table');
+    table.classList.add('table');
+
+    // Tabellenkopf
+    const headerRow = document.createElement('tr');
+    ['Produkt',  'Im Lager', 'Aktueller Preis (€)', 'Neuer Preis (€)'].forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+    table.appendChild(headerRow);
+
+    // Produkte abrufen und Tabelle ausfüllen
+    items.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.classList.add(index % 2 === 0 ? 'row-even' : 'row-odd');
+
+        // Produkt-Name und Emoji
+        const productCell = document.createElement('td');
+        productCell.textContent = item.emoji + ' ' + item.name;
+        row.appendChild(productCell);
+
+        // Lagerbestand
+        const stockCell = document.createElement('td');
+        stockCell.textContent = item.stock;
+        row.appendChild(stockCell);
+
+        // Aktueller Preis
+        const priceCell = document.createElement('td');
+        priceCell.textContent = item.sellPrice ? item.sellPrice.toFixed(2) : '0.00';
+        row.appendChild(priceCell);
+
+        // Eingabefeld für neuen Preis
+        const inputCell = document.createElement('td');
+        const inputElement = document.createElement('input');
+        inputElement.type = 'number';
+        inputElement.value = item.sellPrice || '0.00';
+        inputElement.min = '0.01';
+        inputElement.step = '0.01';
+        inputElement.classList.add('price-input');
+
+        // Eingabe validieren
+        inputElement.addEventListener('input', () => {
+            const value = parseFloat(inputElement.value);
+            if (isNaN(value) || value <= 0) {
+                inputElement.style.borderColor = 'red';
+            } else {
+                inputElement.style.borderColor = '';
+            }
+        });
+
+        inputCell.appendChild(inputElement);
+        row.appendChild(inputCell);
+
+        // Speichere die Eingabe
+        inputs[item.name] = inputElement;
+
+        table.appendChild(row);
+    });
+
+    container.appendChild(table);
+
+    // Button "Preise setzen"
+    const setPricesButton = document.createElement('button');
+    setPricesButton.textContent = 'Preise setzen';
+    setPricesButton.classList.add('btn-save', 'btn-green');
+    setPricesButton.addEventListener('click', () => {
+        applyAllPrices(items, inputs);
+    });
+    container.appendChild(setPricesButton);
+
+    // Button "Zurück"
+    const backButton = document.createElement('button');
+    backButton.textContent = 'Zurück';
+    backButton.classList.add('btn-back', 'btn-blue');
+    backButton.addEventListener('click', () => {
+        game.scene.start('MainScene')
+        document.getElementById('game-container').style.display = 'block';
+        document.getElementById('html-content').style.display = 'none';
+    });
+    container.appendChild(backButton);
+});

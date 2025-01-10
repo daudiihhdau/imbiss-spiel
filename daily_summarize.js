@@ -169,7 +169,7 @@ World.getInstance().events.subscribe('midnight', () => {
     nextDayButton.style.padding = '10px 20px';
     nextDayButton.style.fontSize = '16px';
     nextDayButton.addEventListener('click', () => {
-        game.events.emit('load_purchase_scene'); 
+        World.getInstance().events.emit('load_purchase_scene'); 
     });
 
     container.appendChild(nextDayButton);

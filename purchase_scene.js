@@ -30,7 +30,6 @@ function purchaseItems(inputs) {
 }
 
 World.getInstance().events.subscribe('load_purchase_scene', () => {
-    console.log('Lade Kaufszene');
     game.scene.stop();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('html-content').style.display = 'block';
@@ -52,7 +51,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
 
     // Tabellenkopf
     const headerRow = document.createElement('tr');
-    ['Produkt', 'Preis (€)', 'Vorhanden (Großhandel)', 'Auf Lager', 'Bestellung', ].forEach(headerText => {
+    ['Produkt', 'Preis (€)', 'Im Lager', 'Im Verkauf', 'Bestellung', ].forEach(headerText => {
         const th = document.createElement('th');
         th.textContent = headerText;
         headerRow.appendChild(th);
@@ -79,15 +78,15 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
         priceCell.textContent = randomPrice;
         row.appendChild(priceCell);
 
-        // Großhandel Bestand
-        const stockCell = document.createElement('td');
-        stockCell.textContent = randomUnits;
-        row.appendChild(stockCell);
-
         // Eigenes Lager
         const ownStockCell = document.createElement('td');
         ownStockCell.textContent = item.stock;
         row.appendChild(ownStockCell);
+
+        // Großhandel Bestand
+        const stockCell = document.createElement('td');
+        stockCell.textContent = randomUnits;
+        row.appendChild(stockCell);
 
         // Eingabefeld für Menge
         const inputCell = document.createElement('td');
@@ -129,8 +128,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
     adjustPricesButton.textContent = 'Preise festlegen';
     adjustPricesButton.classList.add('btn-adjust-prices', 'btn-blue');
     adjustPricesButton.addEventListener('click', () => {
-        World.getInstance().cleanupScene();
-        console.log('Wechsel zu Preisfestlegungsszene');
+        World.getInstance().events.emit('load_pricelist_scene');
     });
     container.appendChild(adjustPricesButton);
 });

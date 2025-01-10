@@ -1,7 +1,9 @@
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden; /* Verhindert horizontalen Overflow */
+    font-family: Arial, sans-serif; /* Einheitliche Schriftart */
+    background-color: #f9f9f9; /* Dezentes Hintergrundgrau */
 }
 
 #game-container {
@@ -10,14 +12,24 @@ body {
 }
 
 .table {
-    width: 60vw;
-    font-size: 1.2em;
+    width: 100%; /* Maximale Breite für bessere Anpassung */
+    max-width: 60vw; /* Begrenzte Breite für größere Bildschirme */
+    overflow-x: auto; /* Ermöglicht Scrollen bei kleinen Bildschirmen */
+    margin: 0 auto; /* Zentriert die Tabelle */
 }
 
 .table input {
     font-size: 0.9em;
-    padding: 3px;
+    padding: 5px;
     width: 70px;
+    border: 1px solid #ccc; /* Leichter Rahmen */
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Eingelassener Effekt */
+}
+
+.table input:focus {
+    border-color: #4CAF50; /* Grün bei Fokus */
+    outline: none; /* Entfernt den Standard-Fokus */
 }
 
 .row-even {
@@ -26,6 +38,15 @@ body {
 
 .row-odd {
     background-color: #e6e6e6; /* Etwas dunklere graue Zeilen */
+}
+
+.table th {
+    background-color: #d9d9d9;
+}
+
+.table tr:hover {
+    background-color: #d9d9d9; /* Noch etwas dunkleres Grau */
+    transition: background-color 0.3s ease; /* Sanfter Übergang */
 }
 
 /* Erfolgsmeldung */
@@ -41,9 +62,23 @@ body {
     border-radius: 10px;
 }
 
-/* Buttons */
-.btn-buy {
+/* Fehlernachricht */
+.error-message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #F44336; /* Rot für Fehler */
+    text-align: center;
     margin-top: 20px;
+    border: 2px solid #ccc; /* Grauer Rahmen */
+    background-color: #ffebee; /* Helles Rot als Hintergrund */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Buttons */
+.btn-green {
+    margin-top: 30px; /* Mehr Abstand zur Tabelle */
+    margin-bottom: 10px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -54,14 +89,15 @@ body {
     transition: transform 0.2s ease-in-out, background-color 0.3s ease; /* Animation für Hover */
 }
 
-.btn-buy:hover {
+.btn-green:hover {
     transform: scale(1.1); /* Vergrößern beim Hover */
     background-color: #66bb6a; /* Helleres Grün beim Hover */
 }
 
-.btn-adjust-prices {
-    margin-top: 20px;
+.btn-blue {
+    margin-top: 30px; /* Mehr Abstand zur Tabelle */
     margin-left: 10px;
+    margin-bottom: 10px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -72,7 +108,18 @@ body {
     transition: transform 0.2s ease-in-out, background-color 0.3s ease; /* Animation für Hover */
 }
 
-.btn-adjust-prices:hover {
+.btn-blue:hover {
     transform: scale(1.1); /* Vergrößern beim Hover */
     background-color: #64b5f6; /* Helleres Blau beim Hover */
+}
+
+/* Fallback für ältere Browser */
+.btn-blue, .btn-green {
+    -webkit-transition: transform 0.2s ease-in-out, background-color 0.3s ease; /* Fallback */
+}
+
+/* Fokus sichtbar machen */
+.btn-blue:focus, .btn-green:focus {
+    outline: 3px solid #2196F3; /* Fokusrahmen sichtbar machen */
+    outline-offset: 2px;
 }
