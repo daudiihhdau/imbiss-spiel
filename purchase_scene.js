@@ -2,19 +2,37 @@ import { World } from './world.js';
 import { ImbissSoftware } from './inventory_management.js';
 import { game } from './game.js';
 
+let inputs = {}; // Inputs global initialisieren
+
 // Kaufvorgang
 function purchaseItems(inputs) {
     try {
+        let totalCost = 0;
+
+        Object.entries(inputs).forEach(([name, { inputElement, randomUnits, randomPrice }]) => {
+            const quantity = parseInt(inputElement.value, 10);
+
+            if (!isNaN(quantity) && quantity > 0 && quantity <= randomUnits) {
+                totalCost += quantity * parseFloat(randomPrice);
+            }
+        });
+
+        if (totalCost > World.getInstance().getWealth()) {
+            alert(`Fehler: Die Einkaufskosten (${totalCost.toFixed(2)} €) übersteigen dein Budget (${World.getInstance().getWealth()} €).`);
+            return;
+        }
+
         Object.entries(inputs).forEach(([name, { inputElement, randomUnits, randomPrice }]) => {
             const quantity = parseInt(inputElement.value, 10);
 
             if (!isNaN(quantity) && quantity > 0 && quantity <= randomUnits) {
                 ImbissSoftware.getInstance().addPurchase(name, quantity, parseFloat(randomPrice));
                 console.log(`Gekauft: ${quantity} x ${name} zu je ${randomPrice} €.`);
-            } else {
-                console.warn(`Ungültige Menge für ${name} ignoriert.`);
             }
         });
+
+        // Budget aktualisieren
+        World.getInstance().addWealth(totalCost * -1);
 
         // Erfolgsnachricht anzeigen
         const successMessage = document.createElement('p');
@@ -24,9 +42,25 @@ function purchaseItems(inputs) {
 
         setTimeout(() => successMessage.remove(), 3000);
 
+        updateBudgetDisplay();
+
     } catch (error) {
         console.error(`Fehler beim Einkauf: ${error.message}`);
     }
+}
+
+function updateBudgetDisplay() {
+    const budgetDisplay = document.getElementById('budget-display');
+    const currentCost = calculateCurrentCost(inputs);
+
+    budgetDisplay.textContent = `Budget: ${World.getInstance().getWealth().toFixed(2)} €, Einkaufskosten: ${currentCost.toFixed(2)} €, Differenz: ${(World.getInstance().getWealth() - currentCost).toFixed(2)} €`;
+}
+
+function calculateCurrentCost(inputs) {
+    return Object.values(inputs).reduce((total, { inputElement, randomPrice }) => {
+        const quantity = parseInt(inputElement.value, 10);
+        return total + (!isNaN(quantity) ? quantity * parseFloat(randomPrice) : 0);
+    }, 0);
 }
 
 World.getInstance().events.subscribe('load_purchase_scene', () => {
@@ -37,7 +71,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
     const container = document.getElementById('html-content');
     container.innerHTML = ''; // Reset content
 
-    const inputs = {}; // Korrekt initialisieren
+    inputs = {}; // Inputs hier erneut initialisieren
 
     // Titel hinzufügen
     const header = document.createElement('h1');
@@ -45,13 +79,20 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
     header.classList.add('fun-header');
     container.appendChild(header);
 
+    // Budget-Anzeige hinzufügen
+    const budgetDisplay = document.createElement('p');
+    budgetDisplay.id = 'budget-display';
+    budgetDisplay.classList.add('budget-display');
+    container.appendChild(budgetDisplay);
+    updateBudgetDisplay();
+
     // Tabelle erstellen
     const table = document.createElement('table');
     table.classList.add('table');
 
     // Tabellenkopf
     const headerRow = document.createElement('tr');
-    ['Produkt', 'Preis (€)', 'Im Lager', 'Im Verkauf', 'Bestellung', ].forEach(headerText => {
+    ['Produkt', 'Preis (€)', 'Im Lager', 'Im Verkauf', 'Bestellung'].forEach(headerText => {
         const th = document.createElement('th');
         th.textContent = headerText;
         headerRow.appendChild(th);
@@ -103,6 +144,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             if (isNaN(value) || value < 0 || value > randomUnits) {
                 event.target.value = Math.min(Math.max(value, 0), randomUnits);
             }
+            updateBudgetDisplay();
         });
 
         inputCell.appendChild(inputElement);

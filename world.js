@@ -31,7 +31,7 @@ export class World {
         this.currentMonth = params.startMonth || 1; // Startmonat (Standard: Januar)
         this.currentYear = params.startYear || 2025; // Startjahr (Standard: 2025)
 
-        this.playerWealth = 0; // Anfangsvermögen
+        this.playerWealth = 50; // Anfangsvermögen
 
         World.instance = this;
     }
@@ -72,7 +72,7 @@ export class World {
 
         this.timer = setInterval(() => {
             this.updateClock();
-        }, 12); // Alle 120ms
+        }, 120); // Alle 120ms
     }
 
     stopClock() {
@@ -110,9 +110,6 @@ export class World {
     addWealth(amount) {
         if (typeof amount !== 'number' || isNaN(amount)) {
             throw new Error('Invalid amount: Amount must be a valid number');
-        }
-        if (amount < 0) {
-            throw new Error('Invalid amount: Amount cannot be negative');
         }
         this.playerWealth += amount;
     }
