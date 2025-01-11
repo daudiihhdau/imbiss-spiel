@@ -49,7 +49,6 @@ export class ImbissSoftware {
 
     logEntry(entry) {
         const date = new Date(World.getInstance().getFormattedDate() + ' ' + World.getInstance().getFormattedTime())
-        console.log("jjj", date)
         this.logging.push({ ...entry, date });
     }
 
@@ -168,7 +167,6 @@ export class ImbissSoftware {
 
     filterLogsByTimeframe(timeframe = '24h') {
         const now = new Date(World.getInstance().getFormattedDate());
-        console.log("zz", now)
         let cutoffDate;
 
         switch (timeframe) {
@@ -184,8 +182,6 @@ export class ImbissSoftware {
             default:
                 return this.logging; // Keine Filterung
         }
-        console.log("yy", cutoffDate)
-        console.log(this.logging.filter(entry => new Date(entry.date) > cutoffDate))
         return this.logging.filter(entry => new Date(entry.date) > cutoffDate);
     }
 

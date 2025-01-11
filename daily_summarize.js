@@ -121,6 +121,20 @@ World.getInstance().events.subscribe('midnight', () => {
     salesPurchases.textContent = ratioMessage;
     container.appendChild(salesPurchases);
 
+    // Beliebteste Produkte (Tabelle)
+    const popularProductsHeadline = document.createElement('h2');
+    popularProductsHeadline.textContent = 'Beliebteste Produkte';
+    container.appendChild(popularProductsHeadline);
+
+    const popularHeaders = ['Produkt', 'Verkäufe'];
+    const popularData = popularProducts.map(({ itemName, quantity }) => ({
+        'Produkt': `${currentStock.find(item => item.name === itemName)?.emoji || ''} ${itemName}`,
+        'Verkäufe': quantity,
+    }));
+    container.appendChild(createTable(popularHeaders, popularData, {
+        emptyMessage: 'Keine Verkäufe',
+    }));
+
     // Umsatz pro Produkt (Tabelle)
     const productRevenueHeadline = document.createElement('h2');
     productRevenueHeadline.textContent = 'Umsatz pro Produkt';
@@ -146,20 +160,6 @@ World.getInstance().events.subscribe('midnight', () => {
     }));
     container.appendChild(createTable(stockHeaders, stockData, {
         rowStyles: { backgroundColor: '#f8d7da' }, // Zeilenstil für niedrige Bestände
-    }));
-
-    // Beliebteste Produkte (Tabelle)
-    const popularProductsHeadline = document.createElement('h2');
-    popularProductsHeadline.textContent = 'Beliebteste Produkte';
-    container.appendChild(popularProductsHeadline);
-
-    const popularHeaders = ['Produkt', 'Verkäufe'];
-    const popularData = popularProducts.map(({ itemName, quantity }) => ({
-        'Produkt': `${currentStock.find(item => item.name === itemName)?.emoji || ''} ${itemName}`,
-        'Verkäufe': quantity,
-    }));
-    container.appendChild(createTable(popularHeaders, popularData, {
-        emptyMessage: 'Keine Verkäufe',
     }));
 
     // Button: Nächsten Tag starten
