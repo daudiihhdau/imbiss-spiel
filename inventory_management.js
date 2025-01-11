@@ -1,4 +1,5 @@
 import { EventDispatcher } from './event_dispatcher.js';
+import { World } from './world.js';
 
 export class ImbissSoftware {
     static instance = null;
@@ -46,12 +47,10 @@ export class ImbissSoftware {
         return item;
     }
 
-    getCurrentDate(date) {
-        return date || new Date();
-    }
-
     logEntry(entry) {
-        this.logging.push({ ...entry, date: this.getCurrentDate(entry.date) });
+        const date = new Date(World.getInstance().getFormattedDate() + ' ' + World.getInstance().getFormattedTime())
+        console.log("jjj", date)
+        this.logging.push({ ...entry, date });
     }
 
     processSingleItem(name) {
@@ -90,10 +89,9 @@ export class ImbissSoftware {
         }
     }
 
-    processOrder(wishlist, date) {
+    processOrder(wishlist) {
         const processedItems = [];
         let totalRevenue = 0;
-        const currentDate = this.getCurrentDate(date);
 
         wishlist.forEach(({ name }) => {
             const processedItem = this.processSingleItem(name);
@@ -107,8 +105,7 @@ export class ImbissSoftware {
             const saleEntry = {
                 items: processedItems,
                 totalRevenue,
-                type: 'sale',
-                date: currentDate,
+                type: 'sale'
             };
 
             this.logEntry(saleEntry);
@@ -119,7 +116,7 @@ export class ImbissSoftware {
         }
     }
 
-    addPurchase(itemName, quantity, purchasePrice, date) {
+    addPurchase(itemName, quantity, purchasePrice) {
         const item = this.validateInput(itemName, quantity);
         item.stock += quantity;
 
@@ -128,14 +125,13 @@ export class ImbissSoftware {
             quantity,
             purchasePrice,
             totalCost: purchasePrice * quantity,
-            type: 'purchase',
-            date: this.getCurrentDate(date),
+            type: 'purchase'
         };
 
         this.logEntry(purchaseEntry);
     }
 
-    updateSellPrice(itemName, newPrice, date) {
+    updateSellPrice(itemName, newPrice) {
         if (newPrice <= 0) throw new Error(`Ungültiger Preis: ${newPrice}`);
 
         const item = this.validateInput(itemName, 1);
@@ -153,8 +149,7 @@ export class ImbissSoftware {
         const priceUpdateEntry = {
             itemName,
             price: newPrice,
-            type: 'priceUpdate',
-            date: this.getCurrentDate(date),
+            type: 'priceUpdate'
         };
 
         this.logEntry(priceUpdateEntry);
@@ -171,8 +166,32 @@ export class ImbissSoftware {
         }));
     }
 
-    getRevenuePerProduct() {
-        return this.logging.filter(entry => entry.type === 'sale')
+    filterLogsByTimeframe(timeframe = '24h') {
+        const now = new Date(World.getInstance().getFormattedDate());
+        console.log("zz", now)
+        let cutoffDate;
+
+        switch (timeframe) {
+            case '24h':
+                cutoffDate = now;
+                cutoffDate.setDate(now.getDate() - 1);
+                break;
+            case '7d':
+                cutoffDate = now;
+                cutoffDate.setDate(now.getDate() - 7);
+                break;
+            case 'all':
+            default:
+                return this.logging; // Keine Filterung
+        }
+        console.log("yy", cutoffDate)
+        console.log(this.logging.filter(entry => new Date(entry.date) > cutoffDate))
+        return this.logging.filter(entry => new Date(entry.date) > cutoffDate);
+    }
+
+    getRevenuePerProduct(timeframe = '24h') {
+        const logs = this.filterLogsByTimeframe(timeframe);
+        return logs.filter(entry => entry.type === 'sale')
             .reduce((acc, sale) => {
                 sale.items.forEach(item => {
                     if (!acc[item.itemName]) acc[item.itemName] = 0;
@@ -182,9 +201,10 @@ export class ImbissSoftware {
             }, {});
     }
 
-    getPriceLogAnalysis() {
+    getPriceLogAnalysis(timeframe = '24h') {
         // Gibt eine Analyse aller Preisänderungen zurück, einschließlich des neuen Preises und des Datums.
-        return this.logging.filter((entry) => entry.type === 'priceUpdate').map((entry) => ({
+        const logs = this.filterLogsByTimeframe(timeframe);
+        return logs.filter((entry) => entry.type === 'priceUpdate').map((entry) => ({
             itemName: entry.itemName,
             price: entry.price,
             type: entry.type,
@@ -192,24 +212,15 @@ export class ImbissSoftware {
         }));
     }
 
-    filterLastDay() {
-        // Filtert alle Logeinträge der letzten 24 Stunden heraus.
-        const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-        return this.logging.filter((entry) => new Date(entry.date) > oneDayAgo);
-    }
-
-    getStatistics() {
-        // Gibt Statistiken zu Verkäufen und Einkäufen der letzten 24 Stunden zurück.
-        const lastDayLogs = this.filterLastDay();
-
-        const salesStats = lastDayLogs.filter((entry) => entry.type === 'sale').reduce((acc, sale) => {
+    getStatistics(timeframe = '24h') {
+        const logs = this.filterLogsByTimeframe(timeframe);
+        const salesStats = logs.filter((entry) => entry.type === 'sale').reduce((acc, sale) => {
             acc.totalRevenue += sale.totalRevenue;
             acc.totalItemsSold += sale.items.reduce((sum, item) => sum + item.quantity, 0);
             return acc;
         }, { totalRevenue: 0, totalItemsSold: 0 });
 
-        const purchaseStats = lastDayLogs.filter((entry) => entry.type === 'purchase').reduce((acc, purchase) => {
+        const purchaseStats = logs.filter((entry) => entry.type === 'purchase').reduce((acc, purchase) => {
             acc.totalCost += purchase.totalCost;
             acc.totalItemsBought += purchase.quantity;
             return acc;
@@ -218,15 +229,15 @@ export class ImbissSoftware {
         return { salesStats, purchaseStats };
     }
 
-    calculateProfit() {
-        // Berechnet den Nettogewinn, basierend auf den letzten 24 Stunden Verkäufen und Einkäufen.
-        const stats = this.getStatistics();
+    calculateProfit(timeframe = '24h') {
+        const stats = this.getStatistics(timeframe);
         return stats.salesStats.totalRevenue - stats.purchaseStats.totalCost;
     }
 
-    getMostPopularProducts() {
+    getMostPopularProducts(timeframe = '24h') {
         // Filtert alle Verkäufe aus den Logs und zählt die Verkäufe pro Produkt
-        const productSales = this.logging
+        const logs = this.filterLogsByTimeframe(timeframe);
+        const productSales = logs
             .filter((entry) => entry.type === 'sale')
             .reduce((acc, sale) => {
                 sale.items.forEach((item) => {

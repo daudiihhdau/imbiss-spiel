@@ -34,9 +34,9 @@ export function setupDebug(scene) {
 
     function updateDebugText() {
         const items = inventory.getCurrentStock(); // Bestandsdaten aus der Warenwirtschaft abrufen
-        const stats = inventory.getStatistics(); // Verkaufs- und Einkaufsstatistiken abrufen
-        const profit = inventory.calculateProfit(); // Gewinn berechnen
-        const priceLog = inventory.getPriceLogAnalysis(); // Preisänderungslog abrufen
+        const stats = inventory.getStatistics('24h'); // Verkaufs- und Einkaufsstatistiken abrufen
+        const profit = inventory.calculateProfit('24h'); // Gewinn berechnen
+        const priceLog = inventory.getPriceLogAnalysis('24h'); // Preisänderungslog abrufen
 
         // Beliebteste Produkte basierend auf Verkaufsdaten
         const salesLog = inventory.logging.filter((entry) => entry.type === 'sale');

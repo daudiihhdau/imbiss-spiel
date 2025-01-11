@@ -62,11 +62,11 @@ function createTable(headers, data, options = {}) {
 
 World.getInstance().events.subscribe('midnight', () => {
     const imbissSoftware = ImbissSoftware.getInstance();
-    const stats = imbissSoftware.getStatistics();
-    const revenuePerProduct = imbissSoftware.getRevenuePerProduct();
-    const profit = imbissSoftware.calculateProfit();
+    const stats = imbissSoftware.getStatistics('24h');
+    const revenuePerProduct = imbissSoftware.getRevenuePerProduct('24h');
+    const profit = imbissSoftware.calculateProfit('24h');
     const currentStock = imbissSoftware.getCurrentStock();
-    const popularProducts = imbissSoftware.getMostPopularProducts();
+    const popularProducts = imbissSoftware.getMostPopularProducts('24h');
 
     game.scene.stop();
     document.getElementById('game-container').style.display = 'none';

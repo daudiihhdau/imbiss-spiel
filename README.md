@@ -30,6 +30,7 @@ es kommen mehr Customer am Wochenende
 
 # Ideen
 
+Location bekommen Beschreibung in Fließtext - Chatgpt generiert daraus die Besuchzahlen (Beispiel: nahe Kino, Schule, U-Bahnhof)
 es laufen graue Menschen am Stand vorbei, wenn sie bunt werden, sind sie kunden
 Lieferantenwagen kommt
 Es liegt Müll herum, der mehr wird
