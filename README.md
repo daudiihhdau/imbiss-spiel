@@ -30,6 +30,24 @@ es kommen mehr Customer am Wochenende
 
 # Ideen
 
+Kunde:
+
+    * hat Bewusstsein für Fair kalkulierte Preise, die der Qualität des Essens entsprechen
+    * bewertet Essen im Nachgang (Qualität, fettig, unappetitlich)
+    * hat eine aktuelle Laune
+    * hat einen Charakter
+    *
+    * hat Geldbörse (ggf. nur Bezahlung per Karte)
+    * hat Umweltbewusstsein (wirft Müll einfach weg ODER kauft kein Plastik)
+
+Zu hohe Preise im Vergleich zur Qualität.
+Essen schmeckt nicht: Alte, fettige oder unappetitlich präsentierte Speisen.
+Location ist nicht sauber
+Verkäufer ist müde, freundlich, zuverlässig
+Lange Wartezeiten - die Kundne gehen
+Lebensmittel mit unterschiedlicher Qualität
+Hunde kacken hin, Tiere machen Dreck
+Kunden machen Dreck
 Location bekommen Beschreibung in Fließtext - Chatgpt generiert daraus die Besuchzahlen (Beispiel: nahe Kino, Schule, U-Bahnhof)
 es laufen graue Menschen am Stand vorbei, wenn sie bunt werden, sind sie kunden
 Lieferantenwagen kommt
