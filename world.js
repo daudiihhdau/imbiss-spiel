@@ -31,7 +31,7 @@ export class World {
         this.currentMonth = params.startMonth || 1; // Startmonat (Standard: Januar)
         this.currentYear = params.startYear || 2025; // Startjahr (Standard: 2025)
 
-        this.playerWealth = 50; // Anfangsvermögen
+        this.playerWealth = 2.22; // Anfangsvermögen
 
         World.instance = this;
     }
@@ -72,7 +72,7 @@ export class World {
 
         this.timer = setInterval(() => {
             this.updateClock();
-        }, 12); // Alle 120ms
+        }, 120); // Alle 120ms
     }
 
     stopClock() {

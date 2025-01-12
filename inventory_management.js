@@ -252,13 +252,13 @@ export class ImbissSoftware {
     }
 
     static items = new Map([
-        ['Pommes', { emoji: '🍟', stock: 3, sellPrice: 2.5 }],
-        ['Currywurst', { emoji: '🌭', stock: 3, sellPrice: 3.0 }],
-        ['Hamburger', { emoji: '🍔', stock: 3, sellPrice: 4.0 }],
-        ['Kaffee', { emoji: '☕', stock: 3, sellPrice: 1.5 }],
-        ['Bonbon', { emoji: '🍬', stock: 3, sellPrice: 0.5 }],
-        ['Lutscher', { emoji: '🍭', stock: 3, sellPrice: 0.8 }],
-        ['Kartoffelsuppe', { emoji: '🥣', stock: 3, sellPrice: 3.5 }],
-        ['Bratwurst', { emoji: '🥖', stock: 3, sellPrice: 3.2 }],
+        ['Pommes', { emoji: '🍟', stock: 0, sellPrice: 2.5 }],
+        ['Currywurst', { emoji: '🌭', stock: 0, sellPrice: 3.0 }],
+        ['Hamburger', { emoji: '🍔', stock: 0, sellPrice: 4.0 }],
+        ['Kaffee', { emoji: '☕', stock: 0, sellPrice: 1.5 }],
+        ['Bonbon', { emoji: '🍬', stock: 0, sellPrice: 0.5 }],
+        ['Lutscher', { emoji: '🍭', stock: 0, sellPrice: 0.8 }],
+        ['Kartoffelsuppe', { emoji: '🥣', stock: 0, sellPrice: 3.5 }],
+        ['Bratwurst', { emoji: '🥖', stock: 0, sellPrice: 3.2 }],
     ]);
 }
