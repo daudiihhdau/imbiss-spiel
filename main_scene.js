@@ -19,6 +19,8 @@ export class MainScene extends Phaser.Scene {
         this.dateText = null;
         this.clockText = null;
         this.wealthText = null;
+
+        this.dayCycleOverlay = null; // Overlay für Tag-Nacht-Zyklus
     }
 
     preload() {
@@ -37,16 +39,19 @@ export class MainScene extends Phaser.Scene {
         this.setupTopBar();
         setupDebug(this);
 
+        // Tag-Nacht-Overlay hinzufügen
+        this.dayCycleOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000)
+            .setOrigin(0)
+            .setDepth(5) // Über Hintergrund, aber unter anderen Objekten
+            .setAlpha(this.world.getCurrentAlpha()); // Initialer Helligkeitswert
+
         this.world.startClock();
 
         // Listener für Mitternacht hinzufügen
         this.world.events.subscribe('midnight', () => {
             console.log('Mitternacht erreicht, Szene wechseln!');
             
-            // Uhrzeit stoppen
             this.world.stopClock();
-
-            // Zu einer anderen Szene wechseln
             this.scene.stop();
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('html-content').style.display = 'block';
@@ -56,7 +61,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        this.updateClockText()
+        this.updateClockText();
+        this.adjustDayCycle(); // Helligkeit basierend auf der Tageszeit anpassen
 
         this.customers.forEach((customer, index) => {
             this.handleCustomerState(customer, index, delta);
@@ -69,7 +75,7 @@ export class MainScene extends Phaser.Scene {
         this.add.image(0, 0, 'imbiss')
             .setOrigin(0)
             .setDisplaySize(this.scale.width, this.scale.height);
-    
+
         const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
         this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage())
             .setOrigin(0.5)
@@ -77,19 +83,16 @@ export class MainScene extends Phaser.Scene {
     }
 
     setupTopBar() {
-        // Weißer Balken oben
         const barHeight = 43;
         this.add.rectangle(0, 0, this.scale.width, barHeight, 0xffffff)
             .setOrigin(0)
             .setDepth(10);
 
-        // Text für Datum und Uhrzeit mit Kalender-Emoji
-        this.dateText = this.add.text(20, 10, `📅 ${this.getFormattedDateAndTime()}`, {
+        this.dateText = this.add.text(20, 10, `📅 ${this.world.getFullDateAndTime()}`, {
             fontSize: '26px',
             fill: '#000',
         }).setDepth(11);
 
-        // Text für Vermögen mit Geldbeutel-Emoji
         this.wealthText = this.add.text(this.scale.width - 20, 10, `💰 ${this.world.getWealth().toFixed(2)}€`, {
             fontSize: '26px',
             fill: '#000',
@@ -106,6 +109,12 @@ export class MainScene extends Phaser.Scene {
     updateClockText() {
         this.dateText.setText(`📅 ${this.getFormattedDateAndTime()}`);
         this.checkSpawnProbability();
+    }
+
+    adjustDayCycle() {
+        // Aktualisiere die Helligkeit basierend auf der Tageszeit
+        const currentAlpha = this.world.getCurrentAlpha();
+        this.dayCycleOverlay.setAlpha(currentAlpha);
     }
 
     handleCustomerState(customer, index, delta) {

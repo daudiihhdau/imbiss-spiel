@@ -72,7 +72,7 @@ export class World {
 
         this.timer = setInterval(() => {
             this.updateClock();
-        }, 120); // Alle 120ms
+        }, 12); // Alle 120ms
     }
 
     stopClock() {
@@ -107,6 +107,10 @@ export class World {
         return `${hours}:${minutes}`;
     }
 
+    getHour() {
+        return Math.floor(this.currentTime / 60); // Wandelt Minuten in Stunden um
+    }
+
     addWealth(amount) {
         if (typeof amount !== 'number' || isNaN(amount)) {
             throw new Error('Invalid amount: Amount must be a valid number');
@@ -120,5 +124,27 @@ export class World {
 
     getFullDateAndTime() {
         return `${this.getDayOfWeek()}, ${this.getFormattedDate()} um ${this.getFormattedTime()}`;
+    }
+
+    getLightProgress() {
+        const sunriseStart = 260;
+        const sunriseEnd = 420;
+        const sunsetStart = 1250;
+        const sunsetEnd = 1400;
+
+        if (this.currentTime >= sunriseStart && this.currentTime <= sunriseEnd) {
+            return (this.currentTime - sunriseStart) / (sunriseEnd - sunriseStart);
+        } else if (this.currentTime > sunriseEnd && this.currentTime < sunsetStart) {
+            return 1;
+        } else if (this.currentTime >= sunsetStart && this.currentTime <= sunsetEnd) {
+            return 1 - (this.currentTime - sunsetStart) / (sunsetEnd - sunsetStart);
+        } else {
+            return 0;
+        }
+    }
+
+    getCurrentAlpha() {
+        const lightProgress = this.getLightProgress();
+        return 0.9 - (lightProgress * 0.9);
     }
 }
