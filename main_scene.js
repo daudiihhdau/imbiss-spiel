@@ -3,6 +3,7 @@ import { setupDebug } from './debug.js';
 import { locations } from './location.js';
 import { foodStalls } from './food_stall.js';
 import { World } from './world.js';
+import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
 
 export class MainScene extends Phaser.Scene {
     constructor() {
@@ -21,6 +22,8 @@ export class MainScene extends Phaser.Scene {
         this.wealthText = null;
 
         this.dayCycleOverlay = null; // Overlay für Tag-Nacht-Zyklus
+
+        this.eventManager = null; // EventCharacterManager-Instanz
     }
 
     preload() {
@@ -32,6 +35,9 @@ export class MainScene extends Phaser.Scene {
         this.load.image('bubble', 'bubble.png');
 
         foodStalls.forEach(stall => this.load.image(stall.getImage(), stall.getImage()));
+
+        this.eventManager = new EventCharacterManager(this); // Initialisiere den EventCharacterManager
+        this.eventManager.preload();
     }
 
     create() {
@@ -58,6 +64,7 @@ export class MainScene extends Phaser.Scene {
         });
 
         this.customerSchedule = this.currentLocation.generateCustomerSchedule();
+        this.eventManager.startRandomEventSpawner(); // Starte die zufällige Generierung von Events
     }
 
     update(time, delta) {
@@ -69,6 +76,8 @@ export class MainScene extends Phaser.Scene {
         });
 
         this.updateQueuePositions();
+
+        this.eventManager.update(delta); // Aktualisiere die EventCharacter
     }
 
     setupScene() {
@@ -112,7 +121,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     adjustDayCycle() {
-        // Aktualisiere die Helligkeit basierend auf der Tageszeit
         const currentAlpha = this.world.getCurrentAlpha();
         this.dayCycleOverlay.setAlpha(currentAlpha);
     }
