@@ -30,6 +30,22 @@ es kommen mehr Customer am Wochenende
 
 # Ideen
 
+Geräusche
+Leute reden, rülpsen
+Frühstück andere Bestellungen
+eichhörnchen (j)
+reporter (k)
+fotograf (p)
+toilette )p)
+eulen (j)
+sterne (k)
+graffiti (j)
+feuer (p)
+fussballspieler (k)
+polizei, feuerwehr (j)
+Kunde verliert Geld\Karte (j)
+autos fahren vorbei (pa)
+
 Kunde:
 
     * hat Bewusstsein für Fair kalkulierte Preise, die der Qualität des Essens entsprechen
