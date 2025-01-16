@@ -1,3 +1,5 @@
+const taxRate = 0.19;
+
 const Categories = {
     OBST: 'obst',
     WURST: 'wurst',
@@ -23,6 +25,11 @@ const Units = {
     STUECK: 'Stück',
     PORTIONEN: 'Portionen'
 };
+
+const InvoiceStatus = {
+    PAID: 'bezahlt',
+    OPEN: 'offen'
+}
 
 const items = new Map([
     ['Pommes', { emoji: '🍟' }],

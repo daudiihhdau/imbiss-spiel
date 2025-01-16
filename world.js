@@ -107,6 +107,10 @@ export class World {
         return `${hours}:${minutes}`;
     }
 
+    getDate() {
+        return new Date(this.getFormattedDate() + ' ' + this.getFormattedTime())
+    }
+
     getHour() {
         return Math.floor(this.currentTime / 60); // Wandelt Minuten in Stunden um
     }

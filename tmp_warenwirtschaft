@@ -1,0 +1,88 @@
+class Inventory {
+  constructor() {
+    this.productList = [];
+  }
+
+  // Add a product
+  addProduct(product) {
+    this.productList.push(product);
+    console.log(`Product '${product.name}' added.`);
+  }
+
+  // Update stock
+  updateStock(id, quantity) {
+    const product = this.productList.find((p) => p.id === id);
+    if (product) {
+      product.stock += quantity;
+      console.log(`Stock of '${product.name}' updated: ${product.stock}`);
+
+      // Check for reorder level
+      if (product.stock < product.reorderLevel) {
+        console.log(`Warning: Stock of '${product.name}' is below the reorder level (${product.reorderLevel}). Consider restocking.`);
+      }
+    } else {
+      console.error("Product not found.");
+    }
+  }
+
+  // Remove a product
+  removeProduct(id) {
+    this.productList = this.productList.filter((p) => p.id !== id);
+    console.log(`Product with ID ${id} removed.`);
+  }
+
+  // Display all products
+  displayProducts() {
+    console.table(this.productList.map((product) => ({
+      ID: product.id,
+      Name: product.name,
+      "Purchase Price": `${product.purchasePrice.toFixed(2)} EUR`,
+      "Sale Price": `${product.salePrice.toFixed(2)} EUR`,
+      Margin: `${product.calculateMargin().toFixed(2)} EUR`,
+      Stock: product.stock,
+      Location: product.location,
+      "Expiry Date": product.expiryDate,
+      Charge: product.charge
+    })));
+  }
+
+  // Inventory analysis
+  analyzeInventory() {
+    const totalValue = this.productList.reduce((sum, product) => sum + product.salePrice * product.stock, 0);
+    console.log(`Total inventory value: ${totalValue.toFixed(2)} EUR`);
+
+    const lowStockProducts = this.productList.filter((product) => product.stock === 0);
+    if (lowStockProducts.length > 0) {
+      console.log("Products with zero stock:");
+      console.table(lowStockProducts);
+    } else {
+      console.log("No products with zero stock.");
+    }
+  }
+}
+
+// // Example usage
+// const inventory = new Inventory();
+
+// // Create products
+// const product1 = new Product(1, "Laptop", 800.0, 1200.0, 10, "Shelf A1", "2025-12-31", "CH001", 5);
+// const product2 = new Product(2, "Mouse", 15.0, 25.0, 50, "Shelf B2", "2024-06-15", "CH002", 20);
+// const product3 = new Product(3, "Keyboard", 30.0, 45.0, 0, "Shelf C3", "2024-12-01", "CH003", 10);
+
+// // Add products
+// inventory.addProduct(product1);
+// inventory.addProduct(product2);
+// inventory.addProduct(product3);
+
+// // Display products
+// inventory.displayProducts();
+
+// // Update stock
+// inventory.updateStock(1, -2);
+// inventory.updateStock(3, 10);
+
+// // Remove a product
+// inventory.removeProduct(2);
+
+// // Analyze inventory
+// inventory.analyzeInventory();
