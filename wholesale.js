@@ -1,31 +1,33 @@
 import { Categories, Attributes, Rating, items, Units } from './constants.js';
-import { InvoiceGenerator } from './invoice_generator.js';
+import { InventoryManagement } from './Inventory_management.js'; // Importiere Warenwirtschaft
+import { POS } from './pos.js';
 import { Product } from './product.js';
 
 export class Wholesale {
     constructor() {
-        this.stock = new Map(); // Lagerbestand des Großhändlers
+        this.inventoryManagement = new InventoryManagement();
+        this.pos = new POS("Wholesale", inventoryManagement);
         this.initializeStock(); // Initialisiert den Lagerbestand einmalig
     }
 
     // Initialisiert den Lagerbestand aus der items-Map
     initializeStock() {
         items.forEach((itemData, itemName) => {
-            const newItem = this.createItem({ name: itemName, emoji: itemData.emoji });
-            this.stock.set(newItem.id, newItem); // Produkt zum Lager hinzufügen
+            const newProduct = this.createProduct({ name: itemName, emoji: itemData.emoji });
+            inventoryManagement.addProduct(newProduct);
+            
+            const randomStock = Math.floor(Math.random() * 100) + 10
+            inventoryManagement.updateStock(newProduct.id, randomStock)
         });
-
-        console.log('Initialer Lagerbestand:', this.listAvailableItems());
     }
 
     // Erstellt ein neues Produkt
-    createItem({ name, emoji }) {
+    createProduct({ name, emoji }) {
         const randomCategory = this.getRandomCategory();
         const randomAttributes = this.getRandomAttributes();
         const randomQuality = this.getRandomRating();
         const randomTaste = this.getRandomRating();
         const randomUnit = this.getRandomUnit();
-        // const randomStock = Math.floor(Math.random() * 100) + 10;
         // const randomPurchasePrice = parseFloat((Math.random() * 10 + 1).toFixed(2));
 
         return new Product(name, randomCategory, randomAttributes, emoji, randomQuality, randomTaste, randomUnit, '2030-01-01', 'TestCharge', 2)
@@ -50,25 +52,23 @@ export class Wholesale {
         return { ...item, stock: quantity }; // Nur die angeforderte Menge liefern
     }
 
-    // Erstellt eine Rechnung für einen Einkauf
     generateInvoice(purchaseList, customerInfo) {
-        const preparedList = purchaseList.map(({ itemId, quantity }) => {
-            const item = this.deliverItem(itemId, quantity);
-            if (!item) {
-                console.warn(`Produkt mit ID ${itemId} konnte nicht geliefert werden.`);
-                return null;
-            }
-            return { item, quantity };
-        }).filter(entry => entry !== null);
+        // const preparedList = purchaseList.map(({ itemId, quantity }) => {
+        //     const item = this.deliverItem(itemId, quantity);
+        //     if (!item) {
+        //         console.warn(`Produkt mit ID ${itemId} konnte nicht geliefert werden.`);
+        //         return null;
+        //     }
+        //     return { item, quantity };
+        // }).filter(entry => entry !== null);
 
-        return InvoiceGenerator.generateInvoice(preparedList, "Wholesale", "FoodStall", "WholesaleSale");
+        // return InvoiceGenerator.generateInvoice(preparedList, , "FoodStall", "WholesaleSale");
+        
+        const invoice = this.pos.generateInvoice();
+        this.pos.completePayment()
+        return invoice
     }
 
-    // Gibt die Liste aller Produkte im Lager zurück
-    listAvailableItems() {
-        return Array.from(this.stock.values());
-    }
-    
     // Generiert eine zufällige Einheit aus den verfügbaren Units
     getRandomUnit() {
         const units = Object.values(Units); // Mögliche Einheiten aus constants.js

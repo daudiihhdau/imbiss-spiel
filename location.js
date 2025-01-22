@@ -1,6 +1,4 @@
-// location.js - Locations und Zeitplan
-
-import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import { ImbissSoftware } from './Inventory_management.js'; // Importiere Warenwirtschaft
 
 const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
 
@@ -35,21 +33,10 @@ export class Location {
         for (let time = 0; time < 1440; time++) {
             const probability = this.getCustomerProbability(time);
             if (Math.random() < probability) {
-                schedule.push({ time, order: this.generateRandomOrder() });
+                schedule.push({ time });
             }
         }
         return schedule;
-    }
-
-    generateRandomOrder() {
-        const items = inventory.getCurrentStock();
-        const order = [];
-        const itemCount = Phaser.Math.Between(1, 3);
-        for (let i = 0; i < itemCount; i++) {
-            const randomItem = items[Phaser.Math.Between(0, items.length - 1)];
-            order.push({ name: randomItem.name, emoji: randomItem.emoji }); // Nur benötigte Daten übernehmen
-        }
-        return order;
     }
 }
 

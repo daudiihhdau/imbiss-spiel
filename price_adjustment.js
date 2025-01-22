@@ -1,5 +1,5 @@
 import { World } from './world.js';
-import { ImbissSoftware } from './inventory_management.js';
+import { ImbissSoftware } from './Inventory_management.js';
 import { game } from './game.js';
 
 // Kaufvorgang

@@ -1,14 +1,5 @@
-import { ImbissSoftware } from './inventory_management.js';
-
-export const Emotions = {
-    HAPPY: { emoji: '😊', description: 'glücklich' },
-    SAD: { emoji: '😢', description: 'traurig' },
-    ANGRY: { emoji: '😡', description: 'wütend' },
-    TIRED: { emoji: '😴', description: 'müde' },
-    EXCITED: { emoji: '😁', description: 'fröhlich' },
-    HUNGRY: { emoji: '🍴', description: 'hungrig' },
-    DISAPPOINTED: { emoji: '😞', description: 'enttäuscht' },
-};
+import { ImbissSoftware } from './Inventory_management.js';
+import { Emotions } from './Constants.js';
 
 export class Customer {
     constructor(scene, x, y, spriteKey, order) {

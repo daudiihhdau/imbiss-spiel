@@ -1,6 +1,7 @@
-import { Customer } from './customer.js';
-import { setupDebug } from './debug.js';
-import { locations } from './location.js';
+import Character, { character } from './Character.js';
+import { characterPlugin } from './CharacterPlugin.js';
+// import { setupDebug } from './debug.js';
+import { locations } from './Location.js';
 import { foodStalls } from './food_stall.js';
 import { World } from './world.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
@@ -21,6 +22,8 @@ export class MainScene extends Phaser.Scene {
         this.clockText = null;
         this.wealthText = null;
 
+        this.customerPlugins = [];
+
         this.dayCycleOverlay = null; // Overlay für Tag-Nacht-Zyklus
 
         this.eventManager = null; // EventCharacterManager-Instanz
@@ -40,10 +43,26 @@ export class MainScene extends Phaser.Scene {
         this.eventManager.preload();
     }
 
+    async loadAsyncPlugins() {
+        const pluginPaths = [
+            './plugins/customers/Plugin1.js',
+            './plugins/customers/Plugin2.js',
+            './plugins/customers/Plugin3.js'
+        ];
+    
+        for (const pathOn of pluginPaths) {
+            const module = await import(pathOn);
+            const plugin = module.default();
+            this.customerPlugins.push(plugin);
+        }
+    }
+
     create() {
+        loadAsyncPlugins.call(this);
+
         this.setupScene();
         this.setupTopBar();
-        setupDebug(this);
+        // setupDebug(this);
 
         // Tag-Nacht-Overlay hinzufügen
         this.dayCycleOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000)
@@ -71,11 +90,13 @@ export class MainScene extends Phaser.Scene {
         this.updateClockText();
         this.adjustDayCycle(); // Helligkeit basierend auf der Tageszeit anpassen
 
-        this.customers.forEach((customer, index) => {
-            this.handleCustomerState(customer, index, delta);
+        this.customers.forEach((customerOn, index) => {
+            customerOn.update();
+            customerOn.render(this);
+            //this.handleCustomerState(customer, index, delta);
         });
 
-        this.updateQueuePositions();
+        // this.updateQueuePositions();
 
         this.eventManager.update(delta); // Aktualisiere die EventCharacter
     }
@@ -125,82 +146,18 @@ export class MainScene extends Phaser.Scene {
         this.dayCycleOverlay.setAlpha(currentAlpha);
     }
 
-    handleCustomerState(customer, index, delta) {
-        customer.updatePosition(delta);
-        customer.updateBubblePosition();
-
-        switch (customer.state) {
-            case Customer.States.ENTERING:
-                this.handleEnteringCustomer(customer);
-                break;
-            case Customer.States.PAYING:
-                this.handlePayingCustomer(customer);
-                break;
-            case Customer.States.LEAVING:
-            case Customer.States.EXITING:
-                this.handleExitingCustomer(customer, index);
-                break;
-        }
-    }
-
-    handleEnteringCustomer(customer) {
-        customer.showDesiredItems();
-        if (customer.isAtTarget()) {
-            customer.state = customer.hasPurchased() ? Customer.States.LEAVING : Customer.States.PAYING;
-        }
-    }
-
-    handlePayingCustomer(customer) {
-        const orderSummary = customer.processOrder();
-        if (orderSummary) {
-            this.world.addWealth(orderSummary.totalRevenue);
-            this.wealthText.setText(`💰 ${this.world.getWealth().toFixed(2)}€`);
-            customer.state = Customer.States.EXITING;
-        } else {
-            customer.state = Customer.States.LEAVING;
-        }
-    }
-
-    handleExitingCustomer(customer, index) {
-        const exitDirection = customer.state === Customer.States.LEAVING ? -300 : this.scale.width + 300;
-        customer.sprite.setFlipX(customer.state === Customer.States.LEAVING);
-        customer.moveTo(exitDirection);
-
-        customer.showPurchasedItems();
-
-        if (
-            (customer.state === Customer.States.EXITING && customer.sprite.x > this.scale.width + 50) ||
-            (customer.state === Customer.States.LEAVING && customer.sprite.x < -50)
-        ) {
-            this.customers.splice(index, 1);
-            customer.destroy();
-        }
-    }
-
     checkSpawnProbability() {
         if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.currentTime) {
             const nextCustomer = this.customerSchedule.shift();
-            this.spawnCustomer(nextCustomer.order);
+            this.spawnCustomer(nextCustomer);
         }
     }
 
-    spawnCustomer(order = []) {
+    spawnCustomer() {
         const customerIndex = Phaser.Math.Between(1, 4);
         const spriteKey = `customer${customerIndex}`;
-        const x = -50;
-        const y = this.scale.height - 100;
-        const customer = new Customer(this, x, y, spriteKey, order);
-        customer.state = Customer.States.ENTERING;
-        this.customers.push(customer);
-        this.updateQueuePositions();
-    }
-
-    updateQueuePositions() {
-        this.customers.forEach((customer, index) => {
-            if (customer.state === Customer.States.ENTERING) {
-                const targetX = this.scale.width / 3 + index * 50;
-                customer.moveTo(targetX);
-            }
-        });
+        const character = this.customerPlugins.default(new Character(spriteKey, 'Alice', 'Smith', 25));
+        
+        this.customers.push(character);
     }
 }

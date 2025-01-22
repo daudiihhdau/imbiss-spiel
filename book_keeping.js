@@ -1,4 +1,4 @@
-import { InvoiceStatus } from './constants.js';
+import { InvoiceStatus } from './Constants.js';
 
 class AccountingSoftware {
   constructor() {

@@ -10,16 +10,8 @@ class Product {
     this.quality = quality
     this.taste = taste
     this.unit = unit
-    // this.purchasePrice = purchasePrice;
-    // this.salePrice = null;
     this.expiryDate = expiryDate;
     this.charge = charge;
-    // this.reorderLevel = reorderLevel;
-  }
-  
-  // Calculate margin
-  calculateMargin() {
-    return this.salePrice - this.purchasePrice;
   }
 }
   

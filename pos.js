@@ -1,24 +1,30 @@
 import { InvoiceGenerator } from './invoice_generator.js';
 
-class POS {
-  constructor() {
-    this.productList = [];
-    this.cart = [];
-  }
+    // this.reorderLevel = reorderLevel;
+    // this.purchasePrice = purchasePrice;
+    // this.salePrice = null;
+  
+  // // Calculate margin
+  // calculateMargin() {
+  //   return this.salePrice - this.purchasePrice;
+  // }
 
-  // Add a product
-  addProduct(product) {
-    this.productList.push(product);
-    console.log(`Product '${product.name}' added.`);
+class POS {
+  constructor(supplier, inventoryManagement) {
+    this.cart = [];
+    this.supplier = supplier;
+    this.inventoryManagement = inventoryManagement
   }
 
   // Add product to cart
   addToCart(id, quantity = 1) {
-    const product = this.productList.find((p) => p.id === id);
+    const product = this.inventoryManagement.findProduct(id);
     if (product) {
-      const existing = this.cart.find((item) => item.product.id === id);
-      if (existing) {
-        existing.quantity += quantity;
+      this.inventoryManagement.updateStock(product.id, quantity * -1)
+
+      const existsInCard = this.cart.find((item) => item.product.id === id);
+      if (existsInCard) {
+        existsInCard.quantity += quantity;
       } else {
         this.cart.push({ product, quantity });
       }
@@ -51,49 +57,9 @@ class POS {
     return total.toFixed(2);
   }
 
-  generateInvoice() {
-    return InvoiceGenerator.generateInvoice(this.cart, "FoodStall", "Client", "FoodStallSale");
-  }
-
-  // Complete payment
-  completePayment() {
-    if (this.cart.length === 0) {
-      console.log("The cart is empty. No payment required.");
-      return;
-    }
-    console.log(`Payment completed. Total Amount: ${this.calculateTotal()} EUR`);
+  pay() {
+    const invoice = InvoiceGenerator.generateInvoice(this.cart, this.supplier, "Client", `${this.supplier}Sale`);
     this.cart = [];
+    return invoice
   }
 }
-
-
-
-// // Example usage
-// const pos = new POS();
-
-// // Create products
-// const product1 = new Product(1, "Apple", 0.5, 1.0, 100, "2025-12-31", "C001", 20);
-// const product2 = new Product(2, "Bread", 1.2, 2.0, 50, "2024-06-30", "C002", 10);
-// const product3 = new Product(3, "Milk", 0.8, 1.5, 30, "2024-03-15", "C003", 5);
-
-// // Add products to system
-// pos.addProduct(product1);
-// pos.addProduct(product2);
-// pos.addProduct(product3);
-
-// // Add products to cart
-// pos.addToCart(1, 3); // 3 Apples
-// pos.addToCart(2, 2); // 2 Bread
-// pos.addToCart(3, 1); // 1 Milk
-
-// // Print receipt
-// pos.printReceipt();
-
-// // Remove product from cart
-// pos.removeFromCart(1, 1); // Remove 1 Apple
-
-// // Print receipt again
-// pos.printReceipt();
-
-// // Complete payment
-// pos.completePayment();

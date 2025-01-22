@@ -22,7 +22,7 @@ export class InvoiceGenerator {
                 itemsInInvoice.set(item.name, {
                     name: item.name,
                     quantity,
-                    unit: item.unit || 'pcs',
+                    unit: item.unit,
                     unitPrice: item.price,
                     totalPrice: itemTotal,
                 });

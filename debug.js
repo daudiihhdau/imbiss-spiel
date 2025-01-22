@@ -1,4 +1,4 @@
-import { ImbissSoftware } from './inventory_management.js'; // Importiere Warenwirtschaft
+import { ImbissSoftware } from './Inventory_management.js'; // Importiere Warenwirtschaft
 
 export function setupDebug(scene) {
     const debugBackground = scene.add.rectangle(

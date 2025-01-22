@@ -1,4 +1,4 @@
-import { ImbissSoftware } from './inventory_management.js';
+import { ImbissSoftware } from './Inventory_management.js';
 import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
 
 export class World {

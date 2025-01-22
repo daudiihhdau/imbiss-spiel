@@ -42,4 +42,12 @@ const items = new Map([
     ['Bratwurst', { emoji: '🥖' }],
 ]);
 
-
+const Emotions = {
+    HAPPY: { emoji: '😊', description: 'glücklich' },
+    SAD: { emoji: '😢', description: 'traurig' },
+    ANGRY: { emoji: '😡', description: 'wütend' },
+    TIRED: { emoji: '😴', description: 'müde' },
+    EXCITED: { emoji: '😁', description: 'fröhlich' },
+    HUNGRY: { emoji: '🍴', description: 'hungrig' },
+    DISAPPOINTED: { emoji: '😞', description: 'enttäuscht' },
+};
