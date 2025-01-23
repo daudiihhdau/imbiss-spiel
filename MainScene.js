@@ -1,5 +1,4 @@
 import { Character } from './Character.js';
-import { CharacterPlugin } from './CharacterPlugin.js';
 // import { setupDebug } from './debug.js';
 import { locations } from './Location.js';
 import { foodStalls } from './FoodStall.js';
@@ -151,8 +150,10 @@ export class MainScene extends Phaser.Scene {
     spawnCustomer() {
         const customerIndex = Phaser.Math.Between(1, 4);
         const spriteKey = `customer${customerIndex}`;
-        // TODO: use random plugin
-        const character = this.customerPlugins[0].default(new Character(spriteKey, 'Alice', 'Smith', 25));
+
+        const pluginIndex = 0 // Phaser.Math.Between(0, this.customerPlugins.length - 1);
+        const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
+        character.position = { x: -70, y: this.scale.height - 150 };
         
         this.customers.push(character);
     }

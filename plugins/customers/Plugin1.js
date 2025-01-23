@@ -1,33 +1,30 @@
 import { CharacterPlugin } from '../../CharacterPlugin.js';
 
-export default function Plugin1(character) {
-    const plugin = new CharacterPlugin(character);
-
-    plugin.phaseTimings = { deciding: 50, buying: 1000 };
+export default function Plugin1(spriteKey, character) {
+    const plugin = new CharacterPlugin(spriteKey, character);
 
     plugin.onEntering = function () {
-        // console.log(`${this.character.firstName} is entering.`);
-        this.character.position.x += 3;
-        if (this.character.position.x > 300) this.startPhase('onDeciding')
-        // this.setTimeout(() => this.startPhase('onDeciding'), this.phaseTimings.deciding);
+        console.log(`${this.character.firstName} is entering.`);
+        this.position.x += 3;
+        this.setThinking("Hallo")
+        if (this.position.x > 300) this.startPhase('onDeciding')
     };
 
     plugin.onDeciding = function () {
         console.log(`${this.character.firstName} is deciding quickly.`);
         this.startPhase('onPaying')
-        // this.setTimeout(() => this.startPhase('onPaying'), this.phaseTimings.deciding);
     };
 
     plugin.onPaying = function () {
         console.log(`${this.character.firstName} is buying.`);
+        this.setThinking("Geld")
         this.startPhase('onLeaving')
-        // this.setTimeout(() => this.startPhase('onExiting'), this.phaseTimings.buying);
     };
 
     plugin.onLeaving = function () {
         console.log(`${this.character.firstName} is leaving.`);
-        this.character.position.x -= 6;
-        // this.setTimeout(() => this.startPhase('onExiting'), this.phaseTimings.buying);
+        this.setThinking("Bye")
+        this.position.x -= 6;
     };
 
     return plugin;

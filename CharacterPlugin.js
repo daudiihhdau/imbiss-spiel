@@ -1,10 +1,14 @@
 // CharacterPlugin.js
 export class CharacterPlugin {
-    constructor(character) {
+    constructor(spriteKey, character) {
         this.character = character; // Der Charakter wird von außen übergeben
-        this.phaseTimings = {}; // Konfiguration für Phasen-Dauern
-        this.currentTimeout = null; // Aktiver Timer für Phasenwechsel
 
+        this.spriteKey = spriteKey
+        this.sprite = null;
+        this.bubble = null;
+        this.position = null;
+
+        this.phase = 'onEntering'; // Startphase
         this.middleware = {}; // Hooks für Phasen
     }
 
@@ -32,28 +36,41 @@ export class CharacterPlugin {
         console.log(`Starting phase: ${phase}`);
         await this.executeMiddleware(phase, 'before'); // Middleware vor der Phase
         if (this[phase]) {
-            this.character.phase = phase
+            this.phase = phase
             await this[phase](); // Hauptlogik der Phase
         }
         await this.executeMiddleware(phase, 'after'); // Middleware nach der Phase
     }
 
-    setTimeout(callback, duration) {
-        clearTimeout(this.currentTimeout);
-        this.currentTimeout = setTimeout(callback, duration);
+    setThinking(text) {
+        if (this.bubbleText && text) {
+            this.bubbleText.setText(text);
+        }
     }
 
     update() {
-        if (this.character.phase && this[this.character.phase]) {
-            console.log("ff", this.character.phase)
-            this[this.character.phase]();
+        if (this.phase && this[this.phase]) {
+            console.log("ff", this.phase)
+            this[this.phase]();
         }
     }
 
     render(scene) {
-        if (!this.character.sprite) {
-            this.character.sprite = scene.add.sprite(this.character.position.x, this.character.position.y, this.character.spriteKey);
+        if (!this.sprite) {
+            this.sprite = scene.add.sprite(this.position.x, this.position.y, this.spriteKey);
         }
-        this.character.sprite.setPosition(this.character.position.x, this.character.position.y);
+
+        if (!this.bubble) {
+            this.bubble = scene.add.image(this.sprite.x + 20, this.sprite.y - 250, 'bubble').setOrigin(0.5).setScale(0.5);
+            this.bubbleText = scene.add.text(this.sprite.x + 20, this.sprite.y - 260, '', {
+                fontSize: '32px',
+                fill: '#000',
+                align: 'center'
+            }).setOrigin(0.5);
+        }
+
+        this.sprite.setPosition(this.position.x, this.position.y);
+        this.bubble.setPosition(this.position.x + 50, this.position.y - 240);
+        this.bubbleText.setPosition(this.position.x + 50, this.position.y - 240);
     }
 }
