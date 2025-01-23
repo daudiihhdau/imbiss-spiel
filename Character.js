@@ -11,10 +11,11 @@ export class Character {
         //TODO: add Geldbörse
 
         // Position und Phase
-        this.position = { x: -50, y: 100 + Math.random() * 200 };
+        this.position = { x: -70, y: 100 + Math.random() * 200 };
         this.phase = 'onEntering'; // Startphase
 
         // Rendering-Komponente
-        this.sprite = spriteKey;
+        this.sprite = null;
+        this.spriteKey = spriteKey
     }
 }

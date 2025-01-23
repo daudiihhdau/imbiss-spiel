@@ -44,13 +44,14 @@ export class CharacterPlugin {
 
     update() {
         if (this.character.phase && this[this.character.phase]) {
+            console.log("ff", this.character.phase)
             this[this.character.phase]();
         }
     }
 
     render(scene) {
         if (!this.character.sprite) {
-            this.character.sprite = scene.add.sprite(this.character.position.x, this.character.position.y, 'characterSprite');
+            this.character.sprite = scene.add.sprite(this.character.position.x, this.character.position.y, this.character.spriteKey);
         }
         this.character.sprite.setPosition(this.character.position.x, this.character.position.y);
     }

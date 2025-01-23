@@ -45,7 +45,7 @@ export const locations = [
     new Location('Moon', './img/locations/moon.png', [
         { start: '00:00', end: '23:59', probability: 0.1 }
     ]),
-    new Location('Forest', 'forest.png', [
+    new Location('Forest', './img/locations/forest.png', [
         { start: '00:00', end: '06:00', probability: 0.001 },
         { start: '06:00', end: '09:00', probability: 0.002 },
         { start: '09:00', end: '12:00', probability: 0.004 },

@@ -54,8 +54,7 @@ export class MainScene extends Phaser.Scene {
     
         for (const pathOn of pluginPaths) {
             const module = await import(pathOn);
-            const plugin = module.default();
-            this.customerPlugins.push(plugin);
+            this.customerPlugins.push(module);
         }
     }
 
@@ -90,7 +89,7 @@ export class MainScene extends Phaser.Scene {
         this.updateClockText();
         this.adjustDayCycle(); // Helligkeit basierend auf der Tageszeit anpassen
 
-        this.customers.forEach((customerOn, index) => {
+        this.customers.forEach((customerOn) => {
             customerOn.update();
             customerOn.render(this);
         });
@@ -152,7 +151,7 @@ export class MainScene extends Phaser.Scene {
     spawnCustomer() {
         const customerIndex = Phaser.Math.Between(1, 4);
         const spriteKey = `customer${customerIndex}`;
-        console.log("ss", this.customerPlugins)
+        // TODO: use random plugin
         const character = this.customerPlugins[0].default(new Character(spriteKey, 'Alice', 'Smith', 25));
         
         this.customers.push(character);
