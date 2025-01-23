@@ -1,6 +1,6 @@
-import { ImbissSoftware } from './Inventory_management.js'; // Importiere Warenwirtschaft
+// import { ImbissSoftware } from './InventoryManagement.js'; // Importiere Warenwirtschaft
 
-const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
+// const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
 
 export class Location {
     constructor(name, backgroundImage, config) {
@@ -42,7 +42,7 @@ export class Location {
 
 // Beispielkonfiguration für verschiedene Locations
 export const locations = [
-    new Location('Moon', 'moon.png', [
+    new Location('Moon', './img/locations/moon.png', [
         { start: '00:00', end: '23:59', probability: 0.1 }
     ]),
     new Location('Forest', 'forest.png', [
@@ -54,7 +54,7 @@ export const locations = [
         { start: '18:00', end: '21:00', probability: 0.002 },
         { start: '21:00', end: '00:00', probability: 0.001 },
     ]),
-    new Location('Parc', 'parc.png', [
+    new Location('Parc', './img/locations/parc.png', [
         { start: '00:00', end: '06:00', probability: 0.01 },
         { start: '06:00', end: '10:00', probability: 0.03 },
         { start: '10:00', end: '14:00', probability: 0.06 },
@@ -62,7 +62,7 @@ export const locations = [
         { start: '18:00', end: '21:00', probability: 0.05 },
         { start: '21:00', end: '00:00', probability: 0.02 },
     ]),
-    new Location('City', 'city.png', [
+    new Location('City', './img/locations/city.png', [
         { start: '00:00', end: '06:00', probability: 0.01 },
         { start: '06:00', end: '09:00', probability: 0.05 },
         { start: '09:00', end: '12:00', probability: 0.07 },
@@ -71,7 +71,7 @@ export const locations = [
         { start: '18:00', end: '21:00', probability: 0.06 },
         { start: '21:00', end: '00:00', probability: 0.04 },
     ]),
-    new Location('Altstadt', 'altstadt.png', [
+    new Location('Altstadt', './img/locations/altstadt.png', [
         { start: '00:00', end: '06:00', probability: 0.005 },
         { start: '06:00', end: '10:00', probability: 0.4 },
         { start: '10:00', end: '14:00', probability: 0.7 },
@@ -79,7 +79,7 @@ export const locations = [
         { start: '18:00', end: '21:00', probability: 0.6 },
         { start: '21:00', end: '00:00', probability: 0.3 },
     ]),
-    new Location('Fussballplatz_Amateur', 'fussballplatz_amateur.png', [
+    new Location('Fussballplatz_Amateur', './img/locations/fussballplatz_amateur.png', [
         { start: '00:00', end: '06:00', probability: 0.001 },
         { start: '06:00', end: '09:00', probability: 0.02 },
         { start: '09:00', end: '12:00', probability: 0.03 },
@@ -88,7 +88,7 @@ export const locations = [
         { start: '18:00', end: '21:00', probability: 0.06 },
         { start: '21:00', end: '00:00', probability: 0.02 },
     ]),
-    new Location('Fussballplatz_Profi', 'fussballplatz_profi.png', [
+    new Location('Fussballplatz_Profi', './img/locations/fussballplatz_profi.png', [
         { start: '00:00', end: '06:00', probability: 0.001 },
         { start: '06:00', end: '10:00', probability: 0.002 },
         { start: '10:00', end: '14:00', probability: 0.003 },

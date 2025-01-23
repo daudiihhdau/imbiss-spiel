@@ -45,11 +45,11 @@ export class EventCharacterManager {
 
     preload() {
         // Lade alle Tier-Sprites vor
-        this.scene.load.image("dog1", "./pets/dog1.png");
-        this.scene.load.image("dog2", "./pets/dog2.png");
-        this.scene.load.image("dog3", "./pets/dog3.png");
-        this.scene.load.image("sparrow", "./pets/sparrow.png");
-        this.scene.load.image("pigeon", "./pets/pigeon.png");
+        this.scene.load.image("dog1", "./img/pets/dog1.png");
+        this.scene.load.image("dog2", "./img/pets/dog2.png");
+        this.scene.load.image("dog3", "./img/pets/dog3.png");
+        this.scene.load.image("sparrow", "./img/pets/sparrow.png");
+        this.scene.load.image("pigeon", "./img/pets/pigeon.png");
     }
 
     spawnRandomEvent() {

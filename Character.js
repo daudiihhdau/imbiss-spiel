@@ -1,6 +1,6 @@
 import { Emotions } from './Constants.js';
 
-class Character {
+export class Character {
     constructor(spriteKey, firstName, lastName, age) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -18,5 +18,3 @@ class Character {
         this.sprite = spriteKey;
     }
 }
-
-export default Character;

@@ -1,5 +1,5 @@
 import { World } from './world.js';
-import { ImbissSoftware } from './Inventory_management.js';
+// import { ImbissSoftware } from './InventoryManagement.js';
 import { game } from './game.js';
 
 let inputs = {}; // Inputs global initialisieren
@@ -26,7 +26,7 @@ function purchaseItems(inputs) {
             const quantity = parseInt(inputElement.value, 10);
 
             if (!isNaN(quantity) && quantity > 0 && quantity <= randomUnits) {
-                ImbissSoftware.getInstance().addPurchase(name, quantity, parseFloat(randomPrice));
+                // ImbissSoftware.getInstance().addPurchase(name, quantity, parseFloat(randomPrice));
                 console.log(`Gekauft: ${quantity} x ${name} zu je ${randomPrice} €.`);
             }
         });
@@ -100,7 +100,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
     table.appendChild(headerRow);
 
     // Produkte abrufen und Tabelle ausfüllen
-    const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
+    // const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
 
     items.forEach((item, index) => {
         const randomUnits = Math.floor(Math.random() * 50) + 1; // Zufälliger Großhandel-Bestand

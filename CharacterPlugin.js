@@ -1,5 +1,5 @@
 // CharacterPlugin.js
-class CharacterPlugin {
+export class CharacterPlugin {
     constructor(character) {
         this.character = character; // Der Charakter wird von außen übergeben
         this.phaseTimings = {}; // Konfiguration für Phasen-Dauern
@@ -55,5 +55,3 @@ class CharacterPlugin {
         this.character.sprite.setPosition(this.character.position.x, this.character.position.y);
     }
 }
-
-export default CharacterPlugin;

@@ -1,37 +1,36 @@
-const taxRate = 0.19;
+export const taxRate = 0.19;
 
-const Categories = {
+export const Categories = {
     OBST: 'obst',
     WURST: 'wurst',
     GETRAENKE: 'getraenke',
     SAUCEN: 'saucen',
     SUESSWAREN: 'suesswaren',
-    FASTFOOD: 'fastfood',
     SPEISEN: 'speisen'
 };
 
-const Rating = {
+export const Rating = {
     SCHLECHT: 'schlecht',
     NORMAL: 'normal',
     GUT: 'gut'
 };
 
-const Attributes = {
+export const Attributes = {
     BIO: 'bio',
     FAIRTRADE: 'fairtrade'
 };
 
-const Units = {
+export const Units = {
     STUECK: 'Stück',
     PORTIONEN: 'Portionen'
 };
 
-const InvoiceStatus = {
+export const InvoiceStatus = {
     PAID: 'bezahlt',
     OPEN: 'offen'
 }
 
-const items = new Map([
+export const items = new Map([
     ['Pommes', { emoji: '🍟' }],
     ['Currywurst', { emoji: '🌭' }],
     ['Hamburger', { emoji: '🍔' }],
@@ -42,7 +41,7 @@ const items = new Map([
     ['Bratwurst', { emoji: '🥖' }],
 ]);
 
-const Emotions = {
+export const Emotions = {
     HAPPY: { emoji: '😊', description: 'glücklich' },
     SAD: { emoji: '😢', description: 'traurig' },
     ANGRY: { emoji: '😡', description: 'wütend' },

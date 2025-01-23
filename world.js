@@ -1,4 +1,4 @@
-import { ImbissSoftware } from './Inventory_management.js';
+// import { ImbissSoftware } from './InventoryManagement.js';
 import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
 
 export class World {
@@ -15,10 +15,10 @@ export class World {
         const urlParams = new URLSearchParams(params.url || window.location.search);
         this.isDebugMode = urlParams.get('debug') === '1';
 
-        this.imbissSoftware = ImbissSoftware.getInstance();
-        this.imbissSoftware.dispatcher.subscribe('lowStock', data => {
-            console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
-        });
+        // this.imbissSoftware = ImbissSoftware.getInstance();
+        // this.imbissSoftware.dispatcher.subscribe('lowStock', data => {
+        //     console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
+        // });
 
         if (this.isDebugMode) {
             ImbissSoftware.items.forEach(item => {

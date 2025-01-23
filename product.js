@@ -1,6 +1,6 @@
 import { Helper } from './helper.js';
 
-class Product {
+export class Product {
   constructor(name, categoryId, attributeIds, emoji, quality, taste, unit, expiryDate, charge) {
     this.id = Helper.generateUUID();
     this.name = name
@@ -14,4 +14,3 @@ class Product {
     this.charge = charge;
   }
 }
-  

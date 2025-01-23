@@ -1,8 +1,8 @@
 import { World } from './world.js';
-import { MainScene } from './main_scene.js';
-import './purchase_scene.js';
-import './price_adjustment.js';
-import './daily_summarize.js';
+import { MainScene } from './MainScene.js';
+// import './purchase_scene.js';
+// import './price_adjustment.js';
+// import './daily_summarize.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -20,6 +20,6 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-World.getInstance().events.emit('load_purchase_scene');
+// World.getInstance().events.emit('load_purchase_scene');
 
 export { game };

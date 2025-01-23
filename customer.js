@@ -1,4 +1,4 @@
-import { ImbissSoftware } from './Inventory_management.js';
+import { ImbissSoftware } from './InventoryManagement.js';
 import { Emotions } from './Constants.js';
 
 export class Customer {

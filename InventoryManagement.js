@@ -1,6 +1,6 @@
-import { Product } from './product.js';
+import { Product } from './Product.js';
 
-class InventoryManagement {
+export class InventoryManagement {
   constructor() {
     this.products = []; // Array zur Speicherung von Produkten
     this.stock = new Map(); // Map zur Verwaltung der Bestände

@@ -1,5 +1,5 @@
 import { World } from './world.js';
-import { ImbissSoftware } from './Inventory_management.js';
+// import { ImbissSoftware } from './InventoryManagement.js';
 import { game } from './game.js';
 
 // Kaufvorgang
@@ -10,7 +10,7 @@ function applyAllPrices(items, inputs) {
             const newPrice = parseFloat(inputElement.value);
 
             if (!isNaN(newPrice) && newPrice > 0) {
-                ImbissSoftware.getInstance().updateSellPrice(item.name, newPrice);
+                // ImbissSoftware.getInstance().updateSellPrice(item.name, newPrice);
                 console.log(`Preis für ${item.name} auf ${newPrice.toFixed(2)} € gesetzt.`);
                 inputElement.style.borderColor = '';
             } else {
@@ -45,7 +45,7 @@ World.getInstance().events.subscribe('load_pricelist_scene', () => {
     header.classList.add('fun-header');
     container.appendChild(header);
 
-    const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
+    // const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
     const inputs = {}; // Eingabe-Elemente sammeln
 
     // Tabelle erstellen

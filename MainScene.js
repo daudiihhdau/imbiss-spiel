@@ -1,8 +1,8 @@
-import Character, { character } from './Character.js';
-import { characterPlugin } from './CharacterPlugin.js';
+import { Character } from './Character.js';
+import { CharacterPlugin } from './CharacterPlugin.js';
 // import { setupDebug } from './debug.js';
 import { locations } from './Location.js';
-import { foodStalls } from './food_stall.js';
+import { foodStalls } from './FoodStall.js';
 import { World } from './world.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
 
@@ -30,12 +30,14 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
+        this.loadAsyncPlugins();
+
         this.load.image('imbiss', this.currentLocation.backgroundImage);
-        this.load.image('customer1', 'mensch1.png');
-        this.load.image('customer2', 'mensch2.png');
-        this.load.image('customer3', 'mensch3.png');
-        this.load.image('customer4', 'mensch4.png');
-        this.load.image('bubble', 'bubble.png');
+        this.load.image('customer1', './img/characters/mensch1.png');
+        this.load.image('customer2', './img/characters/mensch2.png');
+        this.load.image('customer3', './img/characters/mensch3.png');
+        this.load.image('customer4', './img/characters/mensch4.png');
+        this.load.image('bubble', './img/characters/bubble.png');
 
         foodStalls.forEach(stall => this.load.image(stall.getImage(), stall.getImage()));
 
@@ -58,8 +60,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
-        loadAsyncPlugins.call(this);
-
         this.setupScene();
         this.setupTopBar();
         // setupDebug(this);
@@ -93,11 +93,7 @@ export class MainScene extends Phaser.Scene {
         this.customers.forEach((customerOn, index) => {
             customerOn.update();
             customerOn.render(this);
-            //this.handleCustomerState(customer, index, delta);
         });
-
-        // this.updateQueuePositions();
-
         this.eventManager.update(delta); // Aktualisiere die EventCharacter
     }
 
@@ -156,7 +152,8 @@ export class MainScene extends Phaser.Scene {
     spawnCustomer() {
         const customerIndex = Phaser.Math.Between(1, 4);
         const spriteKey = `customer${customerIndex}`;
-        const character = this.customerPlugins.default(new Character(spriteKey, 'Alice', 'Smith', 25));
+        console.log("ss", this.customerPlugins)
+        const character = this.customerPlugins[0].default(new Character(spriteKey, 'Alice', 'Smith', 25));
         
         this.customers.push(character);
     }

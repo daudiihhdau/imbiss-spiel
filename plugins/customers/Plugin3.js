@@ -1,4 +1,4 @@
-import CharacterPlugin from '../../CharacterPlugin.js';
+import { CharacterPlugin } from '../../CharacterPlugin.js';
 
 export default function Plugin3(character) {
     const plugin = new CharacterPlugin(character);
