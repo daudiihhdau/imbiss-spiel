@@ -32,6 +32,7 @@ export class CharacterPlugin {
         console.log(`Starting phase: ${phase}`);
         await this.executeMiddleware(phase, 'before'); // Middleware vor der Phase
         if (this[phase]) {
+            this.character.phase = phase
             await this[phase](); // Hauptlogik der Phase
         }
         await this.executeMiddleware(phase, 'after'); // Middleware nach der Phase
