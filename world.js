@@ -72,7 +72,7 @@ export class World {
 
         this.timer = setInterval(() => {
             this.updateClock();
-        }, 12); // Alle 120ms
+        }, 80); // Alle 120ms
     }
 
     stopClock() {

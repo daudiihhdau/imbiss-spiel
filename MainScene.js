@@ -4,6 +4,7 @@ import { locations } from './Location.js';
 import { foodStalls } from './FoodStall.js';
 import { World } from './world.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
+import { CustomerQueue } from './CustomerQueue.js';
 
 export class MainScene extends Phaser.Scene {
     constructor() {
@@ -42,6 +43,8 @@ export class MainScene extends Phaser.Scene {
 
         this.eventManager = new EventCharacterManager(this); // Initialisiere den EventCharacterManager
         this.eventManager.preload();
+
+        this.queue = CustomerQueue.getInstance(this);
     }
 
     async loadAsyncPlugins() {
@@ -151,10 +154,10 @@ export class MainScene extends Phaser.Scene {
         const customerIndex = Phaser.Math.Between(1, 4);
         const spriteKey = `customer${customerIndex}`;
 
-        const pluginIndex = Phaser.Math.Between(0, this.customerPlugins.length - 1);
+        const pluginIndex = 0 // Phaser.Math.Between(0, this.customerPlugins.length - 1);
         const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
         character.position = { x: -70, y: this.scale.height - 150 };
-        character.foodTruckPositionX = this.scale.width / 2;
+        character.setTargetX(this.scale.width / 2 - 100);
         
         this.customers.push(character);
     }

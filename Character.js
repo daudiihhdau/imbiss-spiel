@@ -6,7 +6,7 @@ export class Character {
         this.lastName = lastName;
         this.age = age;
         this.emotion = Emotions.HAPPY;
-        this.orderRequest = []
+        this.wishList = []
         this.purchasedItems = []
         //TODO: add Geldbörse
     }
