@@ -5,9 +5,17 @@ export default function Plugin2(spriteKey, character) {
 
     plugin.onMakeDecision = function () {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
-        this.setThinking("???")
-        if (this.hasPhaseTimeElapsed(3000)) {
-            this.startPhase('onOrderAndPay');
+        this.setThinking("anstellen?")
+
+        if (this.hasPhaseTimeElapsed(2000)) {
+            if (!this.queue.contains(this)) {
+                this.queue.enqueue(this);
+            }
+
+            this.startPhase('onWaitingInQueue');
+        } else {
+            this.setTargetX(900)
+            this.moveToTargetX(1)
         }
     };
 

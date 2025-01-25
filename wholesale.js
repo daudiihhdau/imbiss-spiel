@@ -1,23 +1,20 @@
-import { Categories, Attributes, Rating, items, Units } from './constants.js';
-import { InventoryManagement } from './Inventory_management.js'; // Importiere Warenwirtschaft
-import { POS } from './pos.js';
-import { Product } from './product.js';
+import { Categories, Attributes, Rating, Products, Units } from './constants.js';
+import { POS } from './POS.js';
+import { Product } from './Product.js';
 
 export class Wholesale {
     constructor() {
-        this.inventoryManagement = new InventoryManagement();
-        this.pos = new POS("Wholesale", inventoryManagement);
+        this.pos = new POS();
         this.initializeStock(); // Initialisiert den Lagerbestand einmalig
     }
 
     // Initialisiert den Lagerbestand aus der items-Map
     initializeStock() {
-        items.forEach((itemData, itemName) => {
-            const newProduct = this.createProduct({ name: itemName, emoji: itemData.emoji });
-            inventoryManagement.addProduct(newProduct);
-            
-            const randomStock = Math.floor(Math.random() * 100) + 10
-            inventoryManagement.updateStock(newProduct.id, randomStock)
+        Products.forEach((productData, productName) => {
+            const newProduct = this.createProduct({ name: productName, emoji: productData.emoji });
+            const randomStock = Math.floor(Math.random() * 100) + 10;
+            const randomPurchasePrice = parseFloat((Math.random() * 10 + 1).toFixed(2));
+            this.pos.addProductToInventory(newProduct, randomStock, randomPurchasePrice);
         });
     }
 
@@ -28,45 +25,37 @@ export class Wholesale {
         const randomQuality = this.getRandomRating();
         const randomTaste = this.getRandomRating();
         const randomUnit = this.getRandomUnit();
-        // const randomPurchasePrice = parseFloat((Math.random() * 10 + 1).toFixed(2));
-
-        return new Product(name, randomCategory, randomAttributes, emoji, randomQuality, randomTaste, randomUnit, '2030-01-01', 'TestCharge', 2)
+        return new Product(name, randomCategory, randomAttributes, emoji, randomQuality, randomTaste, randomUnit, '2030-01-01');
     }
 
     // Liefert ein Produkt in der gewünschten Menge
-    deliverItem(itemId, quantity) {
-        const item = this.stock.get(itemId);
-
-        if (!item) {
-            console.warn(`Produkt mit ID ${itemId} nicht gefunden.`);
+    addToCart(itemId, quantity, context = {}) {
+        try {
+            this.pos.addToCart(itemId, quantity, context);
+        } catch (error) {
+            console.warn(`Fehler beim Hinzufügen zum Warenkorb: ${error.message}`);
             return null;
         }
-
-        if (item.stock < quantity) {
-            console.warn(`Nicht genügend Bestand für '${item.name}'.`);
-            return null;
-        }
-
-        item.stock -= quantity; // Bestand reduzieren
-
-        return { ...item, stock: quantity }; // Nur die angeforderte Menge liefern
     }
 
-    generateInvoice(purchaseList, customerInfo) {
-        // const preparedList = purchaseList.map(({ itemId, quantity }) => {
-        //     const item = this.deliverItem(itemId, quantity);
-        //     if (!item) {
-        //         console.warn(`Produkt mit ID ${itemId} konnte nicht geliefert werden.`);
-        //         return null;
-        //     }
-        //     return { item, quantity };
-        // }).filter(entry => entry !== null);
+    // Entfernt ein Produkt aus dem Warenkorb
+    removeFromCart(itemId, quantity) {
+        try {
+            this.pos.removeFromCart(itemId, quantity);
+        } catch (error) {
+            console.warn(`Fehler beim Entfernen aus dem Warenkorb: ${error.message}`);
+            return null;
+        }
+    }
 
-        // return InvoiceGenerator.generateInvoice(preparedList, , "FoodStall", "WholesaleSale");
-        
-        const invoice = this.pos.generateInvoice();
-        this.pos.completePayment()
-        return invoice
+    generateInvoice(customerInfo, context = {}) {
+        const total = this.pos.calculateTotal();
+        const margin = this.pos.calculateMargin();
+        const invoice = this.pos.checkout('Wholesale', customerInfo, 'Wholesale Sale');
+        console.log('Rechnung generiert:', invoice);
+        console.log('Gesamtsumme:', total, '€');
+        console.log('Marge:', margin);
+        return invoice;
     }
 
     // Generiert eine zufällige Einheit aus den verfügbaren Units

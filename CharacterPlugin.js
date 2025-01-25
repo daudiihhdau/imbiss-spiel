@@ -90,6 +90,16 @@ export class CharacterPlugin {
         }
     }
 
+    showWishes() {
+        const itemsText = this.character.wishList.map(item => item.emoji).join(' ');
+        this.bubbleText.setText(itemsText);
+    }
+
+    showPurchasedItems() {
+        const itemsText = this.character.purchasedItems.map(item => item.emoji).join(' ');
+        this.bubbleText.setText(itemsText);
+    }
+
     update() {
         if (!this.sprite) return
 

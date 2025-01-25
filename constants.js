@@ -30,7 +30,7 @@ export const InvoiceStatus = {
     OPEN: 'offen'
 }
 
-export const items = new Map([
+export const Products = new Map([
     ['Pommes', { emoji: '🍟' }],
     ['Currywurst', { emoji: '🌭' }],
     ['Hamburger', { emoji: '🍔' }],

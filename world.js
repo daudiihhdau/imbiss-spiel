@@ -20,11 +20,11 @@ export class World {
         //     console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
         // });
 
-        if (this.isDebugMode) {
-            ImbissSoftware.items.forEach(item => {
-                item.stock = 2;
-            });
-        }
+        // if (this.isDebugMode) {
+        //     ImbissSoftware.items.forEach(item => {
+        //         item.stock = 2;
+        //     });
+        // }
 
         this.currentTime = 0; // Minuten seit Tagesbeginn (00:00)
         this.currentDay = params.startDay || 1; // Starttag (Standard: 1. Januar)
