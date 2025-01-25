@@ -1,6 +1,6 @@
 import { World } from './world.js';
 import { MainScene } from './MainScene.js';
-// import './purchase_scene.js';
+import './purchase_scene.js';
 // import './price_adjustment.js';
 // import './daily_summarize.js';
 
@@ -15,11 +15,12 @@ const config = {
             debug: false,
         },
     },
-    scene: [MainScene], // Alle Szenen in der Liste
+    scene: []// [MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);
+game.scene.stop();
 
-// World.getInstance().events.emit('load_purchase_scene');
+World.getInstance().events.emit('load_purchase_scene');
 
 export { game };

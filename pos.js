@@ -60,6 +60,28 @@ export class POS {
         this.inventory.updateStock(productId, -quantity);
     }
 
+    // Produkt aus dem Warenkorb entfernen
+    removeFromCart(productId, quantity) {
+        const cartItemIndex = this.cart.findIndex(item => item.id === productId);
+
+        if (cartItemIndex === -1) {
+            throw new Error('Produkt nicht im Warenkorb.');
+        }
+
+        const cartItem = this.cart[cartItemIndex];
+
+        if (quantity >= cartItem.quantity) {
+            // Wenn die Menge gleich oder größer ist, das Produkt komplett aus dem Warenkorb entfernen
+            this.cart.splice(cartItemIndex, 1);
+        } else {
+            // Ansonsten nur die angegebene Menge reduzieren
+            cartItem.quantity -= quantity;
+        }
+
+        // Bestand im Lager aktualisieren
+        this.inventory.updateStock(productId, quantity);
+    }
+
     // Warenkorb anzeigen
     listCart() {
         return this.cart.map(item => ({

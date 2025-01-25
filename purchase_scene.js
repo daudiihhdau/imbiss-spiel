@@ -1,176 +1,140 @@
 import { World } from './world.js';
-// import { ImbissSoftware } from './InventoryManagement.js';
 import { game } from './game.js';
+import { Wholesale } from './Wholesale.js';
 
-let inputs = {}; // Inputs global initialisieren
-
-// Kaufvorgang
-function purchaseItems(inputs) {
-    try {
-        let totalCost = 0;
-
-        Object.entries(inputs).forEach(([name, { inputElement, randomUnits, randomPrice }]) => {
-            const quantity = parseInt(inputElement.value, 10);
-
-            if (!isNaN(quantity) && quantity > 0 && quantity <= randomUnits) {
-                totalCost += quantity * parseFloat(randomPrice);
-            }
-        });
-
-        if (totalCost > World.getInstance().getWealth()) {
-            alert(`Fehler: Die Einkaufskosten (${totalCost.toFixed(2)} €) übersteigen dein Budget (${World.getInstance().getWealth()} €).`);
-            return;
-        }
-
-        Object.entries(inputs).forEach(([name, { inputElement, randomUnits, randomPrice }]) => {
-            const quantity = parseInt(inputElement.value, 10);
-
-            if (!isNaN(quantity) && quantity > 0 && quantity <= randomUnits) {
-                // ImbissSoftware.getInstance().addPurchase(name, quantity, parseFloat(randomPrice));
-                console.log(`Gekauft: ${quantity} x ${name} zu je ${randomPrice} €.`);
-            }
-        });
-
-        // Budget aktualisieren
-        World.getInstance().addWealth(totalCost * -1);
-
-        // Erfolgsnachricht anzeigen
-        const successMessage = document.createElement('p');
-        successMessage.textContent = 'Einkauf erfolgreich!';
-        successMessage.classList.add('success-message');
-        document.getElementById('html-content').appendChild(successMessage);
-
-        setTimeout(() => successMessage.remove(), 3000);
-
-        updateBudgetDisplay();
-
-    } catch (error) {
-        console.error(`Fehler beim Einkauf: ${error.message}`);
-    }
-}
-
-function updateBudgetDisplay() {
-    const budgetDisplay = document.getElementById('budget-display');
-    const currentCost = calculateCurrentCost(inputs);
-
-    budgetDisplay.textContent = `Budget: ${World.getInstance().getWealth().toFixed(2)} €, Einkaufskosten: ${currentCost.toFixed(2)} €, Differenz: ${(World.getInstance().getWealth() - currentCost).toFixed(2)} €`;
-}
-
-function calculateCurrentCost(inputs) {
-    return Object.values(inputs).reduce((total, { inputElement, randomPrice }) => {
-        const quantity = parseInt(inputElement.value, 10);
-        return total + (!isNaN(quantity) ? quantity * parseFloat(randomPrice) : 0);
-    }, 0);
-}
 
 World.getInstance().events.subscribe('load_purchase_scene', () => {
     game.scene.stop();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('html-content').style.display = 'block';
 
-    const container = document.getElementById('html-content');
-    container.innerHTML = ''; // Reset content
+    const wholesale = new Wholesale();
 
-    inputs = {}; // Inputs hier erneut initialisieren
+    function renderApp() {
+        document.getElementById('html-content').innerHTML = ''; // Reset content
 
-    // Titel hinzufügen
-    const header = document.createElement('h1');
-    header.textContent = 'Wareneinkauf';
-    header.classList.add('fun-header');
-    container.appendChild(header);
+        const appHTML = `
+                <h1>Wholesale Shop</h1>
 
-    // Budget-Anzeige hinzufügen
-    const budgetDisplay = document.createElement('p');
-    budgetDisplay.id = 'budget-display';
-    budgetDisplay.classList.add('budget-display');
-    container.appendChild(budgetDisplay);
-    updateBudgetDisplay();
+                <h2>Produkte</h2>
+                <table id="product-table">
+                    <thead>
+                        <tr>
+                            <th>Emoji</th>
+                            <th>Name</th>
+                            <th>Kategorie</th>
+                            <th>Bestand</th>
+                            <th>Preis (€)</th>
+                            <th>Menge</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Produkte werden hier dynamisch hinzugefügt -->
+                    </tbody>
+                </table>
 
-    // Tabelle erstellen
-    const table = document.createElement('table');
-    table.classList.add('table');
+                <h2>Warenkorb</h2>
+                <div class="cart">
+                    <ul id="cart-list">
+                        <li>Warenkorb ist leer.</li>
+                    </ul>
+                    <p><strong>Gesamtsumme:</strong> <span id="total-price">0</span> €</p>
+                    <button id="checkout-button">Rechnung erstellen</button>
+                </div>
+            `;
 
-    // Tabellenkopf
-    const headerRow = document.createElement('tr');
-    ['Produkt', 'Preis (€)', 'Im Lager', 'Im Verkauf', 'Bestellung'].forEach(headerText => {
-        const th = document.createElement('th');
-        th.textContent = headerText;
-        headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
+            document.getElementById('html-content').innerHTML = appHTML;
 
-    // Produkte abrufen und Tabelle ausfüllen
-    // const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
+            const productTableBody = document.querySelector('#product-table tbody');
+            const cartList = document.getElementById('cart-list');
+            const totalPriceSpan = document.getElementById('total-price');
+            const checkoutButton = document.getElementById('checkout-button');
 
-    items.forEach((item, index) => {
-        const randomUnits = Math.floor(Math.random() * 50) + 1; // Zufälliger Großhandel-Bestand
-        const randomPrice = (Math.random() * 5 + 1).toFixed(2); // Zufälliger Preis
-
-        const row = document.createElement('tr');
-        row.classList.add(index % 2 === 0 ? 'row-even' : 'row-odd');
-
-        // Produkt-Emoji und Name
-        const productCell = document.createElement('td');
-        productCell.textContent = item.emoji + ' ' + item.name;
-        row.appendChild(productCell);
-
-        // Preis
-        const priceCell = document.createElement('td');
-        priceCell.textContent = randomPrice;
-        row.appendChild(priceCell);
-
-        // Eigenes Lager
-        const ownStockCell = document.createElement('td');
-        ownStockCell.textContent = item.stock;
-        row.appendChild(ownStockCell);
-
-        // Großhandel Bestand
-        const stockCell = document.createElement('td');
-        stockCell.textContent = randomUnits;
-        row.appendChild(stockCell);
-
-        // Eingabefeld für Menge
-        const inputCell = document.createElement('td');
-        const inputElement = document.createElement('input');
-        inputElement.type = 'number';
-        inputElement.value = '0';
-        inputElement.min = '0';
-        inputElement.max = randomUnits.toString();
-        inputElement.step = '1';
-
-        // Eingabe validieren
-        inputElement.addEventListener('input', (event) => {
-            const value = parseInt(event.target.value, 10);
-            if (isNaN(value) || value < 0 || value > randomUnits) {
-                event.target.value = Math.min(Math.max(value, 0), randomUnits);
+            // Produkte anzeigen
+            function renderProducts() {
+                const inventory = wholesale.pos.listInventory();
+                productTableBody.innerHTML = '';
+                inventory.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.emoji}</td>
+                        <td>${product.name}</td>
+                        <td>${product.categoryId}</td>
+                        <td>${product.stock}</td>
+                        <td><input type="number" min="1" max="${product.stock}" value="1" id="quantity-${product.id}"></td>
+                        <td><button onclick="addToCart('${product.id}')">Hinzufügen</button></td>
+                    `;
+                    productTableBody.appendChild(row);
+                });
             }
-            updateBudgetDisplay();
-        });
 
-        inputCell.appendChild(inputElement);
-        row.appendChild(inputCell);
+            // Produkt in den Warenkorb legen
+            window.addToCart = function (productId) {
+                const quantityInput = document.getElementById(`quantity-${productId}`);
+                const quantity = parseInt(quantityInput.value);
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert('Bitte eine gültige Menge eingeben!');
+                    return;
+                }
 
-        // Speichere die Eingabe für die Verarbeitung
-        inputs[item.name] = { inputElement, randomUnits, randomPrice };
+                wholesale.addToCart(productId, quantity, { basePrice: 10, taxRate: 0.2 });
+                renderCart();
+            };
 
-        table.appendChild(row);
-    });
+            // Produkt aus dem Warenkorb entfernen
+            window.removeFromCart = function (productId, quantity) {
+                try {
+                    wholesale.removeFromCart(productId, quantity);
+                    renderCart();
+                } catch (error) {
+                    alert(`Fehler beim Entfernen aus dem Warenkorb: ${error.message}`);
+                }
+            };
 
-    container.appendChild(table);
+            // Warenkorb anzeigen
+            function renderCart() {
+                const cart = wholesale.pos.listCart();
+                cartList.innerHTML = '';
 
-    // Button "Kaufen"
-    const buyButton = document.createElement('button');
-    buyButton.textContent = 'Kaufen';
-    buyButton.classList.add('btn-buy', 'btn-green');
-    buyButton.addEventListener('click', () => purchaseItems(inputs)); // inputs korrekt übergeben
-    container.appendChild(buyButton);
+                if (cart.length === 0) {
+                    cartList.innerHTML = '<li>Warenkorb ist leer.</li>';
+                    totalPriceSpan.textContent = '0';
+                    return;
+                }
 
-    // Button "Preise festlegen"
-    const adjustPricesButton = document.createElement('button');
-    adjustPricesButton.textContent = 'Preise festlegen';
-    adjustPricesButton.classList.add('btn-adjust-prices', 'btn-blue');
-    adjustPricesButton.addEventListener('click', () => {
-        World.getInstance().events.emit('load_pricelist_scene');
-    });
-    container.appendChild(adjustPricesButton);
+                cart.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${item.name} (x${item.quantity}) - ${item.totalPrice.toFixed(2)} € 
+                        <button onclick="removeFromCart('${item.id}', 1)">-1</button>`;
+                    cartList.appendChild(li);
+                });
+
+                const total = wholesale.pos.calculateTotal();
+                totalPriceSpan.textContent = total;
+            }
+
+            // Rechnung erstellen
+            checkoutButton.addEventListener('click', () => {
+                if (wholesale.pos.listCart().length === 0) {
+                    alert('Warenkorb ist leer!');
+                    return;
+                }
+
+                const invoice = wholesale.generateInvoice('Kunde ABC');
+                alert('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
+                console.log(invoice);
+                renderCart();
+            });
+
+            // Initiale Anzeige
+            renderProducts();
+    }
+
+    renderApp();
 });
+
+
+// adjustPricesButton.addEventListener('click', () => {
+//     World.getInstance().events.emit('load_pricelist_scene');
+// });
