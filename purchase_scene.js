@@ -39,6 +39,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 </ul>
                 <p><strong>Gesamtsumme:</strong> <span id="total-price">0</span> €</p>
                 <p><strong>Vermögen:</strong> <span id="wealth">0</span> €</p>
+                <p id="error-message" style="color: red; display: none;">Du hast nicht genug Geld für Deinen Warenkorb</p>
                 <button id="checkout-button" class="btn-green">Rechnung erstellen</button>
             </div>
         `;
@@ -50,9 +51,9 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
         const totalPriceSpan = document.getElementById('total-price');
         const checkoutButton = document.getElementById('checkout-button');
         const wealthSpan = document.getElementById('wealth');
+        const errorMessage = document.getElementById('error-message');
 
         wealthSpan.textContent = World.getInstance().getWealth();
-        
 
         // Produkte anzeigen
         function renderProducts() {
@@ -111,6 +112,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             if (cart.length === 0) {
                 cartList.innerHTML = '<li>Warenkorb ist leer.</li>';
                 totalPriceSpan.textContent = '0';
+                errorMessage.style.display = 'none';
                 return;
             }
 
@@ -122,7 +124,16 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             });
 
             const total = wholesale.pos.calculateTotal();
+            const wealth = World.getInstance().getWealth();
             totalPriceSpan.textContent = total;
+
+            if (total > wealth) {
+                errorMessage.style.display = 'block';
+                checkoutButton.disabled = true;
+            } else {
+                errorMessage.style.display = 'none';
+                checkoutButton.disabled = false;
+            }
         }
 
         // Input-Felder auf 1 zurücksetzen

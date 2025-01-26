@@ -148,7 +148,7 @@ export class POS {
         // Warenkorb leeren
         this.cart = [];
 
-        return invoice;
+        return invoice
     }
 
     // Lagerbestand anzeigen

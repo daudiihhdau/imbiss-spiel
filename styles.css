@@ -97,6 +97,17 @@ body {
     background-color: #66bb6a; /* Helleres Grün beim Hover */
 }
 
+/* Deaktivierter Button */
+.btn-green:disabled {
+    background-color: #cccccc; /* Helles Grau für deaktivierten Zustand */
+    color: #666666; /* Dunklerer Text für Kontrast */
+    cursor: not-allowed; /* Zeigt an, dass der Button nicht anklickbar ist */
+    box-shadow: none; /* Entfernt Schatten */
+    transform: none; /* Entfernt Animationen */
+    opacity: 0.7; /* Reduziert Sichtbarkeit für deaktivierten Look */
+}
+
+
 .btn-blue {
     margin-top: 3px; /* Mehr Abstand zur Tabelle */
     margin-left: 1px;
