@@ -48,7 +48,6 @@ body {
 
 .table td {
     text-align: center;
-    padding: 6px;
     border: 1px solid #ddd;
 }
 
@@ -98,10 +97,10 @@ body {
 }
 
 .btn-blue {
-    margin-top: 30px; /* Mehr Abstand zur Tabelle */
-    margin-left: 10px;
-    margin-bottom: 10px;
-    padding: 10px 20px;
+    margin-top: 3px; /* Mehr Abstand zur Tabelle */
+    margin-left: 1px;
+    margin-bottom: 1px;
+    padding: 4px 4px;
     font-size: 16px;
     cursor: pointer;
     border: none;

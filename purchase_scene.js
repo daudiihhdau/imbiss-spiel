@@ -13,10 +13,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
         document.getElementById('html-content').innerHTML = ''; // Reset content
 
         const appHTML = `
-            <h1>Großhandel Shop</h1>
-
-            <h2>Produkte</h2>
-            <table id="product-table">
+            <h2>Großhandel Shop</h2>
+            <table id="product-table" class="table">
                 <thead>
                     <tr>
                         <th>Emoji</th>
@@ -40,7 +38,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <li>Warenkorb ist leer.</li>
                 </ul>
                 <p><strong>Gesamtsumme:</strong> <span id="total-price">0</span> €</p>
-                <button id="checkout-button">Rechnung erstellen</button>
+                <button id="checkout-button" class="btn-green">Rechnung erstellen</button>
             </div>
         `;
 
@@ -64,8 +62,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <td>${product.taste}</td>
                     <td>${product.stock}</td>
                     <td>${product.purchasePrice} €</td>
-                    <td><input type="number" min="1" max="${product.stock}" value="1" id="quantity-${product.id}"></td>
-                    <td><button onclick="window.addToCart('${product.id}')">Hinzufügen</button></td>
+                    <td><input type="number" class="table-input" min="1" max="${product.stock}" value="1" id="quantity-${product.id}"></td>
+                    <td><button class="btn-blue" onclick="window.addToCart('${product.id}')">+</button></td>
                 `;
                 productTableBody.appendChild(row);
             });
@@ -81,7 +79,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             }
 
             try {
-                wholesale.pos.addToCart(productId, quantity, { });
+                wholesale.pos.addToCart(productId, quantity, {});
                 resetQuantities();
                 renderCart();
             } catch (error) {
@@ -114,7 +112,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             cart.forEach(item => {
                 const li = document.createElement('li');
                 li.innerHTML = `${item.name} (x${item.quantity}) - ${item.totalPrice.toFixed(2)} € 
-                    <button onclick="window.removeFromCart('${item.id}')">-1</button>`;
+                    <button class="btn-blue" onclick="window.removeFromCart('${item.id}')">-1</button>`;
                 cartList.appendChild(li);
             });
 
