@@ -38,6 +38,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <li>Warenkorb ist leer.</li>
                 </ul>
                 <p><strong>Gesamtsumme:</strong> <span id="total-price">0</span> €</p>
+                <p><strong>Vermögen:</strong> <span id="wealth">0</span> €</p>
                 <button id="checkout-button" class="btn-green">Rechnung erstellen</button>
             </div>
         `;
@@ -48,6 +49,10 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
         const cartList = document.getElementById('cart-list');
         const totalPriceSpan = document.getElementById('total-price');
         const checkoutButton = document.getElementById('checkout-button');
+        const wealthSpan = document.getElementById('wealth');
+
+        wealthSpan.textContent = World.getInstance().getWealth();
+        
 
         // Produkte anzeigen
         function renderProducts() {
