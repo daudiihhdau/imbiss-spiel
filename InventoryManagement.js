@@ -25,10 +25,10 @@ export class InventoryManagement {
     if (!this.stock.has(productId)) {
       throw new Error('Produkt nicht gefunden.');
     }
-    if (quantity < 0) {
+    if (increment < 0) {
       throw new Error('Bestand kann nicht negativ sein.');
     }
-    this.stock.set(productId, getStock(productId) + increment);
+    this.stock.set(productId, this.getStock(productId) + increment);
   }
 
   getStock(productId) {

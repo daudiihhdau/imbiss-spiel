@@ -6,11 +6,13 @@ export class POS {
         this.inventory = new InventoryManagement();
         this.cart = [];
         this.logbook = []; // Logbuch für Ein- und Ausgänge
+        this.purchasePrices = new Map(); // Map zur Speicherung der Einkaufspreise
     }
 
     // Produkte hinzufügen
     addProductToInventory(product, quantity, purchasePrice) {
         this.inventory.addProduct(product, quantity);
+        this.purchasePrices.set(product.id, purchasePrice); // Einkaufspreis speichern
         this.logbook.push({
             action: 'added',
             product: product.name,
@@ -22,7 +24,8 @@ export class POS {
 
     // Dynamische Preisberechnung
     calculatePrice(product, context) {
-        const basePrice = context.basePrice || 0;
+        const purchasePrice = this.purchasePrices.get(product.id) || 0; // Einkaufspreis abrufen
+        const basePrice = context.basePrice || purchasePrice; // Verwende Basispreis oder Einkaufspreis
         const discount = context.discount || 0;
         const taxRate = context.taxRate || 0;
 
@@ -57,7 +60,7 @@ export class POS {
             this.cart.push({ ...product, quantity, price });
         }
 
-        this.inventory.updateStock(productId, -quantity);
+        this.inventory.updateStock(productId, quantity);
     }
 
     // Produkt aus dem Warenkorb entfernen
@@ -85,6 +88,7 @@ export class POS {
     // Warenkorb anzeigen
     listCart() {
         return this.cart.map(item => ({
+            id: item.id,
             name: item.name,
             quantity: item.quantity,
             unitPrice: item.price,
@@ -102,7 +106,8 @@ export class POS {
     // Marge berechnen
     calculateMargin() {
         const margins = this.cart.map(item => {
-            const totalPurchasePrice = item.purchasePrice * item.quantity;
+            const purchasePrice = this.purchasePrices.get(item.id) || 0;
+            const totalPurchasePrice = purchasePrice * item.quantity;
             const totalSalePrice = item.price * item.quantity;
             return {
                 name: item.name,
@@ -129,11 +134,12 @@ export class POS {
         );
 
         this.cart.forEach(item => {
+            const purchasePrice = this.purchasePrices.get(item.id) || 0;
             this.logbook.push({
                 action: 'sold',
                 product: item.name,
                 quantity: item.quantity,
-                purchasePrice: item.purchasePrice,
+                purchasePrice,
                 salePrice: item.price,
                 date: new Date().toISOString()
             });
@@ -147,7 +153,13 @@ export class POS {
 
     // Lagerbestand anzeigen
     listInventory() {
-        return this.inventory.listAllProducts();
+        return this.inventory.listAllProducts().map(product => {
+            const purchasePrice = this.purchasePrices.get(product.id) || 0;
+            return {
+                ...product,
+                purchasePrice: purchasePrice.toFixed(2)
+            };
+        });
     }
 
     // Logbuch anzeigen
