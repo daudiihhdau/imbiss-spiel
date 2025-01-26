@@ -13,7 +13,7 @@ export class Wholesale {
         Products.forEach((productData, productName) => {
             const newProduct = this.createProduct({ name: productName, emoji: productData.emoji });
             const randomStock = Math.floor(Math.random() * 100) + 10;
-            const randomPurchasePrice = parseFloat((Math.random() * 10 + 1).toFixed(2));
+            const randomPurchasePrice = parseFloat((Math.random() * 5 + 1).toFixed(2));
             this.pos.addProductToInventory(newProduct, randomStock, randomPurchasePrice);
         });
     }

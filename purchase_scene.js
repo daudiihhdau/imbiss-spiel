@@ -13,7 +13,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
         document.getElementById('html-content').innerHTML = ''; // Reset content
 
         const appHTML = `
-            <h1>Wholesale Shop</h1>
+            <h1>Großhandel Shop</h1>
 
             <h2>Produkte</h2>
             <table id="product-table">
@@ -21,6 +21,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <tr>
                         <th>Emoji</th>
                         <th>Name</th>
+                        <th>Qualität</th>
+                        <th>Geschmack</th>
                         <th>Bestand</th>
                         <th>Preis (€)</th>
                         <th>Menge</th>
@@ -58,6 +60,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 row.innerHTML = `
                     <td>${product.emoji}</td>
                     <td>${product.name}</td>
+                    <td>${product.quality}</td>
+                    <td>${product.taste}</td>
                     <td>${product.stock}</td>
                     <td>${product.purchasePrice} €</td>
                     <td><input type="number" min="1" max="${product.stock}" value="1" id="quantity-${product.id}"></td>
