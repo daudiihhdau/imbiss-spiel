@@ -1,6 +1,6 @@
 import { Character } from './Character.js';
 // import { setupDebug } from './debug.js';
-import { World } from './world.js';
+import { World } from './World.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
 import { CustomerQueue } from './CustomerQueue.js';
 
@@ -137,7 +137,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     checkSpawnProbability() {
-        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.currentTime) {
+        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.getCurrentTimeInMinutes()) {
             const nextCustomer = this.customerSchedule.shift();
             this.spawnCustomer(nextCustomer);
         }

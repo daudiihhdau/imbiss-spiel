@@ -1,6 +1,6 @@
 import { Helper } from './helper.js';
 import { taxRate, InvoiceStatus } from './constants.js';
-import { World } from './world.js';
+import { World } from './World.js';
 
 export class InvoiceGenerator {
     static generateInvoice(items, supplier, customer, category, date = null, isExternal = false) {

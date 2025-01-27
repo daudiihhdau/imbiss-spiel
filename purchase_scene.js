@@ -1,4 +1,4 @@
-import { World } from './world.js';
+import { World } from './World.js';
 import { game } from './game.js';
 import { Wholesale } from './Wholesale.js';
 
@@ -158,7 +158,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 console.log('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
                 console.log(invoice);
 
-                
+
                 renderCart();
             } catch (error) {
                 alert(`Fehler beim Erstellen der Rechnung: ${error.message}`);

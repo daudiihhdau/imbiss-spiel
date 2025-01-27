@@ -1,5 +1,5 @@
 import { EventDispatcher } from './event_dispatcher.js';
-import { World } from './world.js';
+import { World } from './World.js';
 
 export class ImbissSoftware {
     static instance = null;

@@ -1,4 +1,4 @@
-import { World } from './world.js';
+import { World } from './World.js';
 import { MainScene } from './MainScene.js';
 import './purchase_scene.js';
 // import './price_adjustment.js';
