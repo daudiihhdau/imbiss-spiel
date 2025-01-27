@@ -1,4 +1,4 @@
-[
+export const Sentences = [
     { "emoji": "🔥❓", "bedeutung": "Habe ich den Herd ausgemacht?" },
     { "emoji": "💧➡️🥤", "bedeutung": "Ich sollte mehr Wasser trinken." },
     { "emoji": "🤔🍝🍱🍔", "bedeutung": "Was esse ich heute zum Mittag?" },

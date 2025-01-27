@@ -19,6 +19,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <tr>
                         <th>Emoji</th>
                         <th>Name</th>
+                        <th>Besonderheit</th>
+                        <th>Haltbarkeit</th>
                         <th>Qualität</th>
                         <th>Geschmack</th>
                         <th>Bestand</th>
@@ -64,6 +66,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 row.innerHTML = `
                     <td>${product.emoji}</td>
                     <td>${product.name}</td>
+                    <td>${product.attributeIds.join(',')}</td>
+                    <td>${product.expiryDate}</td>
                     <td>${product.quality}</td>
                     <td>${product.taste}</td>
                     <td>${product.stock}</td>
@@ -150,9 +154,11 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             }
 
             try {
-                const invoice = wholesale.pos.checkout('Wholesale Supplier', 'Kunde ABC', 'Retail');
-                alert('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
+                const { invoice, products } = wholesale.pos.checkout('Wholesale Supplier', 'Kunde ABC', 'Retail');
+                console.log('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
                 console.log(invoice);
+
+                
                 renderCart();
             } catch (error) {
                 alert(`Fehler beim Erstellen der Rechnung: ${error.message}`);

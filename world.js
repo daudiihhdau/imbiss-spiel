@@ -1,10 +1,13 @@
-// import { ImbissSoftware } from './InventoryManagement.js';
 import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
+import { foodStalls } from './FoodStall.js';
+import { locations } from './Location.js';
 
 export class World {
     static instance = null;
-    timer = null; // Referenz auf den Timer
+    timer = null;
     isRunning = false; // Status, ob die Uhr läuft
+    foodStall = null
+    location = null
     events = new EventDispatcher(); // Dein EventDispatcher für Mitternacht und andere Events
 
     constructor(params = {}) {
@@ -32,6 +35,9 @@ export class World {
         this.currentYear = params.startYear || 2025; // Startjahr (Standard: 2025)
 
         this.playerWealth = 2.22; // Anfangsvermögen
+
+        this.foodStall = foodStalls[Math.floor(Math.random()*foodStalls.length)]
+        this.location = this.isDebugMode ? locations[0] : locations[Phaser.Math.Between(1, locations.length - 1)];
 
         World.instance = this;
     }

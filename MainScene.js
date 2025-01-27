@@ -1,7 +1,5 @@
 import { Character } from './Character.js';
 // import { setupDebug } from './debug.js';
-import { locations } from './Location.js';
-import { foodStalls } from './FoodStall.js';
 import { World } from './world.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
 import { CustomerQueue } from './CustomerQueue.js';
@@ -11,10 +9,6 @@ export class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
 
         this.world = World.getInstance();
-
-        this.currentLocation = this.world.isDebugMode
-            ? locations[0]
-            : locations[Phaser.Math.Between(1, locations.length - 1)];
 
         this.customerSchedule = [];
         this.customers = [];
@@ -32,14 +26,14 @@ export class MainScene extends Phaser.Scene {
     preload() {
         this.loadAsyncPlugins();
 
-        this.load.image('imbiss', this.currentLocation.backgroundImage);
         this.load.image('customer1', './img/characters/mensch1.png');
         this.load.image('customer2', './img/characters/mensch2.png');
         this.load.image('customer3', './img/characters/mensch3.png');
         this.load.image('customer4', './img/characters/mensch4.png');
         this.load.image('bubble', './img/characters/bubble.png');
 
-        foodStalls.forEach(stall => this.load.image(stall.getImage(), stall.getImage()));
+        this.load.image(this.world.foodStall.getImage(), this.world.foodStall.getImage())
+        this.load.image('imbiss', this.world.location.getImage());
 
         this.eventManager = new EventCharacterManager(this); // Initialisiere den EventCharacterManager
         this.eventManager.preload();
@@ -83,7 +77,7 @@ export class MainScene extends Phaser.Scene {
             document.getElementById('html-content').style.display = 'block';
         });
 
-        this.customerSchedule = this.currentLocation.generateCustomerSchedule();
+        this.customerSchedule = this.world.location.generateCustomerSchedule();
         this.eventManager.startRandomEventSpawner(); // Starte die zufällige Generierung von Events
     }
 
@@ -103,8 +97,7 @@ export class MainScene extends Phaser.Scene {
             .setOrigin(0)
             .setDisplaySize(this.scale.width, this.scale.height);
 
-        const randomStall = foodStalls[Phaser.Math.Between(0, foodStalls.length - 1)];
-        this.add.image(this.scale.width / 2, this.scale.height / 2, randomStall.getImage())
+        this.add.image(this.scale.width / 2, this.scale.height / 2, this.world.foodStall.getImage())
             .setOrigin(0.5)
             .setScale(0.5);
     }

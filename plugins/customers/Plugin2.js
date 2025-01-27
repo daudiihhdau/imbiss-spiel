@@ -14,8 +14,8 @@ export default function Plugin2(spriteKey, character) {
 
             this.startPhase('onWaitingInQueue');
         } else {
-            this.setTargetX(900)
-            this.moveToTargetX(1)
+            this.setTargetX(1600)
+            this.moveToTargetX(2)
         }
     };
 

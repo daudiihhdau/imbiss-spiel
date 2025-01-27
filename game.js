@@ -15,11 +15,11 @@ const config = {
             debug: false,
         },
     },
-    scene: [] // MainScene], // Alle Szenen in der Liste
+    scene: [MainScene], // Alle Szenen in der Liste
 };
 
 const game = new Phaser.Game(config);
 
-World.getInstance().events.emit('load_purchase_scene');
+//World.getInstance().events.emit('load_purchase_scene');
 
 export { game };

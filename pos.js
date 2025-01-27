@@ -145,10 +145,12 @@ export class POS {
             });
         });
 
+        const products = this.cart
+
         // Warenkorb leeren
         this.cart = [];
 
-        return invoice
+        return { invoice, products }
     }
 
     // Lagerbestand anzeigen

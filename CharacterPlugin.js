@@ -1,5 +1,6 @@
 import { Emotions } from '../../Constants.js';
 import { CustomerQueue } from './CustomerQueue.js';
+import { Sentences } from '../../Sentences.js';
 
 export class CharacterPlugin {
     constructor(spriteKey, character) {

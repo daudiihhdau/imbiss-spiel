@@ -3,10 +3,14 @@
 // const inventory = new ImbissSoftware(); // Instanziere Warenwirtschaft
 
 export class Location {
-    constructor(name, backgroundImage, config) {
+    constructor(name, image, config) {
         this.name = name;
-        this.backgroundImage = backgroundImage;
+        this.image = image;
         this.config = config; // Uhrzeitenslots und Wahrscheinlichkeiten
+    }
+    
+    getImage() {
+        return this.image;
     }
 
     getCustomerProbability(currentTime) {
