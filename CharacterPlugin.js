@@ -1,6 +1,5 @@
 import { Emotions } from '../../Constants.js';
 import { CustomerQueue } from './CustomerQueue.js';
-import { Sentences } from '../../Sentences.js';
 
 export class CharacterPlugin {
     constructor(spriteKey, character) {
@@ -34,7 +33,7 @@ export class CharacterPlugin {
         const key = `${phase}_${timing}`; // Beispiel: "onPaying_before"
         if (this.middleware[key]) {
             for (const middlewareFunc of this.middleware[key]) {
-                await middlewareFunc(this.character); // Middleware erhält den Charakter
+                await middlewareFunc(this); // Middleware erhält den Charakter
             }
         }
     }
@@ -141,7 +140,7 @@ export class CharacterPlugin {
         // Stoppt vor dem Imbisswagen
         if (!this.hasReachedTargetX()) {
             this.moveToTargetX(3)
-            this.setThinking("Hallo")
+            this.showWishes()
             this.setEmotion(Emotions.HUNGRY)
         } else {
             this.startPhase('onRecognizeHunger');

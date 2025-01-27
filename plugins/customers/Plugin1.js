@@ -1,5 +1,4 @@
 import { CharacterPlugin } from '../../CharacterPlugin.js';
-import { Emotions } from '../../Constants.js';
 
 export default function Plugin1(spriteKey, character) {
     const plugin = new CharacterPlugin(spriteKey, character);

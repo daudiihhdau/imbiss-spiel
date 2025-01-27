@@ -33,9 +33,9 @@ export class CustomerQueue {
         const index = this.queue.indexOf(character); // Finde den Index des Charakters
         if (index !== -1) {
             this.queue.splice(index, 1); // Entferne den Charakter aus der Queue
-            console.log(`${character.firstName} wurde aus der Schlange entfernt.`);
+            console.log(`${character.character.firstName} wurde aus der Schlange entfernt.`);
         } else {
-            console.log(`${character.firstName} befindet sich nicht in der Schlange.`);
+            console.log(`${character.character.firstName} befindet sich nicht in der Schlange.`);
         }
         this.updateQueuePositions();
     }
