@@ -72,9 +72,7 @@ export class MainScene extends Phaser.Scene {
             console.log('Mitternacht erreicht, Szene wechseln!');
             
             this.world.stopClock();
-            this.scene.stop();
-            document.getElementById('game-container').style.display = 'none';
-            document.getElementById('html-content').style.display = 'block';
+            this.world.events.emit('stop_game');
         });
 
         this.customerSchedule = this.world.getLocation().generateCustomerSchedule();

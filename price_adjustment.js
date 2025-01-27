@@ -1,10 +1,7 @@
 import { World } from './World.js';
-import { game } from './game.js';
 
 World.getInstance().events.subscribe('load_pricelist_scene', () => {
-    game.scene.stop();
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('html-content').style.display = 'block';
+    World.getInstance().events.emit('stop_game');    World.getInstance().events.emit('stop_game');
 
     function renderApp() {
         document.getElementById('html-content').innerHTML = ''; // Reset content
@@ -71,8 +68,7 @@ World.getInstance().events.subscribe('load_pricelist_scene', () => {
 
                 if (!isNaN(newPrice) && newPrice > 0) {
                     console.log(`Preis für Produkt ${productId} auf ${newPrice.toFixed(2)} € gesetzt.`);
-                    // Hier würde der Preis im Lager aktualisiert werden
-                    // wholesale.pos.updateSellPrice(productId, newPrice);
+                    World.getInstance().getFoodStall().getPos().updateSellPrice(productId, newPrice);
                     inputElement.style.borderColor = '';
                 } else {
                     console.warn(`Ungültiger Preis für Produkt ${productId} ignoriert.`);
@@ -91,13 +87,14 @@ World.getInstance().events.subscribe('load_pricelist_scene', () => {
         // Event-Listener für Buttons
         setPricesButton.addEventListener('click', () => {
             applyPrices();
+            World.getInstance().events.emit('start_game')
         });
 
-        backButton.addEventListener('click', () => {
-            game.scene.start('MainScene');
-            document.getElementById('game-container').style.display = 'block';
-            document.getElementById('html-content').style.display = 'none';
-        });
+        // backButton.addEventListener('click', () => {
+        //     game.scene.start('MainScene');
+        //     document.getElementById('game-container').style.display = 'block';
+        //     document.getElementById('html-content').style.display = 'none';
+        // });
 
         // Initiale Anzeige
         renderProducts();

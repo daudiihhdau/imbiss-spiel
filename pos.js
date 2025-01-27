@@ -6,13 +6,13 @@ export class POS {
         this.inventory = new InventoryManagement();
         this.cart = [];
         this.logbook = []; // Logbuch für Ein- und Ausgänge
-        this.purchasePrices = new Map(); // Map zur Speicherung der Einkaufspreise
+        this.prices = new Map(); // Map zur Speicherung der Einkaufspreise und Verkaufspreise
     }
 
     // Produkte hinzufügen
     addProductToInventory(product, quantity, purchasePrice) {
         this.inventory.addProduct(product, quantity);
-        this.purchasePrices.set(product.id, purchasePrice); // Einkaufspreis speichern
+        this.prices.set(product.id, { purchasePrice, sellPrice: purchasePrice }); // Einkaufspreis und initialer Verkaufspreis speichern
         this.logbook.push({
             action: 'added',
             product: product.name,
@@ -24,8 +24,8 @@ export class POS {
 
     // Dynamische Preisberechnung
     calculatePrice(product, context) {
-        const purchasePrice = this.purchasePrices.get(product.id) || 0; // Einkaufspreis abrufen
-        const basePrice = context.basePrice || purchasePrice; // Verwende Basispreis oder Einkaufspreis
+        const priceData = this.prices.get(product.id) || { purchasePrice: 0, sellPrice: 0 };
+        const basePrice = context.basePrice || priceData.sellPrice; // Verwende Basispreis oder Verkaufspreis
         const discount = context.discount || 0;
         const taxRate = context.taxRate || 0;
 
@@ -107,8 +107,8 @@ export class POS {
     // Marge berechnen
     calculateMargin() {
         const margins = this.cart.map(item => {
-            const purchasePrice = this.purchasePrices.get(item.product.id) || 0;
-            const totalPurchasePrice = purchasePrice * item.quantity;
+            const priceData = this.prices.get(item.product.id) || { purchasePrice: 0 };
+            const totalPurchasePrice = priceData.purchasePrice * item.quantity;
             const totalSalePrice = item.price * item.quantity;
             return {
                 name: item.product.name,
@@ -119,6 +119,20 @@ export class POS {
         });
 
         return margins;
+    }
+
+    // Verkaufspreis aktualisieren
+    updateSellPrice(productId, newPrice) {
+        const product = this.inventory.products.find(p => p.id === productId);
+        if (!product) {
+            throw new Error('Produkt nicht gefunden.');
+        }
+        const priceData = this.prices.get(productId);
+        if (priceData) {
+            priceData.sellPrice = newPrice;
+            this.prices.set(productId, priceData);
+            console.log(`Verkaufspreis für Produkt ${productId} auf ${newPrice.toFixed(2)} € aktualisiert.`);
+        }
     }
 
     // Rechnung erstellen
@@ -135,12 +149,12 @@ export class POS {
         );
 
         this.cart.forEach(item => {
-            const purchasePrice = this.purchasePrices.get(item.product.id) || 0;
+            const priceData = this.prices.get(item.product.id) || { purchasePrice: 0 };
             this.logbook.push({
                 action: 'sold',
                 product: item.product.name,
                 quantity: item.quantity,
-                purchasePrice,
+                purchasePrice: priceData.purchasePrice,
                 salePrice: item.price,
                 date: new Date().toISOString()
             });
@@ -157,10 +171,11 @@ export class POS {
     // Lagerbestand anzeigen
     listInventory() {
         return this.inventory.listAllProducts().map(product => {
-            const purchasePrice = this.purchasePrices.get(product.id) || 0;
+            const priceData = this.prices.get(product.id) || { purchasePrice: 0, sellPrice: 0 };
             return {
                 ...product,
-                purchasePrice: purchasePrice.toFixed(2)
+                purchasePrice: priceData.purchasePrice.toFixed(2),
+                sellPrice: priceData.sellPrice.toFixed(2)
             };
         });
     }

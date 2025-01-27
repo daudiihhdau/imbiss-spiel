@@ -1,11 +1,8 @@
 import { World } from './World.js';
-import { game } from './game.js';
 import { Wholesale } from './Wholesale.js';
 
 World.getInstance().events.subscribe('load_purchase_scene', () => {
-    game.scene.stop();
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('html-content').style.display = 'block';
+    World.getInstance().events.emit('stop_game');
 
     const wholesale = new Wholesale();
 
@@ -71,7 +68,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                     <td>${product.quality}</td>
                     <td>${product.taste}</td>
                     <td>${product.stock}</td>
-                    <td>${product.purchasePrice} €</td>
+                    <td>${product.sellPrice} €</td>
                     <td><input type="number" class="table-input" min="1" max="${product.stock}" value="1" id="quantity-${product.id}"></td>
                     <td><button class="btn-blue" onclick="window.addToCart('${product.id}')">+</button></td>
                 `;
@@ -159,7 +156,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
 
                 // save products in foodStall
                 items.forEach(itemOn => {
-                    World.getInstance().getFoodStall().getPos().addProductToInventory(itemOn.product, itemOn.quantity, itemOn.purchasePrice)
+                    World.getInstance().getFoodStall().getPos().addProductToInventory(itemOn.product, itemOn.quantity, itemOn.price)
                 })
 
                 renderCart();
