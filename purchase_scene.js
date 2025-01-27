@@ -42,7 +42,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 <p><strong>Gesamtsumme:</strong> <span id="total-price">0</span> €</p>
                 <p><strong>Vermögen:</strong> <span id="wealth">0</span> €</p>
                 <p id="error-message" style="color: red; display: none;">Du hast nicht genug Geld für Deinen Warenkorb</p>
-                <button id="checkout-button" class="btn-green">Rechnung erstellen</button>
+                <button id="checkout-button" class="btn-green">Einkaufen</button>
             </div>
         `;
 
@@ -155,9 +155,7 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
 
             try {
                 const { invoice, items } = wholesale.pos.checkout('Wholesale Supplier', 'Kunde ABC', 'Retail');
-                console.log('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
-                console.log(invoice);
-                console.log(items);
+                console.log('Rechnung erstellt!', invoice, items);
 
                 // save products in foodStall
                 items.forEach(itemOn => {
@@ -165,6 +163,8 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
                 })
 
                 renderCart();
+
+                World.getInstance().events.emit('load_pricelist_scene');
             } catch (error) {
                 alert(`Fehler beim Erstellen der Rechnung: ${error.message}`);
             }

@@ -27,7 +27,7 @@ export class World {
             0
         ).getTime(); // Initialisiere mit Startdatum und Mitternacht
 
-        this.playerWealth = 2.22; // Anfangsvermögen
+        this.playerWealth = 22.22; // Anfangsvermögen
 
         this.foodStall = foodStalls[Math.floor(Math.random() * foodStalls.length)];
         this.location = this.isDebugMode ? locations[0] : locations[Phaser.Math.Between(1, locations.length - 1)];

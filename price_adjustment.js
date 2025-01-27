@@ -1,133 +1,107 @@
-import { World } from './world.js';
-// import { ImbissSoftware } from './InventoryManagement.js';
+import { World } from './World.js';
 import { game } from './game.js';
-
-// Kaufvorgang
-function applyAllPrices(items, inputs) {
-    try {
-        items.forEach(item => {
-            const inputElement = inputs[item.name];
-            const newPrice = parseFloat(inputElement.value);
-
-            if (!isNaN(newPrice) && newPrice > 0) {
-                // ImbissSoftware.getInstance().updateSellPrice(item.name, newPrice);
-                console.log(`Preis für ${item.name} auf ${newPrice.toFixed(2)} € gesetzt.`);
-                inputElement.style.borderColor = '';
-            } else {
-                console.warn(`Ungültiger Preis für ${item.name} ignoriert.`);
-                inputElement.style.borderColor = 'red';
-            }
-        });
-
-        // Erfolgsmeldung anzeigen
-        const successMessage = document.createElement('p');
-        successMessage.textContent = 'Preise erfolgreich aktualisiert!';
-        successMessage.classList.add('success-message');
-        document.getElementById('html-content').appendChild(successMessage);
-
-        setTimeout(() => successMessage.remove(), 3000);
-    } catch (error) {
-        console.error(`Fehler beim Aktualisieren der Preise: ${error.message}`);
-    }
-}
 
 World.getInstance().events.subscribe('load_pricelist_scene', () => {
     game.scene.stop();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('html-content').style.display = 'block';
 
-    const container = document.getElementById('html-content');
-    container.innerHTML = ''; // Reset content
-    
-    // Titel hinzufügen
-    const header = document.createElement('h1');
-    header.textContent = 'Verkaufspreise anpassen';
-    header.classList.add('fun-header');
-    container.appendChild(header);
+    function renderApp() {
+        document.getElementById('html-content').innerHTML = ''; // Reset content
 
-    // const items = ImbissSoftware.getInstance().getCurrentStock().sort((a, b) => a.name.localeCompare(b.name));
-    const inputs = {}; // Eingabe-Elemente sammeln
+        const appHTML = `
+            <h2>Verkaufspreise anpassen</h2>
+            <table id="product-table" class="table">
+                <thead>
+                    <tr>
+                        <th>Emoji</th>
+                        <th>Name</th>
+                        <th>Besonderheit</th>
+                        <th>Haltbarkeit</th>
+                        <th>Qualität</th>
+                        <th>Geschmack</th>
+                        <th>Bestand</th>
+                        <th>Aktueller Preis (€)</th>
+                        <th>Neuer Preis (€)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Produkte werden hier dynamisch hinzugefügt -->
+                </tbody>
+            </table>
 
-    // Tabelle erstellen
-    const table = document.createElement('table');
-    table.classList.add('table');
+            <button id="set-prices-button" class="btn-green">Preise setzen</button>
+            <button id="back-button" class="btn-blue">Zurück</button>
+        `;
 
-    // Tabellenkopf
-    const headerRow = document.createElement('tr');
-    ['Produkt',  'Im Lager', 'Aktueller Preis (€)', 'Neuer Preis (€)'].forEach(headerText => {
-        const th = document.createElement('th');
-        th.textContent = headerText;
-        headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
+        document.getElementById('html-content').innerHTML = appHTML;
 
-    // Produkte abrufen und Tabelle ausfüllen
-    items.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.classList.add(index % 2 === 0 ? 'row-even' : 'row-odd');
+        const productTableBody = document.querySelector('#product-table tbody');
+        const setPricesButton = document.getElementById('set-prices-button');
+        const backButton = document.getElementById('back-button');
+        const inputs = {}; // Eingabe-Elemente sammeln
 
-        // Produkt-Name und Emoji
-        const productCell = document.createElement('td');
-        productCell.textContent = item.emoji + ' ' + item.name;
-        row.appendChild(productCell);
+        // Produkte anzeigen
+        function renderProducts() {
+            const inventory = World.getInstance().getFoodStall().getPos().listInventory();
+            productTableBody.innerHTML = '';
+            inventory.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.emoji}</td>
+                    <td>${product.name}</td>
+                    <td>${product.attributeIds.join(',')}</td>
+                    <td>${product.expiryDate}</td>
+                    <td>${product.quality}</td>
+                    <td>${product.taste}</td>
+                    <td>${product.stock}</td>
+                    <td>${product.purchasePrice} €</td>
+                    <td><input type="number" class="price-input" min="0.01" step="0.01" value="${product.purchasePrice}" id="price-${product.id}"></td>
+                `;
+                productTableBody.appendChild(row);
+                inputs[product.id] = document.getElementById(`price-${product.id}`);
+            });
+        }
 
-        // Lagerbestand
-        const stockCell = document.createElement('td');
-        stockCell.textContent = item.stock;
-        row.appendChild(stockCell);
+        // Preise anwenden
+        function applyPrices() {
+            Object.keys(inputs).forEach(productId => {
+                const inputElement = inputs[productId];
+                const newPrice = parseFloat(inputElement.value);
 
-        // Aktueller Preis
-        const priceCell = document.createElement('td');
-        priceCell.textContent = item.sellPrice ? item.sellPrice.toFixed(2) : '0.00';
-        row.appendChild(priceCell);
+                if (!isNaN(newPrice) && newPrice > 0) {
+                    console.log(`Preis für Produkt ${productId} auf ${newPrice.toFixed(2)} € gesetzt.`);
+                    // Hier würde der Preis im Lager aktualisiert werden
+                    // wholesale.pos.updateSellPrice(productId, newPrice);
+                    inputElement.style.borderColor = '';
+                } else {
+                    console.warn(`Ungültiger Preis für Produkt ${productId} ignoriert.`);
+                    inputElement.style.borderColor = 'red';
+                }
+            });
 
-        // Eingabefeld für neuen Preis
-        const inputCell = document.createElement('td');
-        const inputElement = document.createElement('input');
-        inputElement.type = 'number';
-        inputElement.value = item.sellPrice || '0.00';
-        inputElement.min = '0.01';
-        inputElement.step = '0.01';
-        inputElement.classList.add('price-input');
+            // Erfolgsmeldung anzeigen
+            const successMessage = document.createElement('p');
+            successMessage.textContent = 'Preise erfolgreich aktualisiert!';
+            successMessage.style.color = 'green';
+            document.getElementById('html-content').appendChild(successMessage);
+            setTimeout(() => successMessage.remove(), 3000);
+        }
 
-        // Eingabe validieren
-        inputElement.addEventListener('input', () => {
-            const value = parseFloat(inputElement.value);
-            if (isNaN(value) || value <= 0) {
-                inputElement.style.borderColor = 'red';
-            } else {
-                inputElement.style.borderColor = '';
-            }
+        // Event-Listener für Buttons
+        setPricesButton.addEventListener('click', () => {
+            applyPrices();
         });
 
-        inputCell.appendChild(inputElement);
-        row.appendChild(inputCell);
+        backButton.addEventListener('click', () => {
+            game.scene.start('MainScene');
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('html-content').style.display = 'none';
+        });
 
-        // Speichere die Eingabe
-        inputs[item.name] = inputElement;
+        // Initiale Anzeige
+        renderProducts();
+    }
 
-        table.appendChild(row);
-    });
-
-    container.appendChild(table);
-
-    // Button "Preise setzen"
-    const setPricesButton = document.createElement('button');
-    setPricesButton.textContent = 'Preise setzen';
-    setPricesButton.classList.add('btn-save', 'btn-green');
-    setPricesButton.addEventListener('click', () => {
-        applyAllPrices(items, inputs);
-    });
-    container.appendChild(setPricesButton);
-
-    // Button "Zurück"
-    const backButton = document.createElement('button');
-    backButton.textContent = 'Zurück';
-    backButton.classList.add('btn-back', 'btn-blue');
-    backButton.addEventListener('click', () => {
-        game.scene.start('MainScene')
-        document.getElementById('game-container').style.display = 'block';
-        document.getElementById('html-content').style.display = 'none';
-    });
-    container.appendChild(backButton);
+    renderApp();
 });
