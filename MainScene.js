@@ -45,7 +45,8 @@ export class MainScene extends Phaser.Scene {
         const pluginPaths = [
             './plugins/customers/Plugin1.js',
             './plugins/customers/Plugin2.js',
-            './plugins/customers/Plugin3.js'
+            './plugins/customers/Plugin3.js',
+            './plugins/customers/Plugin4.js'
         ];
     
         for (const pathOn of pluginPaths) {
@@ -149,12 +150,6 @@ export class MainScene extends Phaser.Scene {
         const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
         character.position = { x: -70, y: this.scale.height - 150 };
         character.setTargetX(this.scale.width / 2 - 100);
-
-        character.addMiddleware('onCheckOptions', 'before', async (character) => {
-            console.log('############ Middleware', character);
-            character.setThinking("pupsen")
-        });
-        
         
         this.customers.push(character);
     }

@@ -1,5 +1,6 @@
 import { Emotions } from '../../Constants.js';
 import { CustomerQueue } from './CustomerQueue.js';
+import { HungrySentences, VerifySentences } from './Sentences.js';
 
 export class CharacterPlugin {
     constructor(spriteKey, character) {
@@ -8,15 +9,27 @@ export class CharacterPlugin {
         this.queue = CustomerQueue.getInstance();
 
         this.spriteKey = spriteKey
-        this.sprite = null;
-        this.bubble = null;
+        this.spriteGraphics = null;
+        this.bubbleGraphics = null;
+        this.bubbleTextGraphics = null;
+        this.statementText = ''
         this.position = null;
-
-        this.phase = 'onEntering'; // Startphase
-        this.phaseStartTime = null;
         this.targetX = null;
 
         this.middleware = {}; // Hooks für Phasen
+
+        // this.addMiddleware('onRecognizeHunger', 'before', async (character) => {
+        //     console.log("+++++++++++++++++++++++++++++++")
+        //     character.setThinking(HungrySentences[Math.floor(Math.random()*HungrySentences.length)].emoji)
+        // });
+
+        this.addMiddleware('onEnjoyAndEvaluate', 'before', async (character) => {
+            console.log("+++++++++++++++++++++++++++++++")
+            character.setThinking(VerifySentences[Math.floor(Math.random()*VerifySentences.length)].emoji)
+        });
+
+        this.phase = this.startPhase('onEntering');
+        this.phaseStartTime = null;
     }
 
     // Methode zum Hinzufügen von Hooks für Phasen
@@ -69,12 +82,12 @@ export class CharacterPlugin {
         if (this.position.x > this.targetX) speed *= -1
         this.position.x += speed;
 
-        if (this.sprite) this.sprite.setFlipX(this.position.x > this.targetX)
+        if (this.spriteGraphics) this.spriteGraphics.setFlipX(this.position.x > this.targetX)
     }
 
     setThinking(text) {
-        if (this.bubbleText && text) {
-            this.bubbleText.setText(text);
+        if (text) {
+            this.statementText = text;
         }
     }
 
@@ -91,17 +104,15 @@ export class CharacterPlugin {
     }
 
     showWishes() {
-        const itemsText = this.character.wishList.map(item => item.emoji).join(' ');
-        this.bubbleText.setText(itemsText);
+        this.statementText = this.character.wishList.map(item => item.emoji).join(' ');
     }
 
     showPurchasedItems() {
-        const itemsText = this.character.purchasedItems.map(item => item.emoji).join(' ');
-        this.bubbleText.setText(itemsText);
+        this.statementText = this.character.purchasedItems.map(item => item.emoji).join(' ');
     }
 
     update() {
-        if (!this.sprite) return
+        if (!this.spriteGraphics) return
 
         if (this.phase && this[this.phase]) {
             console.log("ff", this.phase)
@@ -110,22 +121,35 @@ export class CharacterPlugin {
     }
 
     render(scene, delta) {
-        if (!this.sprite) {
-            this.sprite = scene.add.sprite(this.position.x, this.position.y, this.spriteKey);
+        if (!this.spriteGraphics) {
+            this.spriteGraphics = scene.add.sprite(this.position.x, this.position.y, this.spriteKey);
         }
 
-        if (!this.bubble) {
-            this.bubble = scene.add.image(this.sprite.x + 20, this.sprite.y - 250, 'bubble').setOrigin(0.5).setScale(0.5);
-            this.bubbleText = scene.add.text(this.sprite.x + 20, this.sprite.y - 260, '', {
-                fontSize: '32px',
+        if (this.bubbleTextGraphics && this.statementText) {
+            this.bubbleTextGraphics.setText(this.statementText);
+        }
+
+        if (!this.bubbleGraphics) {
+            this.bubbleGraphics = scene.add.image(this.spriteGraphics.x + 20, this.spriteGraphics.y - 250, 'bubble').setOrigin(0.5).setScale(0.5);
+            this.bubbleTextGraphics = scene.add.text(this.bubbleGraphics.x, this.bubbleGraphics.y - 40, '', {
+                fontSize: '40px',
                 fill: '#000',
-                align: 'center'
+                align: 'center',
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 6,
+                    bottom: 6,
+                },
             }).setOrigin(0.5);
         }
 
-        this.sprite.setPosition(this.position.x, this.position.y);
-        this.bubble.setPosition(this.position.x + 50, this.position.y - 240);
-        this.bubbleText.setPosition(this.position.x + 50, this.position.y - 240);
+        this.bubbleGraphics.visible = this.statementText.length > 0
+        this.bubbleTextGraphics.visible = this.statementText.length > 0
+
+        this.spriteGraphics.setPosition(this.position.x, this.position.y);
+        this.bubbleGraphics.setPosition(this.position.x + 50, this.position.y - 240);
+        this.bubbleTextGraphics.setPosition(this.bubbleGraphics.x + 10, this.bubbleGraphics.y - 35);
 
         // Falls der Kunde den Bildschirm verlässt, wird die Position nicht weiter aktualisiert
         if (this.position.x > 3000) {
@@ -140,7 +164,6 @@ export class CharacterPlugin {
         // Stoppt vor dem Imbisswagen
         if (!this.hasReachedTargetX()) {
             this.moveToTargetX(3)
-            this.showWishes()
             this.setEmotion(Emotions.HUNGRY)
         } else {
             this.startPhase('onRecognizeHunger');
@@ -150,7 +173,6 @@ export class CharacterPlugin {
     // Phase: Hunger erkennen
     onRecognizeHunger = function () {
         console.log(`${this.character.firstName}: „Ich habe Hunger, was will ich essen?“`);
-        this.setThinking("Hunger")
         if (this.hasPhaseTimeElapsed(200)) {
             this.startPhase('onCheckOptions');
         }
@@ -176,22 +198,6 @@ export class CharacterPlugin {
     onEvaluatePricePerformance = function () {
         console.log(`${this.character.firstName}: „Ist es das wert? Was kostet es?“`);
         if (this.hasPhaseTimeElapsed(250)) {
-            this.startPhase('onConsiderAlternative');
-        }
-    };
-
-    // Phase: Alternative abwägen
-    onConsiderAlternative = function () {
-        console.log(`${this.character.firstName}: „Soll ich woanders hingehen oder warten?“`);
-        if (this.hasPhaseTimeElapsed(200)) {
-            this.startPhase('onConsiderTime');
-        }
-    };
-
-    // Phase: Zeitfaktor bedenken
-    onConsiderTime = function () {
-        console.log(`${this.character.firstName}: „Wie lange dauert es insgesamt?“`);
-        if (this.hasPhaseTimeElapsed(150)) {
             this.startPhase('onMakeDecision');
         }
     };
@@ -200,7 +206,7 @@ export class CharacterPlugin {
     onMakeDecision = function () {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
 
-        if (this.hasPhaseTimeElapsed(20)) {
+        if (this.hasPhaseTimeElapsed(180)) {
             if (!this.queue.contains(this)) {
                 this.queue.enqueue(this);
             }
@@ -215,7 +221,6 @@ export class CharacterPlugin {
         // Stoppt vor dem Imbisswagen
         if (!this.hasReachedTargetX()) {
             this.moveToTargetX(3)
-            this.setThinking("...")
             this.setEmotion(Emotions.HUNGRY)           
         } else {
             if (this.queue.isFirst(this)) {
@@ -227,16 +232,8 @@ export class CharacterPlugin {
     // Phase: Bestellen und zahlen
     onOrderAndPay = function () {
         console.log(`${this.character.firstName}: „Wie läuft der Kauf ab?“`);
-        this.sprite.setFlipX(false);
+        this.spriteGraphics.setFlipX(false);
         if (this.hasPhaseTimeElapsed(600)) {
-            this.startPhase('onWaitAndVerify');
-        }
-    };
-
-    // Phase: Erwarten und prüfen
-    onWaitAndVerify = function () {
-        console.log(`${this.character.firstName}: „Kommt alles wie bestellt?“`);
-        if (this.hasPhaseTimeElapsed(400)) {
             this.startPhase('onEnjoyAndEvaluate');
         }
     };
@@ -258,14 +255,13 @@ export class CharacterPlugin {
 
     onLeaving = function () {
         console.log(`${this.character.firstName}: "Ich gehe jetzt nach Hause."`);
-        this.setThinking("Bye")
         this.setEmotion(Emotions.HAPPY)
         this.position.x += 4;
     };
     
     destroy() {
-        this.sprite.destroy(); // Entfernt den Sprite, falls nötig
-        this.bubble.destroy();
-        this.bubbleText.destroy();
+        this.spriteGraphics.destroy(); // Entfernt den Sprite, falls nötig
+        this.bubbleGraphics.destroy();
+        this.bubbleTextGraphics.destroy();
     }
 }

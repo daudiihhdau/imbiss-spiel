@@ -1,4 +1,4 @@
-export const Sentences = [
+export const GeneralSentences = [
     { "emoji": "🔥❓", "bedeutung": "Habe ich den Herd ausgemacht?" },
     { "emoji": "💧➡️🥤", "bedeutung": "Ich sollte mehr Wasser trinken." },
     { "emoji": "🤔🍝🍱🍔", "bedeutung": "Was esse ich heute zum Mittag?" },
@@ -269,5 +269,95 @@ export const Sentences = [
     { "emoji": "🏗️📈", "bedeutung": "Wie schnell die Stadt wächst – hier wird überall gebaut." },
     { "emoji": "🚶‍♂️⛪", "bedeutung": "Ob die Kirche hier offen ist? Die Architektur ist wunderschön." },
     { "emoji": "🌳🏙️", "bedeutung": "Die Mischung aus Stadt und Natur gefällt mir." }
+  ]
+  
+
+  export const WaitingSentences = [
+    { "emoji": "⌛👥😤", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🕰️🙄", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "👥🕒🤔", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🙃⌛", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😤⏳👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😩🕒🛑", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🤷‍♀️⌛", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🕰️🙄", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "⌛😓👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😑🕒👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "⌛👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😤🕰️", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🙄⌛", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🕒😩", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😅👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "⌛😓", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😑🕒", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🙃🕰️", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "😩👥", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." },
+    { "emoji": "🤔⌛", "bedeutung": "Ich warte in dieser Schlange schon sehr lange." }
+  ]
+
+
+export const HungrySentences = [
+    { "emoji": "🤔", "bedeutung": "Ein Sandwich wäre schnell gemacht." },
+    { "emoji": "🙌", "bedeutung": "Sushi wäre ein Traum." },
+    { "emoji": "😅", "bedeutung": "Vielleicht reicht ein Hotdog, um mich zu retten." },
+    { "emoji": "🤔", "bedeutung": "Ob ich irgendwo Dumplings bekomme?" },
+    { "emoji": "🤤", "bedeutung": "Eine große Schüssel Ramen bitte!" },
+    { "emoji": "😌", "bedeutung": "Eiscreme wäre genau das Richtige jetzt." },
+    { "emoji": "😋", "bedeutung": "Ein Wrap wäre genau richtig." },
+    { "emoji": "🍴", "bedeutung": "Ein Cheeseburger wäre himmlisch." },
+  ]
+  
+export const EvaluateQueueSentences = [
+  { "emoji": "🤔🛒", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤷‍♂️", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🙄🛒", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "💳🤔", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "😬💰❓", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "💸🤷", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤨💳", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🛒❓", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "💰🙄", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤷‍♀️💵", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤔💰", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🙄💳", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "😟🛒", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "😬💸", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤔🛒❓", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "😬💳", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤔👛", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+  { "emoji": "🤔🛒", "bedeutung": "Soll ich wirklich hier was kaufen?" },
+]
+
+  export const VerifySentences = [
+    { "emoji": "😋✨", "bedeutung": "Das hat sich total gelohnt!" },
+    { "emoji": "🤤👍", "bedeutung": "Das Warten war es absolut wert." },
+    { "emoji": "🙄😐", "bedeutung": "Ganz okay, aber nichts Besonderes." },
+    { "emoji": "😌😊", "bedeutung": "Ich bin zufrieden und fühle mich wohl." },
+    { "emoji": "😅💸", "bedeutung": "Es war gut, aber dafür eindeutig zu teuer." },
+    { "emoji": "😏🤔", "bedeutung": "Ich bin mir nicht sicher, ob das wirklich nötig war." },
+    { "emoji": "🙃👎", "bedeutung": "Das hätte ich mir sparen können." },
+    { "emoji": "🤩👏", "bedeutung": "Ich bin begeistert! Ich komme sicher wieder." },
+    { "emoji": "😳😒", "bedeutung": "Das hat meine Erwartungen leider nicht erfüllt." },
+    { "emoji": "😄🙌", "bedeutung": "Ich bin froh, dass ich gewartet habe!" },
+    { "emoji": "😠🙄", "bedeutung": "Das war eine totale Enttäuschung." },
+    { "emoji": "😌💭", "bedeutung": "Nächstes Mal plane ich das besser ein." },
+    { "emoji": "🤤✨", "bedeutung": "Ich bin mehr als zufrieden – das war großartig!" },
+    { "emoji": "🤔😐", "bedeutung": "Es war okay, aber nichts, was ich noch mal machen würde." },
+    { "emoji": "😤👎", "bedeutung": "Das hat sich überhaupt nicht gelohnt." },
+    { "emoji": "🤷‍♂️🙂", "bedeutung": "Es war ganz nett, aber nichts Außergewöhnliches." },
+    { "emoji": "😍🙌", "bedeutung": "Das hat mich wirklich glücklich gemacht." },
+    { "emoji": "😓💸", "bedeutung": "Zu teuer für das, was es war." },
+    { "emoji": "✨🤩", "bedeutung": "Ein tolles Erlebnis, das mich überzeugt hat." },
+    { "emoji": "👎😐", "bedeutung": "Ich hätte mir etwas Besseres erwartet." },
+    { "emoji": "😊✨", "bedeutung": "Ich fühle mich gut und habe es genossen." },
+    { "emoji": "😩🙄", "bedeutung": "Die Wartezeit hat meine Laune komplett verdorben." },
+    { "emoji": "😁👏", "bedeutung": "Das war eine super Erfahrung!" },
+    { "emoji": "😏😅", "bedeutung": "Es war in Ordnung, aber nicht mein Highlight." },
+    { "emoji": "😎✨", "bedeutung": "Das war cool, ich würde es wiederholen." },
+    { "emoji": "😤🤷", "bedeutung": "Ich habe mehr erwartet und wurde enttäuscht." },
+    { "emoji": "😊💭", "bedeutung": "Das hat mich richtig zufrieden gemacht." },
+    { "emoji": "😔👎", "bedeutung": "Das war leider gar nichts für mich." },
+    { "emoji": "😁✨", "bedeutung": "Ein Erlebnis, das ich in Erinnerung behalten werde!" },
+    { "emoji": "🤷‍♂️🙂", "bedeutung": "Es war okay, aber es hat mich nicht umgehauen." }
   ]
   

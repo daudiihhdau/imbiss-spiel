@@ -1,11 +1,15 @@
 import { CharacterPlugin } from '../../CharacterPlugin.js';
+import { EvaluateQueueSentences } from '../../Sentences.js';
 
 export default function Plugin2(spriteKey, character) {
     const plugin = new CharacterPlugin(spriteKey, character);
 
+    plugin.addMiddleware('onMakeDecision', 'before', async (character) => {
+        character.setThinking(EvaluateQueueSentences[Math.floor(Math.random()*EvaluateQueueSentences.length)].emoji)
+    });
+
     plugin.onMakeDecision = function () {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
-        this.setThinking("anstellen?")
 
         if (this.hasPhaseTimeElapsed(2000)) {
             if (!this.queue.contains(this)) {
@@ -14,7 +18,7 @@ export default function Plugin2(spriteKey, character) {
 
             this.startPhase('onWaitingInQueue');
         } else {
-            this.setTargetX(1600)
+            this.setTargetX(900)
             this.moveToTargetX(2)
         }
     };
