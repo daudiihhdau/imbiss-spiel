@@ -32,8 +32,8 @@ export class MainScene extends Phaser.Scene {
         this.load.image('customer4', './img/characters/mensch4.png');
         this.load.image('bubble', './img/characters/bubble.png');
 
-        this.load.image(this.world.foodStall.getImage(), this.world.foodStall.getImage())
-        this.load.image('imbiss', this.world.location.getImage());
+        this.load.image(this.world.getFoodStall().getImage(), this.world.getFoodStall().getImage())
+        this.load.image('imbiss', this.world.getLocation().getImage());
 
         this.eventManager = new EventCharacterManager(this); // Initialisiere den EventCharacterManager
         this.eventManager.preload();
@@ -77,7 +77,7 @@ export class MainScene extends Phaser.Scene {
             document.getElementById('html-content').style.display = 'block';
         });
 
-        this.customerSchedule = this.world.location.generateCustomerSchedule();
+        this.customerSchedule = this.world.getLocation().generateCustomerSchedule();
         this.eventManager.startRandomEventSpawner(); // Starte die zufällige Generierung von Events
     }
 
@@ -97,7 +97,7 @@ export class MainScene extends Phaser.Scene {
             .setOrigin(0)
             .setDisplaySize(this.scale.width, this.scale.height);
 
-        this.add.image(this.scale.width / 2, this.scale.height / 2, this.world.foodStall.getImage())
+        this.add.image(this.scale.width / 2, this.scale.height / 2, this.world.getFoodStall().getImage())
             .setOrigin(0.5)
             .setScale(0.5);
     }
@@ -137,7 +137,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     checkSpawnProbability() {
-        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.getCurrentTimeInMinutes()) {
+        if (this.customerSchedule.length > 0 && this.customerSchedule[0].time === this.world.getTimeInMinutes()) {
             const nextCustomer = this.customerSchedule.shift();
             this.spawnCustomer(nextCustomer);
         }

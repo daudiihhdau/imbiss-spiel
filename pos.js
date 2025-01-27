@@ -52,12 +52,13 @@ export class POS {
 
         const price = this.calculatePrice(product, context);
 
-        const cartItem = this.cart.find(item => item.id === productId);
+        const cartItem = this.cart.find(item => item.product.id === productId);
         if (cartItem) {
             cartItem.quantity += quantity;
             cartItem.price = price; // Update den Preis, falls er sich geändert hat
         } else {
-            this.cart.push({ ...product, quantity, price });
+            // Produkt unter dem Key "product" speichern
+            this.cart.push({ product, quantity, price });
         }
 
         this.inventory.updateStock(productId, quantity);
@@ -65,7 +66,7 @@ export class POS {
 
     // Produkt aus dem Warenkorb entfernen
     removeFromCart(productId, quantity) {
-        const cartItemIndex = this.cart.findIndex(item => item.id === productId);
+        const cartItemIndex = this.cart.findIndex(item => item.product.id === productId);
 
         if (cartItemIndex === -1) {
             throw new Error('Produkt nicht im Warenkorb.');
@@ -88,8 +89,8 @@ export class POS {
     // Warenkorb anzeigen
     listCart() {
         return this.cart.map(item => ({
-            id: item.id,
-            name: item.name,
+            id: item.product.id,
+            name: item.product.name,
             quantity: item.quantity,
             unitPrice: item.price,
             totalPrice: item.price * item.quantity
@@ -106,11 +107,11 @@ export class POS {
     // Marge berechnen
     calculateMargin() {
         const margins = this.cart.map(item => {
-            const purchasePrice = this.purchasePrices.get(item.id) || 0;
+            const purchasePrice = this.purchasePrices.get(item.product.id) || 0;
             const totalPurchasePrice = purchasePrice * item.quantity;
             const totalSalePrice = item.price * item.quantity;
             return {
-                name: item.name,
+                name: item.product.name,
                 totalPurchasePrice: totalPurchasePrice.toFixed(2),
                 totalSalePrice: totalSalePrice.toFixed(2),
                 margin: (totalSalePrice - totalPurchasePrice).toFixed(2)
@@ -127,17 +128,17 @@ export class POS {
         }
 
         const invoice = InvoiceGenerator.generateInvoice(
-            this.cart.map(item => ({ item, quantity: item.quantity })),
+            this.cart.map(item => ({ item: item.product, quantity: item.quantity })),
             supplier,
             customer,
             category
         );
 
         this.cart.forEach(item => {
-            const purchasePrice = this.purchasePrices.get(item.id) || 0;
+            const purchasePrice = this.purchasePrices.get(item.product.id) || 0;
             this.logbook.push({
                 action: 'sold',
-                product: item.name,
+                product: item.product.name,
                 quantity: item.quantity,
                 purchasePrice,
                 salePrice: item.price,
@@ -145,12 +146,12 @@ export class POS {
             });
         });
 
-        const products = this.cart
+        const items = this.cart;
 
         // Warenkorb leeren
         this.cart = [];
 
-        return { invoice, products }
+        return { invoice, items };
     }
 
     // Lagerbestand anzeigen

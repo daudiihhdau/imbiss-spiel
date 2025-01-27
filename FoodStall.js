@@ -10,6 +10,10 @@ export class FoodStall {
         return this.image;
     }
 
+    getPos() {
+        return this.posSystem
+    }
+
     // Produkte hinzufügen
     addProductToInventory(product, quantity, purchasePrice) {
         this.posSystem.addProductToInventory(product, quantity, purchasePrice);

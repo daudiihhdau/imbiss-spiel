@@ -154,10 +154,15 @@ World.getInstance().events.subscribe('load_purchase_scene', () => {
             }
 
             try {
-                const { invoice, products } = wholesale.pos.checkout('Wholesale Supplier', 'Kunde ABC', 'Retail');
+                const { invoice, items } = wholesale.pos.checkout('Wholesale Supplier', 'Kunde ABC', 'Retail');
                 console.log('Rechnung erstellt! Details wurden in der Konsole ausgegeben.');
                 console.log(invoice);
+                console.log(items);
 
+                // save products in foodStall
+                items.forEach(itemOn => {
+                    World.getInstance().getFoodStall().getPos().addProductToInventory(itemOn.product, itemOn.quantity, itemOn.purchasePrice)
+                })
 
                 renderCart();
             } catch (error) {

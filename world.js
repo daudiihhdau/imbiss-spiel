@@ -42,10 +42,18 @@ export class World {
         return World.instance;
     }
 
+    getLocation() {
+        return this.location
+    }
+
+    getFoodStall() {
+        return this.foodStall
+    }
+
     updateClock() {
         this.timestamp += 60 * 1000; // Eine Minute in Millisekunden hinzufügen
 
-        if (this.getCurrentTimeInMinutes() === 0) {
+        if (this.getTimeInMinutes() === 0) {
             this.events.emit('midnight'); // Mitternacht-Ereignis auslösen
         }
     }
@@ -67,17 +75,17 @@ export class World {
         this.timer = null;
     }
 
-    getCurrentDate() {
+    getDate() {
         return new Date(this.timestamp);
     }
 
     getDayOfWeek() {
         const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-        return days[this.getCurrentDate().getDay()];
+        return days[this.getDate().getDay()];
     }
 
     getFormattedDate() {
-        const date = this.getCurrentDate();
+        const date = this.getDate();
         const months = [
             'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
             'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
@@ -86,7 +94,7 @@ export class World {
     }
 
     getFormattedTime() {
-        const date = this.getCurrentDate();
+        const date = this.getDate();
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
@@ -100,13 +108,13 @@ export class World {
         return new Date(year, month, 0).getDate();
     }
 
-    getCurrentTimeInMinutes() {
-        const date = this.getCurrentDate();
+    getTimeInMinutes() {
+        const date = this.getDate();
         return date.getHours() * 60 + date.getMinutes();
     }
 
     getLightProgress() {
-        const currentTime = this.getCurrentTimeInMinutes();
+        const currentTime = this.getTimeInMinutes();
         const sunriseStart = 260; // 04:20 Uhr
         const sunriseEnd = 420; // 07:00 Uhr
         const sunsetStart = 1250; // 20:50 Uhr
