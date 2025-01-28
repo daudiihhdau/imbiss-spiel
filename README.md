@@ -25,8 +25,8 @@ Das Imbiss-Spiel ist eine witzige Simulation, in der du dein eigenes Fast-Food-B
 Wir bauen nicht nur ein Spiel, wir haben jede Menge Spaß dabei, neue Ideen zu entwickeln und auszuprobieren. Egal ob du programmieren kannst, kreative Einfälle hast oder einfach nur testen willst – deine Unterstützung ist willkommen!  
 
 ### 2. **Entfalte deine Kreativität:**  
-- Hast du verrückte Ideen für neue Rezepte oder besondere Kundentypen?  
-- Bist du neugierig, wie man KI in Spielen einsetzen kann?  
+- Hast du verrückte Ideen für neue Spielmechaniken oder besondere Kundentypen?  
+- Bist du neugierig, wie man mit KI-Tools ein Spielen entwickeln kann?  
 - Willst du lernen, wie ein Open-Source-Projekt funktioniert?  
 
 Dann bist du hier genau richtig!
