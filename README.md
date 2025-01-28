@@ -51,7 +51,8 @@ Dann bist du hier genau richtig!
    npm install -g local-web-server
    git clone https://github.com/daudiihhdau/imbiss-spiel  
    cd imbiss-spiel  
-   ws --spa index.html```
+   ws --spa index.html
+   ```
 
 Drücke F5, wenn keine Kunden kommen. Dann wird eine zufällige andere Location geladen.
 
