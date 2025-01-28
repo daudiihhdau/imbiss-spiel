@@ -1,5 +1,5 @@
 import { EventDispatcher } from './event_dispatcher.js';
-import { World } from './world.js';
+import { World } from './World.js';
 
 export class ImbissSoftware {
     static instance = null;
@@ -48,7 +48,7 @@ export class ImbissSoftware {
     }
 
     logEntry(entry) {
-        const date = new Date(World.getInstance().getFormattedDate() + ' ' + World.getInstance().getFormattedTime())
+        const date = new Date(World.getInstance().getDate())
         this.logging.push({ ...entry, date });
     }
 
@@ -166,7 +166,7 @@ export class ImbissSoftware {
     }
 
     filterLogsByTimeframe(timeframe = '24h') {
-        const now = new Date(World.getInstance().getFormattedDate());
+        const now = new Date(World.getInstance().getDate());
         let cutoffDate;
 
         switch (timeframe) {

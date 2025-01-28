@@ -1,4 +1,4 @@
-import { ImbissSoftware } from './inventory_management.js';
+// import { ImbissSoftware } from './InventoryManagement.js';
 import { World } from './world.js';
 import { game } from './game.js';
 
@@ -60,117 +60,117 @@ function createTable(headers, data, options = {}) {
     return table;
 }
 
-World.getInstance().events.subscribe('midnight', () => {
-    const imbissSoftware = ImbissSoftware.getInstance();
-    const stats = imbissSoftware.getStatistics('24h');
-    const revenuePerProduct = imbissSoftware.getRevenuePerProduct('24h');
-    const profit = imbissSoftware.calculateProfit('24h');
-    const currentStock = imbissSoftware.getCurrentStock();
-    const popularProducts = imbissSoftware.getMostPopularProducts('24h');
+// World.getInstance().events.subscribe('midnight', () => {
+//     const imbissSoftware = ImbissSoftware.getInstance();
+//     const stats = imbissSoftware.getStatistics('24h');
+//     const revenuePerProduct = imbissSoftware.getRevenuePerProduct('24h');
+//     const profit = imbissSoftware.calculateProfit('24h');
+//     const currentStock = imbissSoftware.getCurrentStock();
+//     const popularProducts = imbissSoftware.getMostPopularProducts('24h');
 
-    game.scene.stop();
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('html-content').style.display = 'block';
+//     game.scene.stop();
+//     document.getElementById('game-container').style.display = 'none';
+//     document.getElementById('html-content').style.display = 'block';
 
-    const container = document.getElementById('html-content');
-    container.innerHTML = ''; // Reset content
+//     const container = document.getElementById('html-content');
+//     container.innerHTML = ''; // Reset content
 
-    // Tageszusammenfassung hinzufügen
-    const header = document.createElement('h1');
-    header.textContent = 'Tageszusammenfassung';
-    container.appendChild(header);
+//     // Tageszusammenfassung hinzufügen
+//     const header = document.createElement('h1');
+//     header.textContent = 'Tageszusammenfassung';
+//     container.appendChild(header);
 
-    // Tagesgewinn
-    const dailyProfit = document.createElement('p');
-    dailyProfit.textContent = `Tagesgewinn: ${profit.toFixed(2)} €`;
-    container.appendChild(dailyProfit);
+//     // Tagesgewinn
+//     const dailyProfit = document.createElement('p');
+//     dailyProfit.textContent = `Tagesgewinn: ${profit.toFixed(2)} €`;
+//     container.appendChild(dailyProfit);
 
-    // Tagesumsatz
-    const dailyRevenue = document.createElement('p');
-    dailyRevenue.textContent = `Tagesumsatz: ${stats.salesStats.totalRevenue.toFixed(2)} €`;
-    container.appendChild(dailyRevenue);
+//     // Tagesumsatz
+//     const dailyRevenue = document.createElement('p');
+//     dailyRevenue.textContent = `Tagesumsatz: ${stats.salesStats.totalRevenue.toFixed(2)} €`;
+//     container.appendChild(dailyRevenue);
 
-    // Durchschnittlicher Umsatz pro Stunde
-    const avgRevenuePerHour = stats.salesStats.totalRevenue / 24;
-    const hourlyRevenue = document.createElement('p');
-    hourlyRevenue.textContent = `Durchschnittlicher Umsatz pro Stunde: ${avgRevenuePerHour.toFixed(2)} €`;
-    container.appendChild(hourlyRevenue);
+//     // Durchschnittlicher Umsatz pro Stunde
+//     const avgRevenuePerHour = stats.salesStats.totalRevenue / 24;
+//     const hourlyRevenue = document.createElement('p');
+//     hourlyRevenue.textContent = `Durchschnittlicher Umsatz pro Stunde: ${avgRevenuePerHour.toFixed(2)} €`;
+//     container.appendChild(hourlyRevenue);
 
-    // Durchschnittlicher Umsatz pro Kunde
-    const avgRevenuePerCustomer = stats.salesStats.totalRevenue / stats.salesStats.totalItemsSold;
-    const customerRevenue = document.createElement('p');
-    customerRevenue.textContent = `Durchschnittlicher Umsatz pro Kunde: ${avgRevenuePerCustomer.toFixed(2)} €`;
-    container.appendChild(customerRevenue);
+//     // Durchschnittlicher Umsatz pro Kunde
+//     const avgRevenuePerCustomer = stats.salesStats.totalRevenue / stats.salesStats.totalItemsSold;
+//     const customerRevenue = document.createElement('p');
+//     customerRevenue.textContent = `Durchschnittlicher Umsatz pro Kunde: ${avgRevenuePerCustomer.toFixed(2)} €`;
+//     container.appendChild(customerRevenue);
 
-    // Verhältnis von Verkäufen zu Einkäufen
-    const salesToPurchasesRatio = (stats.salesStats.totalRevenue / stats.purchaseStats.totalCost).toFixed(2);
-    const salesPurchases = document.createElement('p');
-    let ratioMessage = `Verhältnis von Verkäufen zu Einkäufen: ${salesToPurchasesRatio} `;
+//     // Verhältnis von Verkäufen zu Einkäufen
+//     const salesToPurchasesRatio = (stats.salesStats.totalRevenue / stats.purchaseStats.totalCost).toFixed(2);
+//     const salesPurchases = document.createElement('p');
+//     let ratioMessage = `Verhältnis von Verkäufen zu Einkäufen: ${salesToPurchasesRatio} `;
 
-    if (salesToPurchasesRatio > 1.5) {
-        ratioMessage += '🟢 Sehr gut';
-        salesPurchases.style.color = 'green';
-    } else if (salesToPurchasesRatio >= 1.0) {
-        ratioMessage += '🟡 Akzeptabel';
-        salesPurchases.style.color = 'orange';
-    } else {
-        ratioMessage += '🔴 Kritisch';
-        salesPurchases.style.color = 'red';
-    }
+//     if (salesToPurchasesRatio > 1.5) {
+//         ratioMessage += '🟢 Sehr gut';
+//         salesPurchases.style.color = 'green';
+//     } else if (salesToPurchasesRatio >= 1.0) {
+//         ratioMessage += '🟡 Akzeptabel';
+//         salesPurchases.style.color = 'orange';
+//     } else {
+//         ratioMessage += '🔴 Kritisch';
+//         salesPurchases.style.color = 'red';
+//     }
 
-    salesPurchases.textContent = ratioMessage;
-    container.appendChild(salesPurchases);
+//     salesPurchases.textContent = ratioMessage;
+//     container.appendChild(salesPurchases);
 
-    // Beliebteste Produkte (Tabelle)
-    const popularProductsHeadline = document.createElement('h2');
-    popularProductsHeadline.textContent = 'Beliebteste Produkte';
-    container.appendChild(popularProductsHeadline);
+//     // Beliebteste Produkte (Tabelle)
+//     const popularProductsHeadline = document.createElement('h2');
+//     popularProductsHeadline.textContent = 'Beliebteste Produkte';
+//     container.appendChild(popularProductsHeadline);
 
-    const popularHeaders = ['Produkt', 'Verkäufe'];
-    const popularData = popularProducts.map(({ itemName, quantity }) => ({
-        'Produkt': `${currentStock.find(item => item.name === itemName)?.emoji || ''} ${itemName}`,
-        'Verkäufe': quantity,
-    }));
-    container.appendChild(createTable(popularHeaders, popularData, {
-        emptyMessage: 'Keine Verkäufe',
-    }));
+//     const popularHeaders = ['Produkt', 'Verkäufe'];
+//     const popularData = popularProducts.map(({ itemName, quantity }) => ({
+//         'Produkt': `${currentStock.find(item => item.name === itemName)?.emoji || ''} ${itemName}`,
+//         'Verkäufe': quantity,
+//     }));
+//     container.appendChild(createTable(popularHeaders, popularData, {
+//         emptyMessage: 'Keine Verkäufe',
+//     }));
 
-    // Umsatz pro Produkt (Tabelle)
-    const productRevenueHeadline = document.createElement('h2');
-    productRevenueHeadline.textContent = 'Umsatz pro Produkt';
-    container.appendChild(productRevenueHeadline);
+//     // Umsatz pro Produkt (Tabelle)
+//     const productRevenueHeadline = document.createElement('h2');
+//     productRevenueHeadline.textContent = 'Umsatz pro Produkt';
+//     container.appendChild(productRevenueHeadline);
 
-    const revenueHeaders = ['Produkt', 'Umsatz (€)'];
-    const revenueData = Object.entries(revenuePerProduct).map(([product, revenue]) => ({
-        'Produkt': product,
-        'Umsatz (€)': revenue.toFixed(2),
-    }));
-    container.appendChild(createTable(revenueHeaders, revenueData));
+//     const revenueHeaders = ['Produkt', 'Umsatz (€)'];
+//     const revenueData = Object.entries(revenuePerProduct).map(([product, revenue]) => ({
+//         'Produkt': product,
+//         'Umsatz (€)': revenue.toFixed(2),
+//     }));
+//     container.appendChild(createTable(revenueHeaders, revenueData));
 
-    // Bestand aller Produkte (Tabelle)
-    const stockHeadline = document.createElement('h2');
-    stockHeadline.textContent = 'Bestand aller Produkte';
-    container.appendChild(stockHeadline);
+//     // Bestand aller Produkte (Tabelle)
+//     const stockHeadline = document.createElement('h2');
+//     stockHeadline.textContent = 'Bestand aller Produkte';
+//     container.appendChild(stockHeadline);
 
-    const stockHeaders = ['Produkt', 'Bestand', 'Verkaufspreis (€)'];
-    const stockData = currentStock.map(product => ({
-        'Produkt': `${product.emoji} ${product.name}`,
-        'Bestand': product.stock,
-        'Verkaufspreis (€)': product.sellPrice.toFixed(2),
-    }));
-    container.appendChild(createTable(stockHeaders, stockData, {
-        rowStyles: { backgroundColor: '#f8d7da' }, // Zeilenstil für niedrige Bestände
-    }));
+//     const stockHeaders = ['Produkt', 'Bestand', 'Verkaufspreis (€)'];
+//     const stockData = currentStock.map(product => ({
+//         'Produkt': `${product.emoji} ${product.name}`,
+//         'Bestand': product.stock,
+//         'Verkaufspreis (€)': product.sellPrice.toFixed(2),
+//     }));
+//     container.appendChild(createTable(stockHeaders, stockData, {
+//         rowStyles: { backgroundColor: '#f8d7da' }, // Zeilenstil für niedrige Bestände
+//     }));
 
-    // Button: Nächsten Tag starten
-    const nextDayButton = document.createElement('button');
-    nextDayButton.textContent = 'Nächsten Tag starten';
-    nextDayButton.style.marginTop = '20px';
-    nextDayButton.style.padding = '10px 20px';
-    nextDayButton.style.fontSize = '16px';
-    nextDayButton.addEventListener('click', () => {
-        World.getInstance().events.emit('load_purchase_scene'); 
-    });
+//     // Button: Nächsten Tag starten
+//     const nextDayButton = document.createElement('button');
+//     nextDayButton.textContent = 'Nächsten Tag starten';
+//     nextDayButton.style.marginTop = '20px';
+//     nextDayButton.style.padding = '10px 20px';
+//     nextDayButton.style.fontSize = '16px';
+//     nextDayButton.addEventListener('click', () => {
+//         World.getInstance().events.emit('load_purchase_scene'); 
+//     });
 
-    container.appendChild(nextDayButton);
-});
+//     container.appendChild(nextDayButton);
+// });

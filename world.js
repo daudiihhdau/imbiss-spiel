@@ -1,11 +1,14 @@
-import { ImbissSoftware } from './inventory_management.js';
 import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
+import { foodStalls } from './FoodStall.js';
+import { locations } from './Location.js';
 
 export class World {
     static instance = null;
-    timer = null; // Referenz auf den Timer
-    isRunning = false; // Status, ob die Uhr läuft
-    events = new EventDispatcher(); // Dein EventDispatcher für Mitternacht und andere Events
+    timer = null;
+    isRunning = false;
+    foodStall = null;
+    location = null;
+    events = new EventDispatcher(); // EventDispatcher für Mitternacht und andere Events
 
     constructor(params = {}) {
         if (World.instance) {
@@ -15,23 +18,19 @@ export class World {
         const urlParams = new URLSearchParams(params.url || window.location.search);
         this.isDebugMode = urlParams.get('debug') === '1';
 
-        this.imbissSoftware = ImbissSoftware.getInstance();
-        this.imbissSoftware.dispatcher.subscribe('lowStock', data => {
-            console.log(`Warnung: Niedriger Bestand bei ${data.name}. Verbleibend: ${data.stock}`);
-        });
+        this.timestamp = new Date(
+            params.startYear || 2025,
+            (params.startMonth || 1) - 1,
+            params.startDay || 1,
+            0,
+            0,
+            0
+        ).getTime(); // Initialisiere mit Startdatum und Mitternacht
 
-        if (this.isDebugMode) {
-            ImbissSoftware.items.forEach(item => {
-                item.stock = 2;
-            });
-        }
+        this.playerWealth = 22.22; // Anfangsvermögen
 
-        this.currentTime = 0; // Minuten seit Tagesbeginn (00:00)
-        this.currentDay = params.startDay || 1; // Starttag (Standard: 1. Januar)
-        this.currentMonth = params.startMonth || 1; // Startmonat (Standard: Januar)
-        this.currentYear = params.startYear || 2025; // Startjahr (Standard: 2025)
-
-        this.playerWealth = 2.22; // Anfangsvermögen
+        this.foodStall = foodStalls[Math.floor(Math.random() * foodStalls.length)];
+        this.location = this.isDebugMode ? locations[0] : locations[Phaser.Math.Between(1, locations.length - 1)];
 
         World.instance = this;
     }
@@ -43,26 +42,19 @@ export class World {
         return World.instance;
     }
 
-    updateClock() {
-        this.currentTime = (this.currentTime + 1) % 1440; // Minuten im Tagesverlauf (0-1439)
-        if (this.currentTime === 0) {
-            this.advanceDay();
-            this.events.emit('midnight'); // Mitternacht-Ereignis auslösen
-        }
+    getLocation() {
+        return this.location
     }
 
-    advanceDay() {
-        this.currentDay += 1;
+    getFoodStall() {
+        return this.foodStall
+    }
 
-        const daysInMonth = this.getDaysInMonth(this.currentMonth, this.currentYear);
-        if (this.currentDay > daysInMonth) {
-            this.currentDay = 1;
-            this.currentMonth += 1;
+    updateClock() {
+        this.timestamp += 60 * 1000; // Eine Minute in Millisekunden hinzufügen
 
-            if (this.currentMonth > 12) {
-                this.currentMonth = 1;
-                this.currentYear += 1;
-            }
+        if (this.getTimeInMinutes() === 0) {
+            this.events.emit('midnight'); // Mitternacht-Ereignis auslösen
         }
     }
 
@@ -72,7 +64,7 @@ export class World {
 
         this.timer = setInterval(() => {
             this.updateClock();
-        }, 12); // Alle 120ms
+        }, 80); // Alle 80ms (Simulation von Spielzeit)
     }
 
     stopClock() {
@@ -83,32 +75,65 @@ export class World {
         this.timer = null;
     }
 
-    getDaysInMonth(month, year) {
-        return new Date(year, month, 0).getDate(); // Liefert die Anzahl der Tage im Monat
+    getDate() {
+        return new Date(this.timestamp);
     }
 
     getDayOfWeek() {
-        const date = new Date(this.currentYear, this.currentMonth - 1, this.currentDay);
         const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-        return days[date.getDay()];
+        return days[this.getDate().getDay()];
     }
 
     getFormattedDate() {
+        const date = this.getDate();
         const months = [
-            'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+            'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
             'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
         ];
-        return `${this.currentDay}. ${months[this.currentMonth - 1]} ${this.currentYear}`;
+        return `${date.getDate()}. ${months[date.getMonth()]} ${date.getFullYear()}`;
     }
 
     getFormattedTime() {
-        const hours = Math.floor(this.currentTime / 60).toString().padStart(2, '0');
-        const minutes = (this.currentTime % 60).toString().padStart(2, '0');
+        const date = this.getDate();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     }
 
-    getHour() {
-        return Math.floor(this.currentTime / 60); // Wandelt Minuten in Stunden um
+    getFullDateAndTime() {
+        return `${this.getDayOfWeek()}, ${this.getFormattedDate()} um ${this.getFormattedTime()}`;
+    }
+
+    getDaysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    getTimeInMinutes() {
+        const date = this.getDate();
+        return date.getHours() * 60 + date.getMinutes();
+    }
+
+    getLightProgress() {
+        const currentTime = this.getTimeInMinutes();
+        const sunriseStart = 260; // 04:20 Uhr
+        const sunriseEnd = 420; // 07:00 Uhr
+        const sunsetStart = 1250; // 20:50 Uhr
+        const sunsetEnd = 1400; // 23:20 Uhr
+
+        if (currentTime >= sunriseStart && currentTime <= sunriseEnd) {
+            return (currentTime - sunriseStart) / (sunriseEnd - sunriseStart);
+        } else if (currentTime > sunriseEnd && currentTime < sunsetStart) {
+            return 1;
+        } else if (currentTime >= sunsetStart && currentTime <= sunsetEnd) {
+            return 1 - (currentTime - sunsetStart) / (sunsetEnd - sunsetStart);
+        } else {
+            return 0;
+        }
+    }
+
+    getCurrentAlpha() {
+        const lightProgress = this.getLightProgress();
+        return 0.9 - (lightProgress * 0.9);
     }
 
     addWealth(amount) {
@@ -120,31 +145,5 @@ export class World {
 
     getWealth() {
         return this.playerWealth;
-    }
-
-    getFullDateAndTime() {
-        return `${this.getDayOfWeek()}, ${this.getFormattedDate()} um ${this.getFormattedTime()}`;
-    }
-
-    getLightProgress() {
-        const sunriseStart = 260;
-        const sunriseEnd = 420;
-        const sunsetStart = 1250;
-        const sunsetEnd = 1400;
-
-        if (this.currentTime >= sunriseStart && this.currentTime <= sunriseEnd) {
-            return (this.currentTime - sunriseStart) / (sunriseEnd - sunriseStart);
-        } else if (this.currentTime > sunriseEnd && this.currentTime < sunsetStart) {
-            return 1;
-        } else if (this.currentTime >= sunsetStart && this.currentTime <= sunsetEnd) {
-            return 1 - (this.currentTime - sunsetStart) / (sunsetEnd - sunsetStart);
-        } else {
-            return 0;
-        }
-    }
-
-    getCurrentAlpha() {
-        const lightProgress = this.getLightProgress();
-        return 0.9 - (lightProgress * 0.9);
     }
 }
