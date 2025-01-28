@@ -2,7 +2,7 @@
 
 Willkommen bei **unserem Familienprojekt**, das aus einer wilden Mischung aus Burgern, Pommes, Codeschnipseln und viel Liebe entstanden ist! ❤️  
 
-**Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld beibringen und nebenbei selbst herausfinden, wie viel man mit ChatGPT (und/oder anderen KI-Tools) die Programmierung automatisieren kann.  
+**Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld beibringen und nebenbei selbst herausfinden, wie man mit ChatGPT (und/oder anderen KI-Tools) die Programmierung automatisieren kann.  
 
 Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue Ideen – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll angeblich auch bald herumfliegen. 🦇🍟)  
 
