@@ -11,14 +11,14 @@ export default function Plugin2(spriteKey, character) {
     plugin.onMakeDecision = function () {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
 
-        if (this.hasPhaseTimeElapsed(2000)) {
+        if (this.hasPhaseTimeElapsed(4000)) {
             if (!this.queue.contains(this)) {
                 this.queue.enqueue(this);
             }
 
             this.startPhase('onWaitingInQueue');
         } else {
-            this.setTargetX(900)
+            this.setTargetX(90)
             this.moveToTargetX(2)
         }
     };

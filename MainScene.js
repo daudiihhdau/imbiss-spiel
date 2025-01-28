@@ -149,7 +149,7 @@ export class MainScene extends Phaser.Scene {
         const pluginIndex = Phaser.Math.Between(0, this.customerPlugins.length - 1);
         const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
         character.position = { x: -70, y: this.scale.height - 150 };
-        character.setTargetX(this.scale.width / 2 - 100);
+        character.setTargetX(this.queue.calcLastPositionX());
         
         this.customers.push(character);
     }

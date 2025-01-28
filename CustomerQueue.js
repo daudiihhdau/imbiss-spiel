@@ -57,10 +57,18 @@ export class CustomerQueue {
     // Aktualisiere die Positionen der verbleibenden Kunden
     updateQueuePositions() {
         for (let i = 0; i < this.queue.length; i++) {
+            const newX = this.calcPositionX(i);
             const customer = this.queue[i];
-            const newX = this.centerX - i * this.spacing; // Neue Position basierend auf Index
             customer.setTargetX(newX);
         }
         console.log("Schlange aktualisiert.");
+    }
+
+    calcPositionX(queueIndex) {
+        return this.centerX - queueIndex * this.spacing;
+    }
+
+    calcLastPositionX() {
+        return this.calcPositionX(this.queue.length - 1)
     }
 }
