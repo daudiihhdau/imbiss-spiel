@@ -4,7 +4,7 @@ Willkommen bei **unserem Familienprojekt**, das aus einer wilden Mischung aus Bu
 
 **Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld beibringen und nebenbei selbst herausfinden, wie man mit ChatGPT (und/oder anderen KI-Tools) die Programmierung automatisieren kann.  
 
-Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue Ideen – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll angeblich auch bald herumfliegen. 🦇🍟)  
+Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue [Ideen-Board.md](Ideen) – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll angeblich auch bald herumfliegen. 🦇🍟)  
 
 **Begleite uns auf unserer Reise und hab mit uns Spaß dabei, das Imbiss-Spiel gemeinsam weiterzuentwickeln!**
 
@@ -61,6 +61,17 @@ Drücke F5, wenn keine Kunden kommen. Dann wird eine zufällige andere Location 
 Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Abends beim Abendbrot spinnen wir die verrücktesten Ideen, was noch ins Spiel kommen könnte. Vielleicht ein mehr Müll auf den Straßen, ein lustiger Kundentyp – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
 
 Es geht nicht darum, perfekt zu sein – sondern darum, gemeinsam etwas Cooles zu schaffen und dabei jede Menge zu lachen.
+
+---
+
+## 🎯 **Die erste spielbare Version:**  
+Hier sind die nächsten Meilensteine, die wir erreichen wollen:  
+- Kunden haben Wünsche (z. B. "Ich will einen Cheeseburger!")  
+- Kunden bestellen ihre Speisen  
+- Kunden bezahlen für ihre Bestellungen  
+- Statistik am Tagesende anzeigen (z. B. Einnahmen, Ausgaben, Kundenanzahl)  
+- Ein neuer Tag beginnt (inkl. Reset für Kunden und Vorräte)  
+- Zu Beginn kann man das Startvermögen und ein Ziel (z. B. "1.000€ Gewinn") festlegen  
 
 ---
 
