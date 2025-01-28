@@ -59,7 +59,7 @@ Drücke F5, wenn keine Kunden kommen. Dann wird eine zufällige andere Location 
 ---
 
 ## 🌟 **Unsere Vision:**  
-Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Abends beim Abendbrot spinnen wir die verrücktesten Ideen, was noch ins Spiel kommen könnte. Vielleicht ein mehr Müll auf den Straßen, ein lustiger Kundentyp – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
+Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Abends beim Abendbrot spinnen wir die verrücktesten Ideen, was noch ins Spiel kommen könnte. Vielleicht mehr Müll auf den Straßen, ein verrückter lustiger Kundentyp – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
 
 Es geht nicht darum, perfekt zu sein – sondern darum, gemeinsam etwas Cooles zu schaffen und dabei jede Menge zu lachen.
 
