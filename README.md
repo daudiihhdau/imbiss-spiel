@@ -67,5 +67,9 @@ Es geht nicht darum, perfekt zu sein – sondern darum, gemeinsam etwas Cooles z
 ## 🍔 **Los geht’s!**  
 Mach mit, schreib uns, und lass uns zusammen das *beste Fast-Food-Spiel der Welt* bauen!  
 
+## 📝 Lizenz  
+
+Dieses Projekt steht unter der [MIT-Lizenz](LICENSE). Das bedeutet: Du kannst es frei nutzen, ändern und weiterverbreiten – wir freuen uns, wenn du uns als ursprüngliche Autoren erwähnst! 😊
+
 **Gemeinsam ist man nicht einsam**  
 – Deine Imbiss-Spiel-Familie 🍟❤️
