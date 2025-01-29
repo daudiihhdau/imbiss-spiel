@@ -1,10 +1,10 @@
 # 🍔 **Das Imbiss-Spiel** – Kreiere dein eigenes Fast-Food-Imperium!
 
-Willkommen bei **unserem Familienprojekt**, das aus einer wilden Mischung aus Burgern, Pommes, Codeschnipseln und viel Liebe entstanden ist! ❤️  
+Willkommen bei **unserem Familienprojekt**, das aus wilden Kinderträumen und viel Liebe entstanden ist! ❤️  
 
-**Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld beibringen und nebenbei selbst herausfinden, wie man mit ChatGPT (und Co) die Programmierung automatisieren kann.  
+**Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld näherbringen und nebenbei selbst herausfinden, wie man mittels ChatGPT (und Co) die Arbeit als Programmierer automatisieren kann.  
 
-Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue [Ideen](Ideen-Board.md) – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll angeblich auch bald herumfliegen. 🦇🍟)  
+Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue [Ideen](Ideen-Board.md) – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll bspw. auch bald herumfliegen. 🦇🍟)  
 
 **Begleite uns auf unserer Reise und hab mit uns Spaß dabei, das Imbiss-Spiel gemeinsam weiterzuentwickeln!**
 
@@ -14,22 +14,15 @@ Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue [Ideen](
 Das Imbiss-Spiel ist eine witzige Simulation, in der du dein eigenes Fast-Food-Business aufbaust:  
 - 🍟 **Verkaufe reichlich Pommes und Burger:** Ohne den ganzen Tag nach Frittenfett zu riechen.
 - 📈 **Lerne Buchhaltung (ohne zu gähnen):** Budgetiere wie ein Profi – oder geh pleite und probier’s nochmal!  
-- 🤖 **KI-Tools nutzen:** Ich probiere so viele KI-Tools wie möglich aus, um ihre Stärken, Schwächen und Möglichkeiten in der Programmierung zu erforschen.  
-- 🛠️ **Schreibe eigene Plugins:** Füge neue Kundentypen, Speisen oder sogar lustige Mechaniken hinzu – der Code ist offen für deine Kreativität!
+- 🛠️ **Schreibe eigene Plugins:** Füge neue Kundentypen, Speisen oder lustige Spielmechaniken hinzu – der Code ist offen für deine Kreativität!
+- 🤖 **KI-Tools nutzen:** Wir benutzen, wann immer es geht, moderne KI-Tools, um ihre Stärken, Schwächen und Möglichkeiten in der Programmierung zu erforschen.  
 
 ---
 
 ## 🧐 **Warum solltest du mitmachen?**
 
 ### 1. **Sei Teil einer kreativen Reise:**  
-Wir bauen nicht nur ein Spiel, wir haben jede Menge Spaß dabei, neue Ideen zu entwickeln und auszuprobieren. Egal ob du programmieren kannst, kreative Einfälle hast oder einfach nur testen willst – deine Unterstützung ist willkommen!  
-
-### 2. **Entfalte deine Kreativität:**  
-- Hast du verrückte Ideen für neue Spielmechaniken oder besondere Kundentypen?  
-- Bist du neugierig, wie man mit KI-Tools ein Spielen entwickeln kann?  
-- Willst du lernen, wie ein Open-Source-Projekt funktioniert?  
-
-Dann bist du hier genau richtig!
+Wir bauen nicht nur ein Spiel, wir haben auch jede Menge Spaß dabei uns neue Ideen auszudenken. Egal ob du programmieren kannst, einen kreativen Wunsch hast oder einfach nur testen willst – deine Unterstützung ist willkommen!  
 
 ---
 
@@ -54,14 +47,16 @@ Dann bist du hier genau richtig!
    ws --spa index.html
    ```
 
-Drücke F5, wenn keine Kunden kommen. Dann wird eine zufällige andere Location geladen.
+Öffne das Spiel anschließend im Browser unter http://localhost:8000.
+Drücke F5, wenn keine Kunden kommen. Dann wird eine andere andere zufällige Location geladen.
+Wundere Dich nicht, wenn der Bildschirm am Anfang dunkel ist. Der Imbiss öffnet in der Nacht und die Sonne geht erst später auf. 😉  
 
 ---
 
 ## 🌟 **Unsere Vision:**  
-Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Abends beim Abendbrot spinnen wir die verrücktesten Ideen, was noch ins Spiel kommen könnte. Vielleicht mehr Müll auf den Straßen, ein verrückter lustiger Kundentyp – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
+Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Wir überlegen uns fortwährend neuen Ideen, die wir einbauen sollten. Wie wäre es mit mehr Müll auf den Straßen, einen schimpfenden Kunden – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
 
-Es geht nicht darum, perfekt zu sein – sondern darum, gemeinsam etwas Cooles zu schaffen und dabei jede Menge zu lachen.
+Es geht nicht darum ein marktfähiges Spiel zu bauen. Wir wollen gemeinsam mit Euch etwas Cooles bauen und über unsere Ideen lachen.
 
 ---
 
