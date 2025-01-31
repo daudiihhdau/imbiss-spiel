@@ -12,8 +12,8 @@ export default function Plugin2(spriteKey, character) {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
 
         if (this.hasPhaseTimeElapsed(4000)) {
-            if (!this.queue.contains(this)) {
-                this.queue.enqueue(this);
+            if (!this.world.getCustomerQueue().contains(this)) {
+                this.world.getCustomerQueue().enqueue(this);
             }
 
             this.startPhase('onWaitingInQueue');

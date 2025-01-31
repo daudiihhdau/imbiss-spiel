@@ -1,12 +1,12 @@
 import { Emotions } from '../../Constants.js';
-import { CustomerQueue } from './CustomerQueue.js';
+import { World } from './World.js';
 import { HungrySentences, VerifySentences } from './Sentences.js';
 
 export class CharacterPlugin {
     constructor(spriteKey, character) {
         this.character = character; // Der Charakter wird von außen übergeben
 
-        this.queue = CustomerQueue.getInstance();
+        this.world = World.getInstance();
 
         this.spriteKey = spriteKey
         this.spriteGraphics = null;
@@ -207,8 +207,8 @@ export class CharacterPlugin {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
 
         if (this.hasPhaseTimeElapsed(180)) {
-            if (!this.queue.contains(this)) {
-                this.queue.enqueue(this);
+            if (!this.world.getCustomerQueue().contains(this)) {
+                this.world.getCustomerQueue().enqueue(this);
             }
 
             this.startPhase('onWaitingInQueue');
@@ -223,7 +223,7 @@ export class CharacterPlugin {
             this.moveToTargetX(3)
             this.setEmotion(Emotions.HUNGRY)           
         } else {
-            if (this.queue.isFirst(this)) {
+            if (this.world.getCustomerQueue().isFirst(this)) {
                 this.startPhase('onOrderAndPay'); // Wechselt in die nächste Phase
             }
         }
@@ -245,8 +245,8 @@ export class CharacterPlugin {
         if (this.hasPhaseTimeElapsed(500)) {
             console.log(`${this.character.firstName} hat alle Phasen durchlaufen.`);
             
-            if (this.queue.contains(this)) {
-                this.queue.dequeue(this);
+            if (this.world.getCustomerQueue().contains(this)) {
+                this.world.getCustomerQueue().dequeue(this);
             }
 
             this.startPhase('onLeaving');

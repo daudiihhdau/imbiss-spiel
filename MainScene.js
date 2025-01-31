@@ -2,7 +2,6 @@ import { Character } from './Character.js';
 // import { setupDebug } from './debug.js';
 import { World } from './World.js';
 import { EventCharacterManager } from './event_character.js'; // Import der EventCharacterManager-Klasse
-import { CustomerQueue } from './CustomerQueue.js';
 
 export class MainScene extends Phaser.Scene {
     constructor() {
@@ -37,8 +36,6 @@ export class MainScene extends Phaser.Scene {
 
         this.eventManager = new EventCharacterManager(this); // Initialisiere den EventCharacterManager
         this.eventManager.preload();
-
-        this.queue = CustomerQueue.getInstance(this);
     }
 
     async loadAsyncPlugins() {
@@ -61,7 +58,7 @@ export class MainScene extends Phaser.Scene {
         // setupDebug(this);
 
         // Tag-Nacht-Overlay hinzufügen
-        this.dayCycleOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000)
+        this.dayCycleOverlay = this.add.rectangle(0, 0, window.screenSize.width, window.screenSize.height, 0x000000)
             .setOrigin(0)
             .setDepth(5) // Über Hintergrund, aber unter anderen Objekten
             .setAlpha(this.world.getCurrentAlpha()); // Initialer Helligkeitswert
@@ -94,16 +91,16 @@ export class MainScene extends Phaser.Scene {
     setupScene() {
         this.add.image(0, 0, 'imbiss')
             .setOrigin(0)
-            .setDisplaySize(this.scale.width, this.scale.height);
+            .setDisplaySize(window.screenSize.width, window.screenSize.height);
 
-        this.add.image(this.scale.width / 2, this.scale.height / 2, this.world.getFoodStall().getImage())
+        this.add.image(window.screenSize.width / 2, window.screenSize.height / 2, this.world.getFoodStall().getImage())
             .setOrigin(0.5)
             .setScale(0.5);
     }
 
     setupTopBar() {
         const barHeight = 43;
-        this.add.rectangle(0, 0, this.scale.width, barHeight, 0xffffff)
+        this.add.rectangle(0, 0, window.screenSize.width, barHeight, 0xffffff)
             .setOrigin(0)
             .setDepth(10);
 
@@ -112,7 +109,7 @@ export class MainScene extends Phaser.Scene {
             fill: '#000',
         }).setDepth(11);
 
-        this.wealthText = this.add.text(this.scale.width - 20, 10, `💰 ${this.world.getWealth().toFixed(2)}€`, {
+        this.wealthText = this.add.text(window.screenSize.width - 20, 10, `💰 ${this.world.getWealth().toFixed(2)}€`, {
             fontSize: '26px',
             fill: '#000',
         }).setOrigin(1, 0).setDepth(11);
@@ -148,8 +145,8 @@ export class MainScene extends Phaser.Scene {
 
         const pluginIndex = Phaser.Math.Between(0, this.customerPlugins.length - 1);
         const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
-        character.position = { x: -70, y: this.scale.height - 150 };
-        character.setTargetX(this.queue.calcLastPositionX());
+        character.position = { x: -70, y: window.screenSize.height - 150 };
+        character.setTargetX(this.world.getCustomerQueue().calcLastPositionX());
         
         this.customers.push(character);
     }

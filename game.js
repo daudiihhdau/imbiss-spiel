@@ -4,12 +4,20 @@ import './purchase_scene.js';
 import './price_adjustment.js';
 // import './daily_summarize.js';
 
-let game; // Spielobjekt wird hier deklariert, aber nicht sofort initialisiert.
+let game;
+
+// global available
+window.screenSize = {
+    width: window.innerWidth,
+    height: window.innerHeight
+};
+
+console.log("window.screenSize existiert:", window.screenSize);
 
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: window.screenSize.width,
+    height: window.screenSize.height,
     parent: 'game-container',
     physics: {
         default: 'arcade',

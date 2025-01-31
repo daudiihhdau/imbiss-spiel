@@ -1,4 +1,5 @@
 import { EventDispatcher } from './event_dispatcher.js'; // Deine EventDispatcher-Klasse
+import { CustomerQueue } from './CustomerQueue.js';
 import { foodStalls } from './FoodStall.js';
 import { locations } from './Location.js';
 
@@ -8,6 +9,8 @@ export class World {
     isRunning = false;
     foodStall = null;
     location = null;
+    customerQueue = null;
+
     events = new EventDispatcher(); // EventDispatcher für Mitternacht und andere Events
 
     constructor(params = {}) {
@@ -31,6 +34,7 @@ export class World {
 
         this.foodStall = foodStalls[Math.floor(Math.random() * foodStalls.length)];
         this.location = this.isDebugMode ? locations[0] : locations[Phaser.Math.Between(1, locations.length - 1)];
+        this.customerQueue = new CustomerQueue();
 
         World.instance = this;
     }
@@ -48,6 +52,10 @@ export class World {
 
     getFoodStall() {
         return this.foodStall
+    }
+
+    getCustomerQueue() {
+        return this.customerQueue
     }
 
     updateClock() {

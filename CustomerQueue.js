@@ -1,29 +1,16 @@
 export class CustomerQueue {
-    constructor(scene) {
-        if (CustomerQueue.instance) {
-            return CustomerQueue.instance; // Gibt die bestehende Instanz zurück
-        }
-
-        this.scene = scene;
-        this.centerX = scene.scale.width / 2;
-        this.centerY = scene.scale.height / 2;
-
+    constructor() {
         this.queue = []; // Array zur Speicherung der Kunden
         this.spacing = 120; // Abstand zwischen den Kunden
-
-        CustomerQueue.instance = this; // Speichere die Instanz
     }
 
-    static getInstance(scene) {
-        if (!CustomerQueue.instance) {
-            CustomerQueue.instance = new CustomerQueue(scene);
-        }
-        return CustomerQueue.instance;
+    calcCenterX() {
+        return window.screenSize.width / 2;
     }
 
     // Füge einen neuen Kunden zur Schlange hinzu
     enqueue(character) {
-        const positionX = this.centerX - this.queue.length * this.spacing; // Berechne die Position des neuen Kunden
+        const positionX = this.calcCenterX() - this.queue.length * this.spacing; // Berechne die Position des neuen Kunden
         character.setTargetX(positionX);
         this.queue.push(character); // Füge den Kunden zur Schlange hinzu
         console.log(`Neuer Kunde ${character.character.firstName} in der Schlange.`);
@@ -65,7 +52,7 @@ export class CustomerQueue {
     }
 
     calcPositionX(queueIndex) {
-        return this.centerX - queueIndex * this.spacing;
+        return this.calcCenterX() - queueIndex * this.spacing;
     }
 
     calcLastPositionX() {
