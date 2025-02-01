@@ -47,7 +47,14 @@ export class CharacterPlugin {
                 }
                 return false;
             },
-            onOrderAndPay: () => this.hasReachedTargetX() && this.world.getCustomerQueue().isFirst(this),
+            onOrderAndPay: () => { 
+                if (this.hasReachedTargetX() && this.world.getCustomerQueue().isFirst(this)) return true
+
+                if (!this.hasReachedTargetX()) {
+                    this.moveToTargetX(3);
+                }
+                return false;
+            },
             onEnjoyAndEvaluate: () => this.hasPhaseTimeElapsed(600),
             onLeaving: () => {
                 if (this.hasPhaseTimeElapsed(500)) {
@@ -254,11 +261,6 @@ export class CharacterPlugin {
 
     onWaitingInQueue = function () {
         console.log(`${this.character.firstName}: „Warten! Ich stelle mich hinten an.“`);
-
-        // Stoppt vor dem Imbisswagen
-        if (!this.hasReachedTargetX()) {
-            this.moveToTargetX(3)       
-        }
     };
 
     onOrderAndPay = function () {
