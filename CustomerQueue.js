@@ -58,4 +58,26 @@ export class CustomerQueue {
     calcLastPositionX() {
         return this.calcPositionX(this.queue.length - 1)
     }
+
+    // jostle ahead
+    moveToFront(character) {
+        const index = this.queue.indexOf(character);
+        
+        if (index === -1) {
+            console.log(`${character.character.firstName} ist nicht in der Warteschlange.`);
+            return;
+        }
+    
+        // 1️⃣ Charakter aus der aktuellen Position entfernen
+        this.queue.splice(index, 1);
+    
+        // 2️⃣ Charakter an den Anfang der Schlange setzen
+        this.queue.unshift(character);
+    
+        console.log(`${character.character.firstName} hat sich vorgedrängelt! 😲`);
+    
+        // 3️⃣ Alle Positionen in der Schlange neu berechnen
+        this.updateQueuePositions();
+    }
+    
 }

@@ -13,23 +13,69 @@ export class CharacterPlugin {
         this.bubbleGraphics = null;
         this.bubbleTextGraphics = null;
         this.statementText = ''
-        this.position = null;
+        this.position = { x: 0, y: 0 };
         this.targetX = null;
 
         this.middleware = {}; // Hooks für Phasen
 
-        // this.addMiddleware('onRecognizeHunger', 'before', async (character) => {
-        //     console.log("+++++++++++++++++++++++++++++++")
-        //     character.setThinking(HungrySentences[Math.floor(Math.random()*HungrySentences.length)].emoji)
-        // });
+        this.phaseOrder = [
+            'onEntering',
+            'onRecognizeHunger',
+            'onCheckOptions',
+            'onEvaluateQueue',
+            'onEvaluatePricePerformance',
+            'onMakeDecision',
+            'onWaitingInQueue',
+            'onOrderAndPay',
+            'onEnjoyAndEvaluate',
+            'onLeaving'
+        ];
 
-        this.addMiddleware('onEnjoyAndEvaluate', 'before', async (character) => {
-            console.log("+++++++++++++++++++++++++++++++")
-            character.setThinking(VerifySentences[Math.floor(Math.random()*VerifySentences.length)].emoji)
-        });
+        this.phaseConditions = {
+            onEntering: () => true,
+            onRecognizeHunger: () => this.hasReachedTargetX(),
+            onCheckOptions: () => this.hasPhaseTimeElapsed(200),
+            onEvaluateQueue: () => this.hasPhaseTimeElapsed(200),
+            onEvaluatePricePerformance: () => this.hasPhaseTimeElapsed(200),
+            onMakeDecision: () => this.hasPhaseTimeElapsed(200),
+            onWaitingInQueue: () => {
+                if (this.hasPhaseTimeElapsed(180)) {
+                    if (!this.world.getCustomerQueue().contains(this)) {
+                        this.world.getCustomerQueue().enqueue(this);
+                    }
+                    return true;
+                }
+                return false;
+            },
+            onOrderAndPay: () => this.hasReachedTargetX() && this.world.getCustomerQueue().isFirst(this),
+            onEnjoyAndEvaluate: () => this.hasPhaseTimeElapsed(600),
+            onLeaving: () => {
+                if (this.hasPhaseTimeElapsed(500)) {
+                    if (this.world.getCustomerQueue().contains(this)) {
+                        this.world.getCustomerQueue().dequeue(this);
+                    }
+                    return true;
+                }
+                return false;
+            } // Letzte Phase immer erreichbar
+        };
 
         this.phase = this.startPhase('onEntering');
         this.phaseStartTime = null;
+    }
+
+    canChangePhase(phase) {
+        return this.phaseConditions[phase] && this.phaseConditions[phase]();
+    }
+
+    async checkPhaseTransition() {
+        const currentIndex = this.phaseOrder.indexOf(this.phase);
+        if (currentIndex === -1 || currentIndex >= this.phaseOrder.length - 1) return;
+
+        const nextPhase = this.phaseOrder[currentIndex + 1];
+        if (this.canChangePhase(nextPhase)) {
+            await this.startPhase(nextPhase);
+        }
     }
 
     // Methode zum Hinzufügen von Hooks für Phasen
@@ -54,13 +100,13 @@ export class CharacterPlugin {
     // Startet eine Phase und integriert Hooks
     async startPhase(phase) {
         console.log(`Starting phase: ${phase}`);
-        await this.executeMiddleware(phase, 'before'); // Middleware vor der Phase
+        await this.executeMiddleware(phase, 'before');
         if (this[phase]) {
             this.phaseStartTime = Date.now();
-            this.phase = phase
-            await this[phase](); // Hauptlogik der Phase
+            this.phase = phase;
+            await this[phase]();
         }
-        await this.executeMiddleware(phase, 'after'); // Middleware nach der Phase
+        await this.executeMiddleware(phase, 'after');
     }
 
     // Überprüft, wie lange der Charakter bereits in der Phase verweilt
@@ -70,7 +116,7 @@ export class CharacterPlugin {
     }
 
     hasReachedTargetX() {
-        const tolerance = 100;
+        const tolerance = 50;
         return Math.abs(this.targetX - this.position.x) <= tolerance;
     }
 
@@ -79,11 +125,33 @@ export class CharacterPlugin {
     }
 
     moveToTargetX(speed) {
-        if (this.position.x > this.targetX) speed *= -1
-        this.position.x += speed;
-
-        if (this.spriteGraphics) this.spriteGraphics.setFlipX(this.position.x > this.targetX)
+        // Prüfe, ob das Ziel schon erreicht wurde
+        if (this.hasReachedTargetX()) {
+            return;
+        }
+    
+        // Reduziere Geschwindigkeit, wenn der Kunde kurz vor dem Ziel ist
+        const distance = Math.abs(this.targetX - this.position.x);
+        if (distance < 100) {
+            speed = Math.max(speed / 2, 2); // Halbieren, aber nicht unter 2 fallen
+        }
+    
+        // Bestimme Bewegungsrichtung
+        if (this.position.x > this.targetX) speed *= -1;
+    
+        // Bewege den Charakter, aber überlaufe nicht das Ziel
+        if (Math.abs(this.position.x + speed - this.targetX) < Math.abs(speed)) {
+            this.position.x = this.targetX; // Direkt auf Ziel setzen, falls er drüber gehen würde
+        } else {
+            this.position.x += speed;
+        }
+    
+        // Flip Sprite in Phaser.js
+        if (this.spriteGraphics) {
+            this.spriteGraphics.setFlipX(this.position.x > this.targetX);
+        }
     }
+    
 
     setThinking(text) {
         if (text) {
@@ -118,6 +186,7 @@ export class CharacterPlugin {
             console.log("ff", this.phase)
             this[this.phase]();
         }
+        this.checkPhaseTransition();
     }
 
     render(scene, delta) {
@@ -160,59 +229,27 @@ export class CharacterPlugin {
 
     onEntering = function () {
         console.log(`${this.character.firstName}: "Ich laufe hier lang."`);
-
-        // Stoppt vor dem Imbisswagen
-        if (!this.hasReachedTargetX()) {
-            this.moveToTargetX(3)
-            this.setEmotion(Emotions.HUNGRY)
-        } else {
-            this.startPhase('onRecognizeHunger');
-        }
+        this.moveToTargetX(3)
     };
 
-    // Phase: Hunger erkennen
     onRecognizeHunger = function () {
         console.log(`${this.character.firstName}: „Ich habe Hunger, was will ich essen?“`);
-        if (this.hasPhaseTimeElapsed(200)) {
-            this.startPhase('onCheckOptions');
-        }
     };
 
-    // Phase: Optionen prüfen
     onCheckOptions = function () {
         console.log(`${this.character.firstName}: „Gibt es hier etwas, das mir schmeckt?“`);
-        if (this.hasPhaseTimeElapsed(300)) {
-            this.startPhase('onEvaluateQueue');
-        }
     };
 
-    // Phase: Schlange bewerten
     onEvaluateQueue = function () {
         console.log(`${this.character.firstName}: „Wie lang ist die Schlange? Habe ich die Zeit und Geduld?“`);
-        if (this.hasPhaseTimeElapsed(250)) {
-            this.startPhase('onEvaluatePricePerformance');
-        }
     };
 
-    // Phase: Preis-Leistungs-Abgleich
     onEvaluatePricePerformance = function () {
         console.log(`${this.character.firstName}: „Ist es das wert? Was kostet es?“`);
-        if (this.hasPhaseTimeElapsed(250)) {
-            this.startPhase('onMakeDecision');
-        }
     };
 
-    // Phase: Entscheidung treffen
     onMakeDecision = function () {
         console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
-
-        if (this.hasPhaseTimeElapsed(180)) {
-            if (!this.world.getCustomerQueue().contains(this)) {
-                this.world.getCustomerQueue().enqueue(this);
-            }
-
-            this.startPhase('onWaitingInQueue');
-        }
     };
 
     onWaitingInQueue = function () {
@@ -220,43 +257,22 @@ export class CharacterPlugin {
 
         // Stoppt vor dem Imbisswagen
         if (!this.hasReachedTargetX()) {
-            this.moveToTargetX(3)
-            this.setEmotion(Emotions.HUNGRY)           
-        } else {
-            if (this.world.getCustomerQueue().isFirst(this)) {
-                this.startPhase('onOrderAndPay'); // Wechselt in die nächste Phase
-            }
+            this.moveToTargetX(3)       
         }
     };
 
-    // Phase: Bestellen und zahlen
     onOrderAndPay = function () {
         console.log(`${this.character.firstName}: „Wie läuft der Kauf ab?“`);
-        this.spriteGraphics.setFlipX(false);
-        if (this.hasPhaseTimeElapsed(600)) {
-            this.startPhase('onEnjoyAndEvaluate');
-        }
     };
 
-    // Phase: Genießen und bewerten
     onEnjoyAndEvaluate = function () {
         console.log(`${this.character.firstName}: „Hat es sich gelohnt?“`);
-
-        if (this.hasPhaseTimeElapsed(500)) {
-            console.log(`${this.character.firstName} hat alle Phasen durchlaufen.`);
-            
-            if (this.world.getCustomerQueue().contains(this)) {
-                this.world.getCustomerQueue().dequeue(this);
-            }
-
-            this.startPhase('onLeaving');
-        }
     };
 
     onLeaving = function () {
         console.log(`${this.character.firstName}: "Ich gehe jetzt nach Hause."`);
-        this.setEmotion(Emotions.HAPPY)
-        this.position.x += 4;
+        this.setTargetX(4000)
+        this.moveToTargetX(4)
     };
     
     destroy() {

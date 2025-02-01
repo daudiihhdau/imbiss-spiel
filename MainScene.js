@@ -40,10 +40,10 @@ export class MainScene extends Phaser.Scene {
 
     async loadAsyncPlugins() {
         const pluginPaths = [
-            './plugins/customers/Plugin1.js',
-            './plugins/customers/Plugin2.js',
-            './plugins/customers/Plugin3.js',
-            './plugins/customers/Plugin4.js'
+             './plugins/customers/Plugin1.js',
+            // './plugins/customers/Plugin2.js',
+            // './plugins/customers/PluginPassBy.js',
+            // './plugins/customers/PluginHurry.js'
         ];
     
         for (const pathOn of pluginPaths) {
@@ -147,7 +147,7 @@ export class MainScene extends Phaser.Scene {
         const character = this.customerPlugins[pluginIndex].default(spriteKey, new Character('Alice', 'Smith', 25));
         character.position = { x: -70, y: window.screenSize.height - 150 };
         character.setTargetX(this.world.getCustomerQueue().calcLastPositionX());
-        
+
         this.customers.push(character);
     }
 }
