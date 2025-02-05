@@ -1,11 +1,9 @@
-import { Emotions } from '../../Constants.js';
 import { World } from './World.js';
-import { HungrySentences, VerifySentences } from './Sentences.js';
 
 export class CharacterPlugin {
     constructor(spriteKey, character) {
-        this.character = character; // Der Charakter wird von außen übergeben
-
+        this.character = character;
+        
         this.world = World.getInstance();
 
         this.spriteKey = spriteKey
@@ -15,6 +13,7 @@ export class CharacterPlugin {
         this.statementText = ''
         this.position = { x: 0, y: 0 };
         this.targetX = null;
+        this.phaseStartTime = null;
 
         this.middleware = {}; // Hooks für Phasen
 
@@ -31,58 +30,55 @@ export class CharacterPlugin {
             'onLeaving'
         ];
 
-        this.phaseConditions = {
-            onEntering: () => true,
-            onRecognizeHunger: () => this.hasReachedTargetX(),
-            onCheckOptions: () => this.hasPhaseTimeElapsed(200),
-            onEvaluateQueue: () => this.hasPhaseTimeElapsed(200),
-            onEvaluatePricePerformance: () => this.hasPhaseTimeElapsed(200),
-            onMakeDecision: () => this.hasPhaseTimeElapsed(200),
-            onWaitingInQueue: () => {
-                if (this.hasPhaseTimeElapsed(180)) {
-                    if (!this.world.getCustomerQueue().contains(this)) {
-                        this.world.getCustomerQueue().enqueue(this);
-                    }
-                    return true;
-                }
-                return false;
-            },
-            onOrderAndPay: () => { 
-                if (this.hasReachedTargetX() && this.world.getCustomerQueue().isFirst(this)) return true
-
-                if (!this.hasReachedTargetX()) {
-                    this.moveToTargetX(3);
-                }
-                return false;
-            },
-            onEnjoyAndEvaluate: () => this.hasPhaseTimeElapsed(600),
-            onLeaving: () => {
-                if (this.hasPhaseTimeElapsed(500)) {
-                    if (this.world.getCustomerQueue().contains(this)) {
-                        this.world.getCustomerQueue().dequeue(this);
-                    }
-                    return true;
-                }
-                return false;
-            } // Letzte Phase immer erreichbar
-        };
-
         this.phase = this.startPhase('onEntering');
-        this.phaseStartTime = null;
     }
 
-    canChangePhase(phase) {
-        return this.phaseConditions[phase] && this.phaseConditions[phase]();
+    hasFixedEntryConditions(phase) {
+        const conditions = {
+            "onMakeDecision": () => !this.world.getCustomerQueue().contains(this),
+            "onEnjoyAndEvaluate": () => this.world.getCustomerQueue().contains(this)
+        };
+        return conditions[phase] ? conditions[phase]() : true;
     }
 
-    async checkPhaseTransition() {
+    executeMandatoryCommands(phase) {
+        const mandatoryActions = {
+            "onMakeDecision": () => {
+                if (!this.world.getCustomerQueue().contains(this)) {
+                    this.world.getCustomerQueue().enqueue(this);
+                }
+            },
+            "onEnjoyAndEvaluate": () => {
+                if (this.world.getCustomerQueue().contains(this)) {
+                    this.world.getCustomerQueue().dequeue(this);
+                }
+            }
+        };
+        if (mandatoryActions[phase]) {
+            mandatoryActions[phase]();
+        }
+    }
+
+    async startNextPhase() {
         const currentIndex = this.phaseOrder.indexOf(this.phase);
         if (currentIndex === -1 || currentIndex >= this.phaseOrder.length - 1) return;
 
         const nextPhase = this.phaseOrder[currentIndex + 1];
-        if (this.canChangePhase(nextPhase)) {
+        if (this.hasFixedEntryConditions(nextPhase)) {
             await this.startPhase(nextPhase);
         }
+    }
+
+    async startPhase(phase) {
+        console.log(`Starting phase: ${phase}`);
+        await this.executeMiddleware(phase, 'before'); // Middleware vor der Phase
+        if (this[phase]) {
+            this.phaseStartTime = Date.now();
+            this.phase = phase
+            this.executeMandatoryCommands(phase);
+            await this[phase](); // Hauptlogik der Phase
+        }
+        await this.executeMiddleware(phase, 'after'); // Middleware nach der Phase
     }
 
     // Methode zum Hinzufügen von Hooks für Phasen
@@ -103,19 +99,7 @@ export class CharacterPlugin {
             }
         }
     }
-
-    // Startet eine Phase und integriert Hooks
-    async startPhase(phase) {
-        console.log(`Starting phase: ${phase}`);
-        await this.executeMiddleware(phase, 'before');
-        if (this[phase]) {
-            this.phaseStartTime = Date.now();
-            this.phase = phase;
-            await this[phase]();
-        }
-        await this.executeMiddleware(phase, 'after');
-    }
-
+ 
     // Überprüft, wie lange der Charakter bereits in der Phase verweilt
     hasPhaseTimeElapsed(duration) {
         const elapsed = Date.now() - this.phaseStartTime;
@@ -193,7 +177,6 @@ export class CharacterPlugin {
             console.log("ff", this.phase)
             this[this.phase]();
         }
-        this.checkPhaseTransition();
     }
 
     render(scene, delta) {
@@ -234,49 +217,70 @@ export class CharacterPlugin {
         }
     }
 
-    onEntering = function () {
+    onEntering = async function () {
         console.log(`${this.character.firstName}: "Ich laufe hier lang."`);
-        this.moveToTargetX(3)
+        
+        if (!this.hasReachedTargetX()) {
+            this.setTargetX(400)
+            this.moveToTargetX(3);
+        } else {
+            this.startNextPhase()
+        }
     };
 
-    onRecognizeHunger = function () {
-        console.log(`${this.character.firstName}: „Ich habe Hunger, was will ich essen?“`);
+    onRecognizeHunger = async function () {
+        console.log(`${this.character.firstName}: "Ich habe Hunger, was will ich essen?"`);
+        this.startNextPhase();
     };
 
-    onCheckOptions = function () {
-        console.log(`${this.character.firstName}: „Gibt es hier etwas, das mir schmeckt?“`);
+    onCheckOptions = async function () {
+        console.log(`${this.character.firstName}: "Gibt es hier etwas, das mir schmeckt?"`);
+        this.startNextPhase();
     };
 
-    onEvaluateQueue = function () {
-        console.log(`${this.character.firstName}: „Wie lang ist die Schlange? Habe ich die Zeit und Geduld?“`);
+    onEvaluateQueue = async function () {
+        console.log(`${this.character.firstName}: "Wie lang ist die Schlange? Habe ich die Zeit und Geduld?"`);
+        this.startNextPhase();
     };
 
-    onEvaluatePricePerformance = function () {
-        console.log(`${this.character.firstName}: „Ist es das wert? Was kostet es?“`);
+    onEvaluatePricePerformance = async function () {
+        console.log(`${this.character.firstName}: "Ist es das wert? Was kostet es?"`);
+        this.startNextPhase();
     };
 
-    onMakeDecision = function () {
-        console.log(`${this.character.firstName}: „Das nehme ich / Ich warte hier.“`);
+    onMakeDecision = async function () {
+        console.log(`${this.character.firstName}: "Das nehme ich / Ich warte hier."`);
+        this.startNextPhase();
     };
 
-    onWaitingInQueue = function () {
-        console.log(`${this.character.firstName}: „Warten! Ich stelle mich hinten an.“`);
+    onWaitingInQueue = async function () {
+        console.log(`${this.character.firstName}: "Warten! Ich stelle mich hinten an."`);
+
+        if (!this.hasReachedTargetX()) {
+            this.moveToTargetX(3)   
+        } else {
+            if (this.world.getCustomerQueue().isFirst(this)) {
+                this.startNextPhase();
+            }
+        }
     };
 
-    onOrderAndPay = function () {
-        console.log(`${this.character.firstName}: „Wie läuft der Kauf ab?“`);
+    onOrderAndPay = async function () {
+        console.log(`${this.character.firstName}: "Wie läuft der Kauf ab?"`);
+        this.startNextPhase();
     };
 
-    onEnjoyAndEvaluate = function () {
-        console.log(`${this.character.firstName}: „Hat es sich gelohnt?“`);
+    onEnjoyAndEvaluate = async function () {
+        console.log(`${this.character.firstName}: "Hat es sich gelohnt?"`);
+        this.startNextPhase();
     };
 
-    onLeaving = function () {
+    onLeaving = async function () {
         console.log(`${this.character.firstName}: "Ich gehe jetzt nach Hause."`);
-        this.setTargetX(4000)
-        this.moveToTargetX(4)
+        this.setTargetX(4000);
+        this.moveToTargetX(4);
     };
-    
+
     destroy() {
         this.spriteGraphics.destroy(); // Entfernt den Sprite, falls nötig
         this.bubbleGraphics.destroy();
