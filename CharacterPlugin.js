@@ -33,53 +33,69 @@ export class CharacterPlugin {
         this.phase = this.startPhase('onEntering');
     }
 
-    hasFixedEntryConditions(phase) {
-        const conditions = {
-            "onMakeDecision": () => !this.world.getCustomerQueue().contains(this),
-            "onEnjoyAndEvaluate": () => this.world.getCustomerQueue().contains(this)
-        };
-        return conditions[phase] ? conditions[phase]() : true;
-    }
-
-    executeMandatoryCommands(phase) {
-        const mandatoryActions = {
-            "onMakeDecision": () => {
-                if (!this.world.getCustomerQueue().contains(this)) {
-                    this.world.getCustomerQueue().enqueue(this);
-                }
+    handlePhaseConditions(phase) {
+        if (!this.world?.getCustomerQueue) {
+            console.warn("Customer queue is not available.");
+            return false;
+        }
+    
+        const queue = this.world.getCustomerQueue();
+        
+        // Bedingungen und verpflichtende Aktionen in einer einzigen Struktur
+        const phaseHandlers = {
+            "onMakeDecision": {
+                condition: () => !queue.contains?.(this),
+                action: () => queue.enqueue?.(this)
             },
-            "onEnjoyAndEvaluate": () => {
-                if (this.world.getCustomerQueue().contains(this)) {
-                    this.world.getCustomerQueue().dequeue(this);
+            "onEnjoyAndEvaluate": {
+                condition: () => queue.contains?.(this),
+                action: () => {
+                    if (queue.contains?.(this)) {
+                        queue.dequeue?.(this);
+                    } else {
+                        console.warn("Character was not in queue but tried to dequeue.");
+                    }
                 }
             }
         };
-        if (mandatoryActions[phase]) {
-            mandatoryActions[phase]();
+    
+        // Falls die Phase existiert, Bedingungen prüfen & Aktion ausführen
+        if (phaseHandlers[phase]) {
+            if (phaseHandlers[phase].condition?.()) {
+                phaseHandlers[phase].action?.();
+                return true;
+            }
+            return false;
         }
+    
+        return true; // Standardmäßig kein spezielles Handling notwendig
     }
-
+    
     async startNextPhase() {
         const currentIndex = this.phaseOrder.indexOf(this.phase);
         if (currentIndex === -1 || currentIndex >= this.phaseOrder.length - 1) return;
-
+    
         const nextPhase = this.phaseOrder[currentIndex + 1];
-        if (this.hasFixedEntryConditions(nextPhase)) {
+    
+        if (this.handlePhaseConditions(nextPhase)) {
             await this.startPhase(nextPhase);
         }
     }
-
+    
+    
     async startPhase(phase) {
         console.log(`Starting phase: ${phase}`);
-        await this.executeMiddleware(phase, 'before'); // Middleware vor der Phase
+        await this.executeMiddleware(phase, 'before');
+    
         if (this[phase]) {
             this.phaseStartTime = Date.now();
-            this.phase = phase
-            this.executeMandatoryCommands(phase);
-            await this[phase](); // Hauptlogik der Phase
+            this.phase = phase;
+            await this[phase]();
         }
-        await this.executeMiddleware(phase, 'after'); // Middleware nach der Phase
+    
+        await this.executeMiddleware(phase, 'after');
     }
+    
 
     // Methode zum Hinzufügen von Hooks für Phasen
     addMiddleware(phase, timing, middlewareFunc) {
