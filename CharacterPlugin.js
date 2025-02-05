@@ -18,7 +18,7 @@ export class CharacterPlugin {
         this.middleware = {}; // Hooks für Phasen
 
         this.phaseOrder = [
-            'onEntering',
+            'onEnter',
             'onRecognizeHunger',
             'onCheckOptions',
             'onEvaluateQueue',
@@ -30,7 +30,7 @@ export class CharacterPlugin {
             'onLeaving'
         ];
 
-        this.phase = this.startPhase('onEntering');
+        this.phase = this.startPhase('onEnter');
     }
 
     handlePhaseConditions(phase) {
@@ -233,7 +233,7 @@ export class CharacterPlugin {
         }
     }
 
-    onEntering = async function () {
+    onEnter = async function () {
         console.log(`${this.character.firstName}: "Ich laufe hier lang."`);
         
         if (!this.hasReachedTargetX()) {
