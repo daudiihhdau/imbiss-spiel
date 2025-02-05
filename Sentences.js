@@ -361,3 +361,15 @@ export const EvaluateQueueSentences = [
     { "emoji": "🤷‍♂️🙂", "bedeutung": "Es war okay, aber es hat mich nicht umgehauen." }
   ]
   
+  export const LeavingSentences = [
+    { "emoji": "🚶‍♂️💨", "bedeutung": "Vergiss es, ich bin raus!" },
+    { "emoji": "😤🚪", "bedeutung": "Ich hau jetzt ab!" },
+    { "emoji": "🙄🛑🚶", "bedeutung": "Nee, das ist mir zu doof!" },
+    { "emoji": "💨👋", "bedeutung": "Ich bin dann mal weg!" },
+    { "emoji": "🕰️😠🚪", "bedeutung": "Das dauert mir zu lange, tschüss!" },
+    { "emoji": "👋😡", "bedeutung": "Vergiss es, ich hab keinen Bock mehr!" },
+    { "emoji": "😑🚶", "bedeutung": "Ich geb auf, das ist mir zu blöd!" },
+    { "emoji": "😠💨", "bedeutung": "Das war's, ich geh!" },
+    { "emoji": "🛑😒🚶‍♀️", "bedeutung": "Ich verschwinde lieber!" },
+    { "emoji": "😵💸🚶", "bedeutung": "Das ist mir den Stress nicht wert!" },
+];

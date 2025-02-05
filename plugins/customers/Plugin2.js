@@ -1,19 +1,25 @@
 import { CharacterPlugin } from '../../CharacterPlugin.js';
+import { WaitingSentences, GeneralSentences, LeavingSentences } from '../../Sentences.js';
 
 export default function ImpatientPlugin(spriteKey, character) {
     const plugin = new CharacterPlugin(spriteKey, character);
 
-    // Überschreibe die onEnter-Methode
+    // Hilfsfunktion für zufälligen Satz aus einer Kategorie
+    function getRandomSentence(sentences) {
+        return sentences[Math.floor(Math.random() * sentences.length)].emoji;
+    }
+
+    // Überschreibe die onEnter-Methode mit hasPhaseTimeElapsed
     plugin.onEnter = async function () {
         console.log(`${character.firstName}: "Ich laufe hier lang."`);
-        
+
         if (!this.hasReachedTargetX()) {
             this.setTargetX(400);
             this.moveToTargetX(3);
         } else {
-            // Prüfen, ob er direkt ungeduldig wird
-            if (Math.random() < 0.3) { // 30% Chance, dass er direkt geht
+            if (this.hasPhaseTimeElapsed(1000)) { // Nach 5 Sekunden überlegt er, ob er direkt geht
                 console.log(`${character.firstName}: "Nee, das ist mir zu stressig!"`);
+                this.setThinking(getRandomSentence(LeavingSentences));
                 this.startSpecificPhase('onLeaving');
                 return;
             }
@@ -21,17 +27,16 @@ export default function ImpatientPlugin(spriteKey, character) {
         }
     };
 
-    // Überschreibe die onWaitingInQueue-Methode für Ungeduld
+    // Überschreibe die onWaitingInQueue-Methode mit hasPhaseTimeElapsed
     plugin.onWaitingInQueue = async function () {
         console.log(`${character.firstName}: "Warten! Ich stelle mich hinten an."`);
 
         if (!this.hasReachedTargetX()) {
             this.moveToTargetX(3);
         } else {
-            // Falls er zu lange wartet, könnte er gehen
-            if (this.hasPhaseTimeElapsed(100)) { // 10 Sekunden Wartezeit
+            if (this.hasPhaseTimeElapsed(300)) { // Nach 10 Sekunden verlässt er frustriert die Schlange
                 console.log(`${character.firstName}: "Das dauert mir zu lange!"`);
-                this.setThinking("😡");
+                this.setThinking(getRandomSentence(LeavingSentences));
                 this.startSpecificPhase('onLeaving');
                 return;
             }
@@ -41,18 +46,17 @@ export default function ImpatientPlugin(spriteKey, character) {
         }
     };
 
-    // Middleware: Ungeduldige Sätze je nach Wartezeit
+    // Middleware: Kunde wird während des Wartens immer ungeduldiger
     plugin.addMiddleware('onWaitingInQueue', 'before', async (character) => {
-        const elapsed = character.hasPhaseTimeElapsed(200) ? "echt zu lange!" : "schon ein bisschen nervig...";
-        console.log(`${character.firstName}: "Boah, das dauert ${elapsed}"`);
-        character.setThinking("⏳😠");
+        character.setThinking(getRandomSentence(WaitingSentences)); // Zufälliger genervter Gedanke
     });
 
-    // Middleware: Kunde wird aggressiver, je länger er wartet
+    // Middleware: Falls der Kunde wirklich ungeduldig wird, verlässt er spontan die Schlange
     plugin.addMiddleware('onWaitingInQueue', 'before', async (character) => {
-        if (character.hasPhaseTimeElapsed(300)) { // 15 Sekunden Wartezeit
-            console.log(`${character.firstName}: "Ey, macht mal schneller da vorne!"`);
-            character.setThinking("💢😡");
+        if (Math.random() < 0.2) { // 20% Chance, dass er plötzlich geht
+            console.log(`${character.firstName}: "Vergiss es, ich bin raus!"`);
+            character.setThinking(getRandomSentence(LeavingSentences));
+            character.startSpecificPhase('onLeaving'); // Kunde verlässt den Imbiss
         }
     });
 
