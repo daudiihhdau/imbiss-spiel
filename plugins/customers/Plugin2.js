@@ -1,5 +1,4 @@
 import { CharacterPlugin } from '../../CharacterPlugin.js';
-// import { WaitingSentences } from '../../Sentences.js';
 
 export default function ImpatientPlugin(spriteKey, character) {
     const plugin = new CharacterPlugin(spriteKey, character);
@@ -41,6 +40,21 @@ export default function ImpatientPlugin(spriteKey, character) {
             }
         }
     };
+
+    // Middleware: Ungeduldige Sätze je nach Wartezeit
+    plugin.addMiddleware('onWaitingInQueue', 'before', async (character) => {
+        const elapsed = character.hasPhaseTimeElapsed(200) ? "echt zu lange!" : "schon ein bisschen nervig...";
+        console.log(`${character.firstName}: "Boah, das dauert ${elapsed}"`);
+        character.setThinking("⏳😠");
+    });
+
+    // Middleware: Kunde wird aggressiver, je länger er wartet
+    plugin.addMiddleware('onWaitingInQueue', 'before', async (character) => {
+        if (character.hasPhaseTimeElapsed(300)) { // 15 Sekunden Wartezeit
+            console.log(`${character.firstName}: "Ey, macht mal schneller da vorne!"`);
+            character.setThinking("💢😡");
+        }
+    });
 
     return plugin;
 }
