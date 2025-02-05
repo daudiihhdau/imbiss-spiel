@@ -81,7 +81,19 @@ export class CharacterPlugin {
             await this.startPhase(nextPhase);
         }
     }
+
+    async startSpecificPhase(phaseName) {
+        if (!this.phaseOrder.includes(phaseName)) {
+            console.warn(`Phase "${phaseName}" existiert nicht in der Reihenfolge.`);
+            return;
+        }
+
+        this.world.getCustomerQueue().dequeue(this)
     
+        if (this.handlePhaseConditions(phaseName)) {
+            await this.startPhase(phaseName);
+        }
+    }
     
     async startPhase(phase) {
         console.log(`Starting phase: ${phase}`);
