@@ -43,6 +43,7 @@ export class MainScene extends Phaser.Scene {
             './plugins/customers/Plugin1.js',
             './plugins/customers/Plugin2.js',
             './plugins/customers/Plugin3.js',
+            './plugins/customers/Plugin4.js',
         ];
     
         for (const pathOn of pluginPaths) {
