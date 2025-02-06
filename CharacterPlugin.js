@@ -14,6 +14,7 @@ export class CharacterPlugin {
         this.position = { x: 0, y: 0 };
         this.targetX = null;
         this.phaseStartTime = null;
+        this.phase = null;
 
         this.middleware = {}; // Hooks für Phasen
 
@@ -29,8 +30,6 @@ export class CharacterPlugin {
             'onEnjoyAndEvaluate',
             'onLeaving'
         ];
-
-        this.phase = 'onEnter';
     }
 
     handlePhaseConditions(phase) {
@@ -197,6 +196,7 @@ export class CharacterPlugin {
 
     update() {
         if (!this.spriteGraphics) return
+        if (!this.phase) this.startPhase('onEnter');
 
         if (this.phase && this[this.phase]) {
             console.log("ff", this.phase)
