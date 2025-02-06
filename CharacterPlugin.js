@@ -30,7 +30,7 @@ export class CharacterPlugin {
             'onLeaving'
         ];
 
-        this.phase = this.startPhase('onEnter');
+        this.phase = 'onEnter';
     }
 
     handlePhaseConditions(phase) {
@@ -71,41 +71,36 @@ export class CharacterPlugin {
         return true; // Standardmäßig kein spezielles Handling notwendig
     }
     
-    async startNextPhase() {
+    startNextPhase() {
         const currentIndex = this.phaseOrder.indexOf(this.phase);
         if (currentIndex === -1 || currentIndex >= this.phaseOrder.length - 1) return;
     
         const nextPhase = this.phaseOrder[currentIndex + 1];
     
         if (this.handlePhaseConditions(nextPhase)) {
-            await this.startPhase(nextPhase);
+            this.startPhase(nextPhase);
         }
     }
 
-    async startSpecificPhase(phaseName) {
-        if (!this.phaseOrder.includes(phaseName)) {
-            console.warn(`Phase "${phaseName}" existiert nicht in der Reihenfolge.`);
-            return;
-        }
-
+    startLeaving() {
         this.world.getCustomerQueue().dequeue(this)
     
-        if (this.handlePhaseConditions(phaseName)) {
-            await this.startPhase(phaseName);
+        if (this.handlePhaseConditions('onLeaving')) {
+            this.startPhase('onLeaving');
         }
     }
     
-    async startPhase(phase) {
+    startPhase(phase) {
         console.log(`Starting phase: ${phase}`);
-        await this.executeMiddleware(phase, 'before');
+        this.executeMiddleware(phase, 'before');
     
         if (this[phase]) {
             this.phaseStartTime = Date.now();
             this.phase = phase;
-            await this[phase]();
+            this[this.phase]();
         }
     
-        await this.executeMiddleware(phase, 'after');
+        this.executeMiddleware(phase, 'after');
     }
     
 
@@ -119,11 +114,11 @@ export class CharacterPlugin {
     }
 
     // Methode zum Ausführen von Middleware
-    async executeMiddleware(phase, timing) {
+    executeMiddleware(phase, timing) {
         const key = `${phase}_${timing}`; // Beispiel: "onPaying_before"
         if (this.middleware[key]) {
             for (const middlewareFunc of this.middleware[key]) {
-                await middlewareFunc(this); // Middleware erhält den Charakter
+                middlewareFunc(this); // Middleware erhält den Charakter
             }
         }
     }
@@ -135,6 +130,8 @@ export class CharacterPlugin {
     }
 
     hasReachedTargetX() {
+        if (this.targetX === null) return false
+
         const tolerance = 50;
         return Math.abs(this.targetX - this.position.x) <= tolerance;
     }
@@ -245,7 +242,7 @@ export class CharacterPlugin {
         }
     }
 
-    onEnter = async function () {
+    onEnter = function () {
         console.log(`${this.character.firstName}: "Ich laufe hier lang."`);
         
         if (!this.hasReachedTargetX()) {
@@ -256,32 +253,32 @@ export class CharacterPlugin {
         }
     };
 
-    onRecognizeHunger = async function () {
+    onRecognizeHunger = function () {
         console.log(`${this.character.firstName}: "Ich habe Hunger, was will ich essen?"`);
         this.startNextPhase();
     };
 
-    onCheckOptions = async function () {
+    onCheckOptions = function () {
         console.log(`${this.character.firstName}: "Gibt es hier etwas, das mir schmeckt?"`);
         this.startNextPhase();
     };
 
-    onEvaluateQueue = async function () {
+    onEvaluateQueue = function () {
         console.log(`${this.character.firstName}: "Wie lang ist die Schlange? Habe ich die Zeit und Geduld?"`);
         this.startNextPhase();
     };
 
-    onEvaluatePricePerformance = async function () {
+    onEvaluatePricePerformance = function () {
         console.log(`${this.character.firstName}: "Ist es das wert? Was kostet es?"`);
         this.startNextPhase();
     };
 
-    onMakeDecision = async function () {
+    onMakeDecision = function () {
         console.log(`${this.character.firstName}: "Das nehme ich / Ich warte hier."`);
         this.startNextPhase();
     };
 
-    onWaitingInQueue = async function () {
+    onWaitingInQueue = function () {
         console.log(`${this.character.firstName}: "Warten! Ich stelle mich hinten an."`);
 
         if (!this.hasReachedTargetX()) {
@@ -293,17 +290,17 @@ export class CharacterPlugin {
         }
     };
 
-    onOrderAndPay = async function () {
+    onOrderAndPay = function () {
         console.log(`${this.character.firstName}: "Wie läuft der Kauf ab?"`);
         this.startNextPhase();
     };
 
-    onEnjoyAndEvaluate = async function () {
+    onEnjoyAndEvaluate = function () {
         console.log(`${this.character.firstName}: "Hat es sich gelohnt?"`);
         this.startNextPhase();
     };
 
-    onLeaving = async function () {
+    onLeaving = function () {
         console.log(`${this.character.firstName}: "Ich gehe jetzt nach Hause."`);
         this.setTargetX(4000);
         this.moveToTargetX(4);
