@@ -1,82 +1,83 @@
-# 🍔 **Das Imbiss-Spiel** – Kreiere dein eigenes Fast-Food-Imperium!
+# 🍔 **Create your own fast food empire!** - 
 
-Willkommen bei **unserem Familienprojekt**, das aus wilden Kinderträumen und viel Liebe entstanden ist! ❤️  
+Welcome to **our family project**, created from wild children's dreams and lots of love! ❤️  
 
-**Die Story?** Ganz einfach: Die Kinder wollten ein eigenes Computerspiel. Der Papa möchte ihnen den Umgang mit Geld näherbringen und nebenbei selbst herausfinden, wie man mittels ChatGPT (und Co) die Arbeit als Programmierer automatisieren kann.  
+**The story?** It's simple: the children wanted their own computer game. Dad wants to teach them how to handle money and find out for themselves how to automate their work as programmers using ChatGPT (and the like).  
 
-Das Ganze ist ein **Spaß-Projekt**, und die Kinder haben ständig neue [Ideen](Ideen-Board.md) – nicht alle haben immer direkt etwas mit einem Imbiss zu tun. (Eine Fledermaus soll bspw. auch bald herumfliegen. 🦇🍟)  
+The whole thing is a **fun project**, and the children are constantly coming up with new [ideas](Ideen-Board.md) - not all of them always have something directly to do with a snack. (For example, a bat is supposed to be flying around soon. 🦇🍟)  
 
-**Begleite uns auf unserer Reise und hab mit uns Spaß dabei, das Imbiss-Spiel gemeinsam weiterzuentwickeln!**
-
----
-
-## 🚀 **Was ist das Imbiss-Spiel?**  
-Das Imbiss-Spiel ist eine witzige Simulation, in der du dein eigenes Fast-Food-Business aufbaust:  
-- 🍟 **Verkaufe reichlich Pommes und Burger:** Ohne den ganzen Tag nach Frittenfett zu riechen.
-- 📈 **Lerne Buchhaltung (ohne zu gähnen):** Budgetiere wie ein Profi – oder geh pleite und probier’s nochmal!  
-- 🛠️ **Schreibe eigene Plugins:** Füge neue Kundentypen, Speisen oder lustige Spielmechaniken hinzu – der Code ist offen für deine Kreativität!
-- 🤖 **KI-Tools nutzen:** Wir benutzen, wann immer es geht, moderne KI-Tools, um ihre Stärken, Schwächen und Möglichkeiten in der Programmierung zu erforschen.  
+**Join us on our journey and have fun developing the snack game together!
 
 ---
 
-## 🧐 **Warum solltest du mitmachen?**
+## 🚀 **What is it?**  
+The game is a fun simulation in which you build your own fast food business:  
+- 🍟 **Sell plenty of fries and burgers:** Without smelling like chip fat all day.
+- 📈 **Learn accounting (without yawning):** Budget like a pro - or go broke and try again!  
+- 🛠️ **Write your own plugins:** Add new customer types, food or fun game mechanics - the code is open for your creativity!
+- 🤖 **Use AI tools:** We use modern AI tools whenever possible to explore their strengths, weaknesses and possibilities in programming.  
 
-### 1. **Sei Teil einer kreativen Reise:**  
-Wir bauen nicht nur ein Spiel, wir haben auch jede Menge Spaß dabei uns neue Ideen auszudenken. Egal ob du programmieren kannst, einen kreativen Wunsch hast oder einfach nur testen willst – deine Unterstützung ist willkommen!  
 
----
+## 🧐 **Why should you take part?**
 
-## 🍟 **So kannst du helfen:**  
-
-1. **Teste das Spiel:** Lade es herunter, probier’s aus und sag uns, was dir gefällt (oder nicht).  
-2. **Programmiere mit:** Schau dir die offenen Aufgaben an (Issues), wie z. B.:  
-   - Eigene Plugins für neue Speisen oder Kundentypen schreiben.  
-   - Steuere tolle Grafiken bei – ob neue Burger, witzige Kunden oder schicke Animationen.  
-3. **Teile Ideen:** Öffne ein Issue und lass uns wissen, woran du denkst. Du musst kein Profi sein – wir lieben kreative Beiträge!  
-4. **Motiviere uns, am Ball zu bleiben:** Schreib uns Feedback, schick uns Ideen oder einfach ein paar aufmunternde Worte. Jede Nachricht motiviert uns, weiterzumachen!
+### 1. **Be part of a creative journey:**  
+We don't just build a game, we also have a lot of fun coming up with new ideas. Whether you can program, have a creative wish or just want to test - your support is welcome!  
 
 ---
 
-## 🛠️ **Wie du startest:**  
+## 🍟 **How you can help:**  
 
-1. Clone das Repo:  
-   ```bash  
-   npm install -g local-web-server
-   git clone https://github.com/daudiihhdau/imbiss-spiel  
-   cd imbiss-spiel  
-   ws --spa index.html
-   ```
-
-Öffne das Spiel anschließend im Browser unter http://localhost:8000.
-Drücke F5, wenn keine Kunden kommen. Dann wird eine andere andere zufällige Location geladen.
-Wundere Dich nicht, wenn der Bildschirm am Anfang dunkel ist. Der Imbiss öffnet in der Nacht und die Sonne geht erst später auf. 😉  
+1. **Test the game:** Download it, try it out and tell us what you like (or don't like).  
+2. **Co-program:** Take a look at the open tasks (issues), e.g:  
+   - Write your own plugins for new food or customer types.  
+   - Contribute great graphics - whether new burgers, funny customers or fancy animations.  
+3. **Share ideas:** Open an issue and let us know what you're thinking about. You don't have to be a pro - we love creative posts!  
+4. **Motivate us to stay on the ball:** Write us feedback, send us ideas or just a few words of encouragement. Every message motivates us to keep going!
 
 ---
 
-## 🌟 **Unsere Vision:**  
-Das Imbiss-Spiel ist unser gemeinsames Freizeitprojekt. Wir wollen Spaß haben, Neues lernen und dabei kreativ sein. Wir überlegen uns fortwährend neuen Ideen, die wir einbauen sollten. Wie wäre es mit mehr Müll auf den Straßen, einen schimpfenden Kunden – oder ein Frosch, der ohne Grund vorbeihüpft. 😉  
+## 🛠️ **How to get started:**  
 
-Es geht nicht darum ein marktfähiges Spiel zu bauen. Wir wollen gemeinsam mit Euch etwas Cooles bauen und über unsere Ideen lachen.
+1. clone the repo:  
+```bash  
+npm install -g local-web-server
+git clone https://github.com/daudiihhdau/imbiss-spiel  
+cd imbiss-spiel  
+ws --spa index.html
+```
 
----
-
-## 🎯 **Die erste spielbare Version:**  
-Hier sind die nächsten Meilensteine, die wir erreichen wollen:  
-- Kunden haben Wünsche (z. B. "Ich will einen Cheeseburger!")  
-- Kunden bestellen ihre Speisen  
-- Kunden bezahlen für ihre Bestellungen  
-- Statistik am Tagesende anzeigen (z. B. Einnahmen, Ausgaben, Kundenanzahl)  
-- Ein neuer Tag beginnt (inkl. Reset für Kunden und Vorräte)  
-- Zu Beginn kann man das Startvermögen und ein Ziel (z. B. "1.000€ Gewinn") festlegen  
+Then open the game in the browser at http://localhost:8000.
+Press F5 if there are no customers. Another random location will then be loaded.
+Don't be surprised if the screen is dark at the beginning. The snack bar opens at night and the sun rises later 😉  
 
 ---
 
-## 🍔 **Los geht’s!**  
-Mach mit, schreib uns, und lass uns zusammen das *beste Fast-Food-Spiel der Welt* bauen!  
+## 🌟 **Our vision:**  
+The snack game is our joint leisure project. We want to have fun, learn new things and be creative. We are constantly thinking of new ideas that we should incorporate. How about more garbage on the streets, a scolding customer - or a frog that hops past for no reason 😉  
 
-## 📝 Lizenz  
+It's not about building a marketable game. We want to build something cool together with you and laugh about our ideas.
 
-Dieses Projekt steht unter der [MIT-Lizenz](LICENSE). Das bedeutet: Du kannst es frei nutzen, ändern und weiterverbreiten – wir freuen uns, wenn du uns als ursprüngliche Autoren erwähnst! 😊
+---
 
-**Gemeinsam ist man nicht einsam**  
-– Deine Imbiss-Spiel-Familie 🍟❤️
+## 🎯 **The first playable version:**  
+Here are the next milestones we want to achieve:  
+- Customers have requests (e.g. “I want a cheeseburger!”)  
+- Customers order their food  
+- Customers pay for their orders  
+- Display statistics at the end of the day (e.g. revenue, expenditure, number of customers)  
+- A new day begins (incl. reset for customers and stocks)  
+- At the beginning you can set the starting assets and a target (e.g. “€1,000 profit”)  
+
+---
+
+## 🍔 **Let's go!  
+Join in, write to us, and let's build the *best fast food game in the world* together!  
+
+---
+
+## 📝 License  
+
+This project is licensed under the [MIT License](LICENSE). This means: You can freely use, modify and redistribute it - we are happy if you mention us as the original authors! 😊
+
+**Together you are not lonely**  
+- Your snack game family 🍟❤️
