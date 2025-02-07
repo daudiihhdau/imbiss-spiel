@@ -1,4 +1,4 @@
-# 🍔 **Create your own fast food empire!** - 
+# 🍔 **Create your own fast food empire!**
 
 Welcome to **our family project**, created from wild children's dreams and lots of love! ❤️  
 
@@ -6,7 +6,7 @@ Welcome to **our family project**, created from wild children's dreams and lots 
 
 The whole thing is a **fun project**, and the children are constantly coming up with new [ideas](Ideen-Board.md) - not all of them always have something directly to do with a snack. (For example, a bat is supposed to be flying around soon. 🦇🍟)  
 
-**Join us on our journey and have fun developing the snack game together!
+**Join us on our journey and have fun developing the snack game together!**
 
 ---
 
@@ -38,7 +38,7 @@ We don't just build a game, we also have a lot of fun coming up with new ideas. 
 
 ## 🛠️ **How to get started:**  
 
-1. clone the repo:  
+Clone the repo:  
 ```bash  
 npm install -g local-web-server
 git clone https://github.com/daudiihhdau/imbiss-spiel  
